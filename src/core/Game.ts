@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+import { DragControls } from 'three/examples/jsm/controls/DragControls';
 
 export default class Game {
 
@@ -7,6 +9,9 @@ export default class Game {
     renderer: THREE.WebGLRenderer;
     camera: THREE.PerspectiveCamera;
     scene: THREE.Scene;
+    transformControls: TransformControls;
+    orbitControls: OrbitControls;
+    dragControls: DragControls;
 
     constructor(canvas: any) {
         this.canvas = canvas;
@@ -22,19 +27,35 @@ export default class Game {
         this.renderer.setClearColor(new THREE.Color(0xffffff));
         this.camera.position.set(3, 4, 5);
         this.camera.lookAt(new THREE.Vector3());
-        new OrbitControls(this.camera, canvas);
+        this.orbitControls = new OrbitControls(this.camera, canvas);
+        this.transformControls = new TransformControls( this.camera, this.renderer.domElement );
+        this.transformControls.addEventListener( 'dragging-changed', ( event )=> {
+            this.orbitControls.enabled = ! event.value;
+        } );
+
+        this.dragControls = new DragControls(this.scene.children, this.camera, this.renderer.domElement);
+        this.dragControls.addEventListener("hoveron", (event) => {
+            this.transformControls.attach(event.object);
+            this.transformControls.setSize(0.4);
+        });
+
+        this.scene.add( this.transformControls );
+
         this.init();
     }
 
     init(): void {
         let light = new THREE.HemisphereLight(0xaaaaaa, 0x444444);
         this.scene.add(light);
-        this.scene.add(new THREE.HemisphereLightHelper(light, 4));
+        let helper = new THREE.HemisphereLightHelper(light, 4)
+        this.scene.add(helper);
         let grid = new THREE.GridHelper(80, 80, 0xe3e3e3, 0xf0f0f0);
         this.scene.add(grid);
 
-        let box = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
-        this.scene.add(box);
+        // let box = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
+        // this.scene.add(box);
+        this.transformControls.attach( helper );
+        this.renderer.domElement.click();
         this.animate();
     }
 
@@ -69,6 +90,12 @@ export default class Game {
 
         let mesh = new THREE.Mesh(geo, material);
         this.scene.add(mesh);
+
+        this.transformControls.attach( mesh );
+        this.orbitControls.enabled = false;
+        this.transformControls.setMode("translate");
+        this.transformControls.enabled = true;
+        this.renderer.domElement.click();
     }
 
 }

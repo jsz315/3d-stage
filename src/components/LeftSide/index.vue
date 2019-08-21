@@ -16,26 +16,12 @@ export default class LeftSide extends Vue {
 	
 	@Provide() tip:string = "ok";
 
-  @Provide() list: Array<Object> = [
-    {
-      name: "BoxBufferGeometry",
-      img: "/asset/img/s1.jpg"
-    },
-    {
-      name: "SphereBufferGeometry",
-      img: "/asset/img/s2.jpg"
-    },
-    {
-      name: "DodecahedronBufferGeometry",
-      img: "/asset/img/s3.jpg"
-    },
-    {
-      name: "CylinderBufferGeometry",
-      img: "/asset/img/s4.jpg"
-    }
-  ];
+  @Provide() list: Array<Object> = [];
 
   mounted() {
+    (<any>this).$axios.get('asset/data.json').then((res: any) => {
+      this.list = res.data;
+    })
     this.$el.addEventListener("mousedown", e => {
 			console.log("mousedown");
 			let obj:any = e.target;
@@ -46,6 +32,7 @@ export default class LeftSide extends Vue {
 				window.addEventListener("mouseup", this.mouseUp);
 			}
     });
+
   }
 
   mouseMove(e: MouseEvent) {
@@ -63,31 +50,5 @@ export default class LeftSide extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.left-side {
-  position: fixed;
-  width: 200px;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  left: 0;
-  top: 0;
-  z-index: 3;
-  background: #ffffff;
-  box-shadow: 1px 2px 4px 0px rgba(0, 0, 0, 0.25);
-}
-.type {
-  padding: 10px;
-  width: 180px;
-  margin: auto;
-}
-.img {
-  width: 100%;
-  margin-bottom: 10px;
-}
-.tip {
-  font-size: 12px;
-  text-align: center;
-  margin-bottom: 40px;
-  color: #999999;
-}
+@import "./index.less";
 </style>

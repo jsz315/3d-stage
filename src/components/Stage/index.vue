@@ -7,6 +7,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
+import GameEvent from '@/event/index'
 
 let game:Game;
 
@@ -16,7 +17,9 @@ export default class Stage extends Vue {
 
   mounted() {
     game = new Game(this.$refs.canvas);
+    
     (<any>this.$refs.canvas).addEventListener("mouseenter", this.mouseenter);
+    GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.info(e)});
   }
 
   mouseenter(e:MouseEvent):void{
@@ -25,20 +28,15 @@ export default class Stage extends Vue {
       game.addObject(this.$store.state.dragItem.name);
     }
   }
+
+  info(e:CustomEvent):void{
+    console.log(e);
+    this.$store.commit("changeCurParams", e.detail.parameters);
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.stage {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  .canvas {
-    width: 100%;
-    height: 100%;
-  }
-}
+@import "./index.less";
 </style>

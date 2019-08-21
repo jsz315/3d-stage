@@ -1,0 +1,26 @@
+[
+    {
+      "name": "BoxBufferGeometry",
+      "img": "asset/img/s1.jpg"
+    },
+    {
+      "name": "SphereBufferGeometry",
+      "img": "asset/img/s2.jpg"
+    },
+    {
+      "name": "IcosahedronBufferGeometry",
+      "img": "asset/img/s3.jpg"
+    },
+    {
+      "name": "CylinderBufferGeometry",
+      "img": "asset/img/s4.jpg"
+    },
+    {
+      "name": "OctahedronBufferGeometry",
+      "img": "asset/img/s5.jpg"
+    },
+    {
+      "name": "TorusBufferGeometry",
+      "img": "asset/img/s6.jpg"
+    }
+]

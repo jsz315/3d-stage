@@ -144,7 +144,7 @@ export default class Game {
         return wireframe;
     }
 
-    addObject(type: string){
+    addObject(type: string, event: MouseEvent){
         let geo;
         console.log("add " + type);
         switch(type){
@@ -173,6 +173,19 @@ export default class Game {
             console.log("no geo");
             return;
         }
+
+        //屏幕坐标转三维坐标对象
+        var vector = new THREE.Vector3();
+        vector.set(
+            ( event.clientX / window.innerWidth ) * 2 - 1,
+            - ( event.clientY / window.innerHeight ) * 2 + 1,
+            0.5 
+        );
+        vector.unproject( this.camera );
+        var dir = vector.sub( this.camera.position ).normalize();
+        var distance = - this.camera.position.z / dir.z;
+        var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
+        
         // var material = new THREE.MeshStandardMaterial( {
         //     color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
         //     roughness: 0.5,
@@ -187,12 +200,12 @@ export default class Game {
             flatShading: true 
         } );
 
-
         let mesh = new THREE.Mesh(geo, material);
         mesh.name = type;
         this.scene.add(mesh);
 
         mesh.add(this.getFrame(geo));
+        mesh.position.copy(pos);
 
         this.transformControls.attach( mesh );
         this.orbitControls.enabled = false;
@@ -200,7 +213,9 @@ export default class Game {
         this.scene.add( this.transformControls );
         this.dragList.push(mesh);
         // this.transformControls.enabled = true;
+
         // this.renderer.domElement.click();
+        // this.renderer.domElement.dispatchEvent(event);
     }
 
 }

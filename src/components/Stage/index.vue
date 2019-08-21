@@ -25,7 +25,7 @@ export default class Stage extends Vue {
   mouseenter(e:MouseEvent):void{
     if(this.$store.state.dragItem){
       console.log("mouseenter");
-      game.addObject(this.$store.state.dragItem.name);
+      game.addObject(this.$store.state.dragItem.name, e);
     }
   }
 

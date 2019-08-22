@@ -37,10 +37,16 @@ export default class Game {
             this.orbitControls.enabled = ! event.value;
         } );
 
+        this.transformControls.addEventListener('objectChange', (event) => {
+            this.sendTransform(this.transformControls.object);
+        })
+
         this.rayCaster = new THREE.Raycaster();
         canvas.addEventListener("mousedown", (e: MouseEvent) => {this.selectObject(e)});
 
+
         GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
+        window.addEventListener("resize", e => this.onResize(e), false);
 
         // this.dragControls = new DragControls(this.dragList, this.camera, this.renderer.domElement);
         // this.dragControls.addEventListener("hoveron", (event) => {
@@ -48,7 +54,37 @@ export default class Game {
         //     this.transformControls.setSize(0.4);
         // });
 
+        window.addEventListener( 'keydown',  ( event ) => {
+            switch ( event.keyCode ) {
+
+                case 81: // Q
+                    this.transformControls.setSpace( this.transformControls.space === "local" ? "world" : "local" );
+                    break;
+
+                case 87: // W
+                    this.transformControls.setMode( "translate" );
+                    break;
+
+                case 69: // E
+                    this.transformControls.setMode( "rotate" );
+                    break;
+
+                case 82: // R
+                    this.transformControls.setMode( "scale" );
+                    break;
+
+            }
+
+        } );
+
         this.init();
+
+    }
+
+    onResize(e:Event):void{
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     changeItemParam(e:CustomEvent):void{
@@ -83,6 +119,33 @@ export default class Game {
             name: mesh.name,
             parameters: parameters
         });
+        this.sendTransform(mesh);
+    }
+
+    sendTransform(mesh: THREE.Object3D):void{
+        if(!mesh){
+            return;
+        }
+        let position = mesh.position;
+        let rotation = mesh.rotation;
+        let scale = mesh.scale;
+        GameEvent.ins.send(GameEvent.CHANGE_TRANSFORM, {
+            position: {
+                x: position.x,
+                y: position.y,
+                z: position.z
+            },
+            rotation: {
+                x: rotation.x,
+                y: rotation.y,
+                z: rotation.z
+            },
+            scale: {
+                x: scale.x,
+                y: scale.y,
+                z: scale.z
+            }
+        });
     }
 
     selectObject(e: MouseEvent):void{
@@ -107,19 +170,58 @@ export default class Game {
         if ( geometry.isGeometry ) {
             geometry = new THREE.BufferGeometry().fromGeometry( geometry );
         }
-        mesh.children[ 0 ].geometry.dispose();
-        mesh.children[ 0 ].geometry = new THREE.WireframeGeometry( geometry );
+        let frame = mesh.children[ 0 ];
+        if(frame){
+            frame.geometry.dispose();
+            frame.material.dispose();
+            mesh.remove(frame);
+        }
+
         mesh.geometry.dispose();
         mesh.geometry = geometry;
+        mesh.add(this.getFrame(geometry));
+    }
+
+    getCanvas(word: any, color:any){
+        let w = 512;
+        let h = 512;
+        let canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        let ctx:any = canvas.getContext("2d");
+        // ctx.fillStyle = "#ffffff";
+        // ctx.arc(w / 2, h / 2, w / 2, 0, 2 * Math.PI);
+        // ctx.fill();
+        ctx.font = 420 + "px bold";
+        ctx.fillStyle = color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(word, w / 2, h / 2); 
+        return canvas;
+    }
+
+    addWorldTip(word:any, color:any, position:THREE.Vector3){
+        var spriteMap = new THREE.CanvasTexture(this.getCanvas(word, color));
+        var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, transparent: true } );
+        var sprite = new THREE.Sprite( spriteMaterial );
+        sprite.position.copy(position);
+        this.scene.add( sprite );
     }
 
     init(): void {
         let light = new THREE.HemisphereLight(0xaaaaaa, 0x444444);
         this.scene.add(light);
+        
         // let helper = new THREE.HemisphereLightHelper(light, 4)
         // this.scene.add(helper);
-        let grid = new THREE.GridHelper(80, 80, 0xe3e3e3, 0xf0f0f0);
+        let grid = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
         this.scene.add(grid);
+
+        this.addWorldTip("x", "#ff0000", new THREE.Vector3(42, 0.5, 0));
+        this.addWorldTip("-x", "#ff0000", new THREE.Vector3(-42, 0.5, 0));
+        this.addWorldTip("z", "#0000ff", new THREE.Vector3(0, 0.5, 42));
+        this.addWorldTip("-z", "#0000ff", new THREE.Vector3(0, 0.5, -42));
+       
 
         // let box = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
         // this.scene.add(box);
@@ -135,12 +237,16 @@ export default class Game {
 
     getFrame(geometry: THREE.BufferGeometry):THREE.Mesh {
         let wireframeMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0x000000, 
-            opacity: 1, 
+            color: 0xffffff, 
+            opacity: 0.8, 
             wireframe: true, 
-            transparent: true 
+            transparent: true,
+            depthTest: true,
+            depthWrite: true
         });
+        console.log("getFrame");
         let wireframe = new THREE.Mesh( geometry, wireframeMaterial );
+        wireframe.name = "frame_" + geometry.type;
         return wireframe;
     }
 
@@ -196,7 +302,9 @@ export default class Game {
         var material = new THREE.MeshPhongMaterial( { 
             color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
             emissive: 0x072534, 
-            side: THREE.DoubleSide, 
+            side: THREE.FrontSide,
+            transparent: true,
+            opacity: 1, 
             flatShading: true 
         } );
 
@@ -205,11 +313,11 @@ export default class Game {
         this.scene.add(mesh);
 
         mesh.add(this.getFrame(geo));
-        mesh.position.copy(pos);
+        // mesh.position.copy(pos);
 
         this.transformControls.attach( mesh );
         this.orbitControls.enabled = false;
-        this.transformControls.setMode("translate");
+        // this.transformControls.setMode("translate");
         this.scene.add( this.transformControls );
         this.dragList.push(mesh);
         // this.transformControls.enabled = true;

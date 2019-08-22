@@ -3,6 +3,7 @@ export default class GameEvent{
 
     public static SELECT_ITEM: string = "select item";
     public static CHANGE_PARAM: string = "change param";
+    public static CHANGE_TRANSFORM: string = "change transform";
 
     public version:string;
     private _sender:any;

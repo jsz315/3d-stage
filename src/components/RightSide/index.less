@@ -7,7 +7,7 @@
 	top: 0;
 	height: 100%;
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: scroll;
 	transform: translateX(300px);
 	transition: all 300ms;
 	&.open{
@@ -38,6 +38,14 @@
 		color: #808080;
 	}
 }
+.normal{
+	padding: 8px 20px;
+	.state{
+		.value{
+			width: 180px;
+		}
+	}
+}
 .state{
 	display: flex;
 	justify-content: center;
@@ -57,4 +65,16 @@
 		flex: 1;
         display: block;
 	}
+}
+.nav{
+	padding: 4px 16px;
+	background: #808080;
+	color: #ffffff;
+	text-align: left;
+	font-size: 16px;
+}
+
+
+/deep/.el-collapse-item__header{
+	padding-left: 20px;
 }

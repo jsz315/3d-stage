@@ -1,5 +1,10 @@
 <template>
   <div class="stage">
+    <div class="btns">
+      <input ref="file" class="file" type="file" @change="handleFile"/>
+      <el-button type="primary" icon="el-icon-sold-out" @click="handleLoad">加载模型</el-button>
+      <el-button type="primary" icon="el-icon-position" @click="handleSave">导出模型</el-button>
+    </div>
     <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
     <canvas ref="canvas" class="canvas"></canvas>
   </div>
@@ -39,6 +44,33 @@ export default class Stage extends Vue {
 
   changeCurTransform(e:CustomEvent):void{
     this.$store.commit("changeCurTransform", e.detail);
+  }
+
+  handleFile(e:any):void{
+    console.log(e);
+    var reader = new FileReader();
+      reader.readAsArrayBuffer(e.target.files[0]);
+      reader.onload = (r) => {
+          console.info(reader.result);
+          var rs = new DataView(reader.result as ArrayBuffer);
+          console.log(rs);
+          game.loadObject(rs.buffer);
+          // reader.readAsText(new Blob( [rs] ), 'utf-8');
+          // reader.onload = function(){
+          //     console.info(reader.result);
+          // }
+          // this.download(new Blob( [rs], { type: 'text/plain' } ), filename);
+      }
+  }
+
+  handleLoad():void{
+    // let data:any = null;
+    // game.loadObject(data);
+    (this.$refs.file as any).click();
+  }
+
+  handleSave():void{
+    game.exportObject();
   }
 }
 </script>

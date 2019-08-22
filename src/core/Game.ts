@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import GameEvent from '@/event';
+import GLTFTooler from './GLTFTooler'
 
 export default class Game {
 
@@ -154,6 +156,9 @@ export default class Game {
         else if(mesh.name == "TorusBufferGeometry"){
             geo = new THREE.TorusBufferGeometry(p.radius, p.tube, p.radialSegments, p.tubularSegments, p.arc);
         }
+        else if(mesh.name == "ConeBufferGeometry"){
+            geo = new THREE.ConeBufferGeometry(p.radius, p.height, p.radialSegments, p.heightSegments, p.openEnded, p.thetaStart, p.thetaLength);
+        }
         this.updateGroupGeometry(mesh, geo);
     }
 
@@ -258,7 +263,9 @@ export default class Game {
         
         // let helper = new THREE.HemisphereLightHelper(light, 4)
         // this.scene.add(helper);
-        let grid = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
+        let grid:any = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
+        grid.material.transparent = true;
+        grid.material.opacity = 0.4;
         this.scene.add(grid);
 
         this.addWorldTip("x", "#ff0000", new THREE.Vector3(42, 0.5, 0));
@@ -316,6 +323,9 @@ export default class Game {
             case "TorusBufferGeometry":
                 geo = new THREE.TorusBufferGeometry(2, 0.5, 8, 20, Math.PI * 2);
                 break;
+            case "ConeBufferGeometry":
+                geo = new THREE.ConeBufferGeometry(1, 3, 8, 3);
+                break;
             default: 
                 break;
         }
@@ -368,6 +378,39 @@ export default class Game {
 
         // this.renderer.domElement.click();
         // this.renderer.domElement.dispatchEvent(event);
+    }
+
+    exportObject():void{
+        let temps:THREE.Object3D[] = [];
+        this.scene.children.forEach(item => {
+            if(this.dragList.indexOf(item) == -1){
+                item.visible = false;
+                temps.push(item);
+            }
+        })
+        GLTFTooler(this.scene);
+        temps.forEach(item => {
+            item.visible = true;
+        })
+    }
+
+    loadObject(data:any):void{
+        let loader = new GLTFLoader();
+        // var reader = new FileReader();
+        // reader.readAsArrayBuffer(blob);
+        // reader.onload = (r) => {
+        //     console.info(reader.result);
+        //     var rs = new DataView(reader.result as ArrayBuffer);
+        //     console.log(rs);
+        //     reader.readAsText(new Blob( [rs] ), 'utf-8');
+        //     reader.onload = function(){
+        //         console.info(reader.result);
+        //     }
+        //     this.download(new Blob( [rs], { type: 'text/plain' } ), filename);
+        // }
+        loader.parse(data, "", (gltf: GLTF) => {
+            this.scene.add(...gltf.scene.children);
+        })
     }
 
 }

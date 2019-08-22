@@ -22,5 +22,9 @@
     {
       "name": "TorusBufferGeometry",
       "img": "asset/img/s6.jpg"
+    },
+    {
+      "name": "ConeBufferGeometry",
+      "img": "asset/img/s7.jpg"
     }
 ]

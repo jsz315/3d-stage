@@ -10,27 +10,26 @@
 	<el-collapse v-model="activeNames" @change="handleCollapse">
 		<el-collapse-item title="状态参数" name="1">
 			<div class="param" v-for="(item, index) in list" :key="index">
-			<div class="state">
-				<div class="label">{{item.name}}:</div>
-				<input
-				type="text"
-				class="value"
-				v-bind:value="item.value"
-				v-on:input="handleChange"
-				:data-name="item.name"
-				/>
-			</div>
+				<div class="state">
+					<div class="label">{{item.name}}:</div>
+					<input
+					type="text"
+					class="value"
+					v-bind:value="item.value"
+					v-on:input="handleChange"
+					:data-name="item.name"
+					/>
+				</div>
 
-			<div class="block">
-				<!-- <el-slider v-bind:value="item.value" show-input :min="-1" :max="1" :step="0.01" v-on:input.native ="handleChange($event)"></el-slider> -->
-				<input
-				type="range"
-				class="range"
-				v-bind:value="item.value"
-				v-on:input="handleChange"
-				:data-name="item.name"
-				/>
-			</div>
+				<div class="block">
+					<input
+					type="range"
+					class="range"
+					v-bind:value="item.value"
+					v-on:input="handleChange"
+					:data-name="item.name"
+					/>
+				</div>
 			</div>
 		</el-collapse-item>
 
@@ -43,7 +42,7 @@
 					class="value"
 					v-bind:value="item"
 					v-on:input="handleChange"
-					data-name="position"
+					:data-name="'position.' + index"
 					/>
 				</div>
 			</div>
@@ -58,7 +57,7 @@
 					class="value"
 					v-bind:value="item"
 					v-on:input="handleChange"
-					data-name="rotation"
+					:data-name="'rotation.' + index"
 					/>
 				</div>
 			</div>
@@ -73,12 +72,16 @@
 					class="value"
 					v-bind:value="item"
 					v-on:input="handleChange"
-					data-name="scale"
+					:data-name="'scale.' + index"
 					/>
 				</div>
 			</div>
 		</el-collapse-item>
 	</el-collapse>
+	<div class="btns">
+		<el-button type="primary" @click="handleCopy">原地复制</el-button>
+		<el-button type="danger" @click="handleDelete">删除物体</el-button>
+	</div>
   </div>
 </template>
 
@@ -132,6 +135,13 @@ export default {
     handleClose() {
       this.$store.commit("changeDrawer", false);
 	},
+	handleCopy(){
+		GameEvent.ins.send(GameEvent.COPY_ITEM);
+	},
+	handleDelete(){
+		this.$store.commit("changeDrawer", false);
+		GameEvent.ins.send(GameEvent.DELETE_ITEM);
+	},
 	handleCollapse(e) {
 		console.log(e);
 	},
@@ -139,6 +149,23 @@ export default {
       console.log(e);
 	  let key = e.target.dataset.name;
 	  console.log(key);
+
+	  let temp = key.split(".");
+	  if(temp.length == 1){
+		let obj = {};
+		obj[key] = Number(e.target.value);
+		let param = Object.assign(this.$store.state.curParam, obj);
+		this.$store.commit("changeCurParams", param);
+		console.log("changeCurParams");
+		GameEvent.ins.send(GameEvent.CHANGE_PARAM, param);
+	  }
+	  else{
+		let transform = Object.assign(this.$store.state.curTransform, {});
+		transform[temp[0]][temp[1]] = Number(e.target.value);
+		this.$store.commit("changeCurTransform", transform);
+		console.log("changeCurTransform");
+		GameEvent.ins.send(GameEvent.CHANGE_TRANSFORM, transform);
+	  }
 
     //   console.log(key + " old = " + e.target.value);
     //   console.log(key + " new = " + this.$store.state.curParam[key]);

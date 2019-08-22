@@ -46,6 +46,10 @@ export default class Game {
 
 
         GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
+        GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
+        GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
+        GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
+
         window.addEventListener("resize", e => this.onResize(e), false);
 
         // this.dragControls = new DragControls(this.dragList, this.camera, this.renderer.domElement);
@@ -85,6 +89,46 @@ export default class Game {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    deleteItem(e:CustomEvent):void{
+        let mesh:any = this.transformControls.object;
+        let frame:any = mesh.children[ 0 ];
+        if(frame){
+            frame.geometry.dispose();
+            frame.material.dispose();
+            mesh.remove(frame);
+        }
+
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+        this.scene.remove(mesh);
+        this.scene.remove(this.transformControls);
+
+        this.dragList = this.dragList.filter(item=>{
+            return item != mesh;
+        });
+    }
+
+    copyItem(e:CustomEvent):void{
+        let oldMesh = this.transformControls.object;
+        let newMesh = oldMesh.clone();
+        this.scene.add(newMesh);
+
+        this.transformControls.attach( newMesh );
+        // this.orbitControls.enabled = false;
+        this.scene.add( this.transformControls );
+        this.dragList.push(newMesh);
+        this.sendInfo(newMesh);
+
+    }
+
+    changeItemTransform(e:CustomEvent):void{
+        let mesh = this.transformControls.object;
+        let p = e.detail;
+        mesh.position.set(p.position.x, p.position.y, p.position.z);
+        mesh.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
+        mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);
     }
 
     changeItemParam(e:CustomEvent):void{

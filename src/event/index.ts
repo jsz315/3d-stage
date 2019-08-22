@@ -2,6 +2,9 @@ export default class GameEvent{
     private static _ins: GameEvent;
 
     public static SELECT_ITEM: string = "select item";
+    public static DELETE_ITEM: string = "delete item";
+    public static COPY_ITEM: string = "copy item";
+    
     public static CHANGE_PARAM: string = "change param";
     public static CHANGE_TRANSFORM: string = "change transform";
 

@@ -17,7 +17,6 @@ export default new Vuex.Store({
     },
     changeCurParams(state, param){
       state.curParam = param;
-      state.drawer = true;
     },
     changeCurTransform(state, transform){
       state.curTransform = transform;

@@ -241,7 +241,7 @@ export default class Game {
         // ctx.fillStyle = "#ffffff";
         // ctx.arc(w / 2, h / 2, w / 2, 0, 2 * Math.PI);
         // ctx.fill();
-        ctx.font = 420 + "px bold";
+        ctx.font = 400 + "px bold";
         ctx.fillStyle = color;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -251,7 +251,7 @@ export default class Game {
 
     addWorldTip(word:any, color:any, position:THREE.Vector3){
         var spriteMap = new THREE.CanvasTexture(this.getCanvas(word, color));
-        var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, transparent: true } );
+        var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, transparent: true, sizeAttenuation: true } );
         var sprite = new THREE.Sprite( spriteMaterial );
         sprite.position.copy(position);
         this.scene.add( sprite );

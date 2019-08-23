@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     dragItem: Object,
     curParam: Object,
+    curMaterial: Object,
     curTransform: {},
     isDrag: false,
     drawer: false,
@@ -21,9 +22,14 @@ export default new Vuex.Store({
     changeCurTransform(state, transform){
       state.curTransform = transform;
     },
+    changeCurMaterial(state, material){
+      debugger
+      state.curMaterial = material;
+    },
     changeDrawer(state, drawer){
       state.drawer = drawer;
     },
+    
   },
   actions: {
 

@@ -39,6 +39,7 @@ export default class Stage extends Vue {
   changeCurParams(e:CustomEvent):void{
     console.log(e);
     this.$store.commit("changeCurParams", e.detail.parameters);
+    this.$store.commit("changeCurMaterial", e.detail.material);
     this.$store.commit("changeDrawer", true);
   }
 

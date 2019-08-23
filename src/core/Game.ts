@@ -5,6 +5,7 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import GameEvent from '@/event';
 import GLTFTooler from './GLTFTooler'
+import ParamTooler from './ParamTooler';
 
 export default class Game {
 
@@ -19,6 +20,8 @@ export default class Game {
     dragList: Array<THREE.Object3D> = [];
 
     constructor(canvas: any) {
+
+        console.log("THREE.BackSide = " + THREE.BackSide);
         GameEvent.ins.init(canvas);
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
@@ -49,6 +52,8 @@ export default class Game {
 
         GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
         GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
+        GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
+
         GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
         GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
 
@@ -130,13 +135,12 @@ export default class Game {
         let p = e.detail;
         mesh.position.set(p.position.x, p.position.y, p.position.z);
         mesh.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
-        mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);
+        mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);        
     }
 
     changeItemParam(e:CustomEvent):void{
         let mesh = this.transformControls.object;
         let geo;
-        console.log(e);
         let p = e.detail;
         if(mesh.name == "BoxBufferGeometry"){
             geo = new THREE.BoxBufferGeometry(p.width, p.height, p.depth, p.widthSegments, p.heightSegments, p.depthSegments);
@@ -162,12 +166,55 @@ export default class Game {
         this.updateGroupGeometry(mesh, geo);
     }
 
+    toggerMaterial(type:string):void{
+        let mat;
+        if(type == "MeshBasicMaterial"){
+            mat = new THREE.MeshBasicMaterial();
+        }
+        else if(type == "MeshNormalMaterial"){
+            mat = new THREE.MeshNormalMaterial();
+        }
+        else if(type == "MeshLambertMaterial"){
+            mat = new THREE.MeshLambertMaterial();
+        }
+        else if(type == "MeshPhongMaterial"){
+            mat = new THREE.MeshPhongMaterial();
+        }
+        else if(type == "MeshToonMaterial"){
+            mat = new THREE.MeshToonMaterial();
+        }
+        else if(type == "MeshStandardMaterial"){
+            mat = new THREE.MeshStandardMaterial();
+        }
+    }
+
+    changeMaterial(e:CustomEvent):void{
+        let mesh:any = this.transformControls.object;
+        let data = e.detail.value;
+        let type = ParamTooler.getType(e.detail.name);
+        if(type == ParamTooler.TYPE_COLOR){
+            mesh.material[e.detail.name] = new THREE.Color(data);
+        }
+        else if(type == ParamTooler.TYPE_NUMBER){
+            mesh.material[e.detail.name] = Number(data);
+        }
+        else if(type == ParamTooler.TYPE_IMAGE){
+            mesh.material[e.detail.name] = new THREE.TextureLoader().load(data);
+        }
+        else if(type == ParamTooler.TYPE_SWITCH){
+            mesh.material[e.detail.name] = Boolean(data);
+        }
+    }
+
     sendInfo(mesh: any):void{
-        let parameters = mesh.geometry.parameters;        
+        let parameters = mesh.geometry.parameters;     
+        let material = mesh.material;
         GameEvent.ins.send(GameEvent.SELECT_ITEM, {
             name: mesh.name,
-            parameters: parameters
+            parameters: parameters,
+            material: material
         });
+        
         this.sendTransform(mesh);
     }
 
@@ -289,7 +336,7 @@ export default class Game {
     getFrame(geometry: THREE.BufferGeometry):THREE.Mesh {
         let wireframeMaterial = new THREE.MeshBasicMaterial({ 
             color: 0xffffff, 
-            opacity: 0.8, 
+            opacity: 0.1, 
             wireframe: true, 
             transparent: true,
             depthTest: true,
@@ -359,7 +406,8 @@ export default class Game {
             side: THREE.FrontSide,
             transparent: true,
             opacity: 1, 
-            flatShading: true 
+            flatShading: true,
+            wireframe: false
         } );
 
         let mesh = new THREE.Mesh(geo, material);

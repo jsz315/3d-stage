@@ -8,6 +8,10 @@
     </div>
 
 	<el-collapse v-model="activeNames" @change="handleCollapse">
+		<el-collapse-item title="材质" name="0">
+			<Material />
+		</el-collapse-item>
+
 		<el-collapse-item title="状态参数" name="1">
 			<div class="param" v-for="(item, index) in list" :key="index">
 				<div class="state">
@@ -77,6 +81,7 @@
 				</div>
 			</div>
 		</el-collapse-item>
+		
 	</el-collapse>
 	<div class="btns">
 		<el-button type="primary" @click="handleCopy">原地复制</el-button>
@@ -87,6 +92,7 @@
 
 <script>
 import GameEvent from "@/event/index";
+import Material from "@/components/Material/index.vue";
 // import { Component, Prop, Vue, Provide } from "vue-property-decorator";
 
 // export default class Right extends Vue {
@@ -106,10 +112,12 @@ export default {
     return {
       value: 0,
 	  direction: "rtl",
-	  activeNames: ['1']
+	  activeNames: ['0']
     };
   },
-
+	components: {
+		Material
+	},
   computed: {
     list() {
       var list = [];

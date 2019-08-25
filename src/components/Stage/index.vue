@@ -33,14 +33,24 @@ export default class Stage extends Vue {
     //vue组件发过来的消息
     // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
     // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
-    // GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
-
+    GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
+    
+    GameEvent.ins.on(GameEvent.DELETE_TEXTURE, (e:any) => {this.deleteTexture(e)});
     GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
     GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
 
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
 
+  }
+
+  changeMaterial(e: any){
+    console.log(e);
+    game.toggerMaterial(e.detail);
+  }
+
+  deleteTexture(e:any){
+    game.deleteTexture(e.detail);
   }
 
   changeItemParam(e: any){
@@ -53,13 +63,13 @@ export default class Stage extends Vue {
       let param:any = Object.assign(this.$store.state.curParam, {});
       param[list[1]] = Number(value);
       game.changeGeometryParam(param);
-      this.$store.commit("changeCurParams", param);
+      // this.$store.commit("changeCurParams", param);
     }
     else if(list[0] == "position" || list[0] == "rotation" || list[0] == "scale"){
       let transform:any = Object.assign(this.$store.state.curTransform, {});
 			transform[list[0]][list[1]] = Number(value);
       game.changeItemTransform(transform);
-      this.$store.commit("changeCurTransform", transform);
+      // this.$store.commit("changeCurTransform", transform);
     }
     else if(list[0] == "material"){
       let material = Object.assign(this.$store.state.curMaterial, {});
@@ -80,17 +90,17 @@ export default class Stage extends Vue {
         game.changeCommonMaterial(list[1], value);
       }
       // ParamTooler.setObjectValue(material, list[1], value);
-      this.$store.commit("changeCurMaterial", material);
+      // this.$store.commit("changeCurMaterial", material);
       
     }
   }
 
   deleteItem(e: any){
-    game.deleteItem(e);
+    game.deleteItem();
   }
 
   copyItem(e: any){
-    game.copyItem(e);
+    game.copyItem();
   }
 
   mouseenter(e:MouseEvent):void{
@@ -100,6 +110,7 @@ export default class Stage extends Vue {
   }
 
   changeSelectItem(e:CustomEvent):void{
+    console.log(e.detail);
     this.$store.commit("changeDrawer", true);
     this.$store.commit("changeMaterialType", e.detail.materialType);
     this.$store.commit("changeCurMaterial", e.detail.material);

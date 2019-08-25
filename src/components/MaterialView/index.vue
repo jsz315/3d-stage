@@ -55,6 +55,9 @@ export default {
   methods: {
     handleChoose(n) {
       // this.$store.commit("changeCurMaterial", this.list[n].param);
+      if(this.$store.state.materialType != this.list[n].name){
+        GameEvent.ins.send(GameEvent.CHANGE_MATERIAL, this.list[n].name);
+      }
     },
     handleChange(pname, n){
       // console.log(pname, n);

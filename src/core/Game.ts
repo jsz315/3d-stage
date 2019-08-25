@@ -99,14 +99,14 @@ export default class Game {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    deleteItem(e:CustomEvent):void{
+    deleteItem():void{
         let mesh:any = this.transformControls.object;
-        let frame:any = mesh.children[ 0 ];
-        if(frame){
-            frame.geometry.dispose();
-            frame.material.dispose();
-            mesh.remove(frame);
-        }
+        // let frame:any = mesh.children[ 0 ];
+        // if(frame){
+        //     frame.geometry.dispose();
+        //     frame.material.dispose();
+        //     mesh.remove(frame);
+        // }
 
         mesh.geometry.dispose();
         mesh.material.dispose();
@@ -118,7 +118,7 @@ export default class Game {
         });
     }
 
-    copyItem(e:CustomEvent):void{
+    copyItem():void{
         let oldMesh = this.transformControls.object;
         let newMesh = oldMesh.clone();
         this.scene.add(newMesh);
@@ -135,7 +135,8 @@ export default class Game {
         let mesh = this.transformControls.object;
         mesh.position.set(p.position.x, p.position.y, p.position.z);
         mesh.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
-        mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);        
+        mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);      
+        this.sendInfo(mesh);  
     }
 
     changeGeometryParam(p: any):void{
@@ -163,9 +164,11 @@ export default class Game {
             geo = new THREE.ConeBufferGeometry(p.radius, p.height, p.radialSegments, p.heightSegments, p.openEnded, p.thetaStart, p.thetaLength);
         }
         this.updateGroupGeometry(mesh, geo);
+        this.sendInfo(mesh);
     }
 
     toggerMaterial(type:string):void{
+        let mesh:any = this.transformControls.object;
         let mat;
         if(type == "MeshBasicMaterial"){
             mat = new THREE.MeshBasicMaterial();
@@ -185,6 +188,8 @@ export default class Game {
         else if(type == "MeshStandardMaterial"){
             mat = new THREE.MeshStandardMaterial();
         }
+        mesh.material = mat;
+        this.sendInfo(mesh);
     }
 
     changeCommonMaterial(key:string, data:any):void{
@@ -199,6 +204,7 @@ export default class Game {
         else if(type == ParamTooler.TYPE_SWITCH){
             mesh.material[key] = Boolean(data);
         }
+        this.sendInfo(mesh);
     }
 
     changeRepeatMaterial(key:string, type:string, data:any):void{
@@ -212,6 +218,7 @@ export default class Game {
             }
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
+            this.sendInfo(mesh);
         }
     }
 
@@ -220,10 +227,18 @@ export default class Game {
         let texture = new THREE.TextureLoader().load(data, ()=>{
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
+            this.sendInfo(mesh);
         });
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         mesh.material[key] = texture;
+    }
+
+    deleteTexture(key:string):void{
+        let mesh:any = this.transformControls.object;
+        mesh.material[key] = null;
+        mesh.material.needsUpdate = true;
+        this.sendInfo(mesh);
     }
 
     /**
@@ -268,16 +283,16 @@ export default class Game {
         if ( geometry.isGeometry ) {
             geometry = new THREE.BufferGeometry().fromGeometry( geometry );
         }
-        let frame = mesh.children[ 0 ];
-        if(frame){
-            frame.geometry.dispose();
-            frame.material.dispose();
-            mesh.remove(frame);
-        }
+        // let frame = mesh.children[ 0 ];
+        // if(frame){
+        //     frame.geometry.dispose();
+        //     frame.material.dispose();
+        //     mesh.remove(frame);
+        // }
 
         mesh.geometry.dispose();
         mesh.geometry = geometry;
-        mesh.add(this.getFrame(geometry));
+        // mesh.add(this.getFrame(geometry));
     }
 
     getCanvas(word: any, color:any){
@@ -416,7 +431,7 @@ export default class Game {
         mesh.name = type;
         this.scene.add(mesh);
 
-        mesh.add(this.getFrame(geo));
+        // mesh.add(this.getFrame(geo));//不需要网格-----------------
         // mesh.position.copy(pos);
 
         this.transformControls.attach( mesh );

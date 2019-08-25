@@ -22,5 +22,13 @@
     {
         "name": "贴图",
         "url": "asset/texture/p6.jpg"
+    },
+    {
+        "name": "贴图",
+        "url": "asset/texture/p6_ao.jpg"
+    },
+    {
+        "name": "贴图",
+        "url": "asset/texture/p6_nor.jpg"
     }
 ]

@@ -86,7 +86,9 @@ export default [
             "side": null,
             "visible": true,
             "roughness": 0.1,
-	        "metalness": 0.1
+            "metalness": 0.1,
+            "bumpMap": null,
+            "bumpScale": 0.1
         }
     }
 ]

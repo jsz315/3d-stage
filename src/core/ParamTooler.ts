@@ -16,7 +16,7 @@ export default class ParamTooler{
         if(name == "wireframe" || name == "transparent" || name == "visible"){
             type = this.TYPE_SWITCH;
         }
-        else if(name == "map"){
+        else if(name == "map" || name == "bumpMap"){
             type = this.TYPE_IMAGE;
         }
         else if(name == "color" || name == "emissive" || name == "specular"){
@@ -70,7 +70,7 @@ export default class ParamTooler{
         let data:any = config.find(item => item.type == material.type);
         let obj:any = {};
         for(let i in data.param){
-            if(i == "map"){
+            if(i == "map" || i == "bumpMap"){
                 if(material[i] && material[i].image){
                     obj[i] = {
                         image: material[i].image.currentSrc,

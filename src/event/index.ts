@@ -8,6 +8,7 @@ export default class GameEvent{
     public static CHANGE_PARAM: string = "change param";
     public static CHANGE_TRANSFORM: string = "change transform";
     public static CHANGE_MATERIAL:string = "change material";
+    public static CHANGE_ITEM_PARAM: string = "change item param"; 
 
     public version:string;
     private _sender:any;

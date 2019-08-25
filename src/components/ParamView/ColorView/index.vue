@@ -59,13 +59,10 @@ export default {
       // console.log(key);
       // console.log(e.target.dataset);
       let data = e.target.value;
-      console.log("颜色：" + data);
       this.$emit("change", this.pname, data);
     },
     handleSetting(e) {
-      console.log(e.target.value);
       let key = e.target.dataset.pname;
-      console.log(key);
       this[key] = e.target.value;
     }
   }

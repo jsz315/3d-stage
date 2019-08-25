@@ -89,6 +89,7 @@ export default {
 
   methods: {
 		handleChange(e){
+			// console.log(this.pname + " == " + e.target.value);
 			this.$emit("change", this.pname, e.target.value);
 		},
 		handleSetting(e){

@@ -19,28 +19,93 @@ let game:Game;
 
 @Component
 export default class Stage extends Vue {
-  @Prop() private msg!: string;
+  @Prop() private msg!: string
 
   mounted() {
     game = new Game(this.$refs.canvas);
     
     (<any>this.$refs.canvas).addEventListener("mouseenter", this.mouseenter);
-    GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeCurParams(e)});
-    GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
+
+    //threejs发过来的消息
+    GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
+    // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
+
+    //vue组件发过来的消息
+    // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
+    // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
+    // GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
+
+    GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
+    GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
+
+    //Paramview组件发过来的消息
+    GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
+
+  }
+
+  changeItemParam(e: any){
+    console.log("Paramview组件发过来的消息");
+    console.log(e.detail);
+    let value = e.detail.value;
+    let list = e.detail.name.split(".");
+
+    if(list[0] == "geometry"){
+      let param:any = Object.assign(this.$store.state.curParam, {});
+      param[list[1]] = Number(value);
+      game.changeGeometryParam(param);
+      this.$store.commit("changeCurParams", param);
+    }
+    else if(list[0] == "position" || list[0] == "rotation" || list[0] == "scale"){
+      let transform:any = Object.assign(this.$store.state.curTransform, {});
+			transform[list[0]][list[1]] = Number(value);
+      game.changeItemTransform(transform);
+      this.$store.commit("changeCurTransform", transform);
+    }
+    else if(list[0] == "material"){
+      let material = Object.assign(this.$store.state.curMaterial, {});
+      if(list[1] == "map"){
+        if(list[2] == "image"){
+          game.changeTextureMaterial(list[1], value);
+        }
+        else{
+          game.changeRepeatMaterial(list[1], list[2], value);
+        }
+        if(!material[list[1]]){
+          material[list[1]] = {};
+        }
+        material[list[1]][list[2]] = value;
+      }
+      else{
+        material[list[1]] = value;
+        game.changeCommonMaterial(list[1], value);
+      }
+      // ParamTooler.setObjectValue(material, list[1], value);
+      this.$store.commit("changeCurMaterial", material);
+      
+    }
+  }
+
+  deleteItem(e: any){
+    game.deleteItem(e);
+  }
+
+  copyItem(e: any){
+    game.copyItem(e);
   }
 
   mouseenter(e:MouseEvent):void{
     if(this.$store.state.dragItem){
-      console.log("mouseenter");
       game.addObject(this.$store.state.dragItem.name, e);
     }
   }
 
-  changeCurParams(e:CustomEvent):void{
-    console.log(e);
-    this.$store.commit("changeCurParams", e.detail.parameters);
-    this.$store.commit("changeCurMaterial", e.detail.material);
+  changeSelectItem(e:CustomEvent):void{
     this.$store.commit("changeDrawer", true);
+    this.$store.commit("changeMaterialType", e.detail.materialType);
+    this.$store.commit("changeCurMaterial", e.detail.material);
+    this.$store.commit("changeCurParams", e.detail.parameters);
+    this.$store.commit("changeCurTransform", e.detail.transform);
+    
   }
 
   changeCurTransform(e:CustomEvent):void{

@@ -55,7 +55,11 @@ export default {
   methods: {
     handleChange(pname, n){
     //   console.log(pname, n);
-      this.$emit("change", pname, n);
+      // this.$emit("change", pname, n);
+      GameEvent.ins.send(GameEvent.CHANGE_ITEM_PARAM, {
+        name: pname,
+        value: n
+      })
     }
   }
 };

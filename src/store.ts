@@ -11,25 +11,39 @@ export default new Vuex.Store({
     curTransform: {},
     isDrag: false,
     drawer: false,
+    texureViewVisible: false,
+    texureViewType: null,
+    materialType: null,
+    chooseImage: null
   },
   mutations: {
     changeDrag(state, item){
       state.dragItem = item;
     },
-    changeCurParams(state, param){
-      state.curParam = param;
+    changeCurParams(state, curParam){
+      state.curParam = curParam;
     },
-    changeCurTransform(state, transform){
-      state.curTransform = transform;
+    changeCurTransform(state, curTransform){
+      state.curTransform = curTransform;
     },
-    changeCurMaterial(state, material){
-      debugger
-      state.curMaterial = material;
+    changeCurMaterial(state, curMaterial){
+      state.curMaterial = curMaterial;
     },
     changeDrawer(state, drawer){
       state.drawer = drawer;
     },
-    
+    changeTexureViewVisible(state, texureViewVisible){
+      state.texureViewVisible = texureViewVisible;
+    },
+    changeChooseImage(state, chooseImage){
+      state.chooseImage = chooseImage;
+    },
+    changeTexureViewType(state, texureViewType){
+      state.texureViewType = texureViewType;
+    },
+    changeMaterialType(state, materialType){
+      state.materialType = materialType;
+    }
   },
   actions: {
 

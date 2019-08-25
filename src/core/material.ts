@@ -1,0 +1,92 @@
+export default [
+    {
+        "name": "MeshBasicMaterial",
+        "type": "MeshBasicMaterial",
+        "param": {
+            "color": "#ff0000",
+            "map": null,
+            "wireframe": false,
+            "opacity": 0.1,
+            "transparent": true,
+            "side": null,
+            "visible": true
+        }
+    },
+    {
+        "name": "MeshNormalMaterial",
+        "type": "MeshNormalMaterial",
+        "param": {
+            "color": "#ff0000",
+            "map": null,
+            "wireframe": false,
+            "opacity": 0.1,
+            "transparent": true,
+            "side": null,
+            "visible": true
+        }
+    },
+    {
+        "name": "MeshLambertMaterial",
+        "type": "MeshLambertMaterial",
+        "param": {
+            "color": "#ff0000",
+            "map": null,
+            "wireframe": false,
+            "opacity": 0.1,
+            "transparent": true,
+            "side": null,
+            "visible": true,
+            "emissive": "#ffffff",
+            "emissiveIntensity": 0.1,
+            "reflectivity": 0.1,
+            "refractionRatio": 0.1
+        }
+    },
+    {
+        "name": "MeshPhongMaterial",
+        "type": "MeshPhongMaterial",
+        "param": {
+            "color": "#ff0000",
+            "map": null,
+            "wireframe": false,
+            "opacity": 0.1,
+            "transparent": true,
+            "side": null,
+            "visible": true,
+            "emissive": "#ffffff",
+            "emissiveIntensity": 0.1,
+            "reflectivity": 0.1,
+            "refractionRatio": 0.1,
+            "specular": "#ffffff",
+            "shininess": 0.1
+        }
+    },
+    {
+        "name": "MeshToonMaterial",
+        "type": "MeshToonMaterial",
+        "param": {
+            "color": "#ff0000",
+            "map": null,
+            "wireframe": false,
+            "opacity": 0.1,
+            "transparent": true,
+            "side": null,
+            "visible": true
+        }
+    },
+    {
+        "name": "MeshStandardMaterial",
+        "type": "MeshStandardMaterial",
+        "param": {
+            "color": "#ff0000",
+            "map": null,
+            "wireframe": false,
+            "opacity": 0.1,
+            "transparent": true,
+            "side": null,
+            "visible": true,
+            "roughness": 0.1,
+	        "metalness": 0.1
+        }
+    }
+]

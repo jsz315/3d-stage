@@ -1,194 +1,122 @@
 <template>
-  <div class="right-side" :class="{open: drawer}">
-    <div class="title">
-      <div class="name">属性</div>
-      <div class="close" @click="handleClose">
-        <i class="el-icon-close"></i>
-      </div>
-    </div>
-
-	<el-collapse v-model="activeNames" @change="handleCollapse">
-		<el-collapse-item title="材质" name="0">
-			<Material />
-		</el-collapse-item>
-
-		<el-collapse-item title="状态参数" name="1">
-			<div class="param" v-for="(item, index) in list" :key="index">
-				<div class="state">
-					<div class="label">{{item.name}}:</div>
-					<input
-					type="text"
-					class="value"
-					v-bind:value="item.value"
-					v-on:input="handleChange"
-					:data-name="item.name"
-					/>
-				</div>
-
-				<div class="block">
-					<input
-					type="range"
-					class="range"
-					v-bind:value="item.value"
-					v-on:input="handleChange"
-					:data-name="item.name"
-					/>
-				</div>
+	<div class="right-side" :class="{open: drawer}">
+		<div class="title">
+			<div class="name">属性</div>
+			<div class="close" @click="handleClose">
+				<i class="el-icon-close"></i>
 			</div>
-		</el-collapse-item>
+		</div>
 
-		<el-collapse-item title="位置" name="2">
-			<div class="param normal" v-for="(item, index) in curTransform.position" :key="'position_' + index">
-				<div class="state">
-					<div class="label">{{index}}:</div>
-					<input
-					type="text"
-					class="value"
-					v-bind:value="item"
-					v-on:input="handleChange"
-					:data-name="'position.' + index"
-					/>
-				</div>
-			</div>
-		</el-collapse-item>
+		<el-collapse v-model="activeNames" @change="handleCollapse">
+			<el-collapse-item title="材质" name="0">
+				<MaterialView :material-type="materialType" :material="material" />
+			</el-collapse-item>
 
-		<el-collapse-item title="旋转" name="3">
-			<div class="param normal" v-for="(item, index) in curTransform.rotation" :key="'rotation_' + index">
-				<div class="state">
-					<div class="label">{{index}}:</div>
-					<input
-					type="text"
-					class="value"
-					v-bind:value="item"
-					v-on:input="handleChange"
-					:data-name="'rotation.' + index"
-					/>
-				</div>
-			</div>
-		</el-collapse-item>
+			<el-collapse-item title="状态参数" name="1">
+				<TransformView label="geometry" :list="list"></TransformView>
+			</el-collapse-item>
 
-		<el-collapse-item title="缩放" name="4">
-			<div class="param normal" v-for="(item, index) in curTransform.scale" :key="'scale_' + index">
-				<div class="state">
-					<div class="label">{{index}}:</div>
-					<input
-					type="text"
-					class="value"
-					v-bind:value="item"
-					v-on:input="handleChange"
-					:data-name="'scale.' + index"
-					/>
-				</div>
-			</div>
-		</el-collapse-item>
-		
-	</el-collapse>
-	<div class="btns">
-		<el-button type="primary" @click="handleCopy">原地复制</el-button>
-		<el-button type="danger" @click="handleDelete">删除物体</el-button>
+			<el-collapse-item title="位置" name="2">
+				<TransformView label="position" :list="curTransform.position"></TransformView>
+			</el-collapse-item>
+
+			<el-collapse-item title="旋转" name="3">
+				<TransformView label="rotation" :list="curTransform.rotation"></TransformView>
+			</el-collapse-item>
+
+			<el-collapse-item title="缩放" name="4">
+				<TransformView label="scale" :list="curTransform.scale"></TransformView>
+			</el-collapse-item>
+
+		</el-collapse>
+		<div class="btns">
+			<el-button type="primary" @click="handleCopy">原地复制</el-button>
+			<el-button type="danger" @click="handleDelete">删除物体</el-button>
+		</div>
 	</div>
-  </div>
 </template>
 
 <script>
-import GameEvent from "@/event/index";
-import Material from "@/components/Material/index.vue";
-// import { Component, Prop, Vue, Provide } from "vue-property-decorator";
+	import GameEvent from "@/event/index";
+	import MaterialView from "@/components/MaterialView/index.vue";
+	import TransformView from "@/components/TransformView/index.vue";
 
-// export default class Right extends Vue {
-//   value: number = 0;
-//   @Provide() direction:string = "rtl";
-//   drawer:boolean = true;
+	export default {
+		data() {
+			return {
+				value: 0,
+				direction: "rtl",
+				activeNames: ['0']
+			};
+		},
+		components: {
+			MaterialView,
+			TransformView
+		},
+		computed: {
+			list() {
+				var obj = {};
+				var curParam = this.$store.state.curParam;
+				for (let i in curParam) {
+					obj[i] = curParam[i] || 0;
+				}
+				return obj;
+			},
+			curTransform() {
+				var obj = this.$store.state.curTransform;
+				return obj;
+			},
+			materialType(){
+				return this.$store.state.materialType;
+			},
+			material() {
+				return this.$store.state.curMaterial;
+			},
+			drawer() {
+				return this.$store.state.drawer;
+			}
+		},
 
-//   handleClose(done:Function){
-//       console.log(this.drawer);
-//       this.drawer = false;
-//       done()
-//   }
-// }
+		methods: {
+			handleClose() {
+				this.$store.commit("changeDrawer", false);
+			},
+			handleCopy() {
+				GameEvent.ins.send(GameEvent.COPY_ITEM);
+			},
+			handleDelete() {
+				this.$store.commit("changeDrawer", false);
+				GameEvent.ins.send(GameEvent.DELETE_ITEM);
+			},
+			handleCollapse(e) {
+				console.log(e);
+			},
+			handleChange(e) {
+				//   console.log(e);
+				//   let key = e.target.dataset.name;
+				//   console.log(key);
 
-export default {
-  data() {
-    return {
-      value: 0,
-	  direction: "rtl",
-	  activeNames: ['0']
-    };
-  },
-	components: {
-		Material
-	},
-  computed: {
-    list() {
-      var list = [];
-      var obj = this.$store.state.curParam;
-      for (let i in obj) {
-        list.push({
-          name: i,
-          value: obj[i] || 0
-        });
-      }
-      return list;
-	},
-	curTransform() {
-		var obj = this.$store.state.curTransform;
-		return obj;
-	},
-    drawer() {
-      return this.$store.state.drawer;
-    }
-  },
-
-  methods: {
-    handleClose() {
-      this.$store.commit("changeDrawer", false);
-	},
-	handleCopy(){
-		GameEvent.ins.send(GameEvent.COPY_ITEM);
-	},
-	handleDelete(){
-		this.$store.commit("changeDrawer", false);
-		GameEvent.ins.send(GameEvent.DELETE_ITEM);
-	},
-	handleCollapse(e) {
-		console.log(e);
-	},
-    handleChange(e) {
-      console.log(e);
-	  let key = e.target.dataset.name;
-	  console.log(key);
-
-	  let temp = key.split(".");
-	  if(temp.length == 1){
-		let obj = {};
-		obj[key] = Number(e.target.value);
-		let param = Object.assign(this.$store.state.curParam, obj);
-		this.$store.commit("changeCurParams", param);
-		console.log("changeCurParams");
-		GameEvent.ins.send(GameEvent.CHANGE_PARAM, param);
-	  }
-	  else{
-		let transform = Object.assign(this.$store.state.curTransform, {});
-		transform[temp[0]][temp[1]] = Number(e.target.value);
-		this.$store.commit("changeCurTransform", transform);
-		console.log("changeCurTransform");
-		GameEvent.ins.send(GameEvent.CHANGE_TRANSFORM, transform);
-	  }
-
-    //   console.log(key + " old = " + e.target.value);
-    //   console.log(key + " new = " + this.$store.state.curParam[key]);
-    //   let obj = {};
-    //   obj[key] = Number(e.target.value);
-    //   let param = Object.assign(this.$store.state.curParam, obj);
-    //   this.$store.commit("changeCurParams", param);
-    //   console.log("changeCurParams");
-    //   console.log(param);
-    //   GameEvent.ins.send(GameEvent.CHANGE_PARAM, param);
-    }
-  }
-};
+				//   let temp = key.split(".");
+				//   if(temp.length == 1){
+				// 	let obj = {};
+				// 	obj[key] = Number(e.target.value);
+				// 	let param = Object.assign(this.$store.state.curParam, obj);
+				// 	this.$store.commit("changeCurParams", param);
+				// 	console.log("changeCurParams");
+				// 	GameEvent.ins.send(GameEvent.CHANGE_PARAM, param);
+				//   }
+				//   else{
+				// 	let transform = Object.assign(this.$store.state.curTransform, {});
+				// 	transform[temp[0]][temp[1]] = Number(e.target.value);
+				// 	this.$store.commit("changeCurTransform", transform);
+				// 	console.log("changeCurTransform");
+				// 	GameEvent.ins.send(GameEvent.CHANGE_TRANSFORM, transform);
+				//   }
+			}
+		}
+	};
 </script>
 
 <style lang="less" scoped>
-@import "./index.less";
+	@import "./index.less";
 </style>

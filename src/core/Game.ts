@@ -43,19 +43,20 @@ export default class Game {
         } );
 
         this.transformControls.addEventListener('objectChange', (event) => {
-            this.sendTransform(this.transformControls.object);
+            // this.sendTransform(this.transformControls.object);
+            this.sendInfo(this.transformControls.object);
         })
 
         this.rayCaster = new THREE.Raycaster();
         canvas.addEventListener("mousedown", (e: MouseEvent) => {this.selectObject(e)});
 
 
-        GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
-        GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
-        GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
+        // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
+        // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
+        // GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
 
-        GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
-        GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
+        // GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
+        // GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
 
         window.addEventListener("resize", e => this.onResize(e), false);
 
@@ -130,18 +131,16 @@ export default class Game {
 
     }
 
-    changeItemTransform(e:CustomEvent):void{
+    changeItemTransform(p:any):void{
         let mesh = this.transformControls.object;
-        let p = e.detail;
         mesh.position.set(p.position.x, p.position.y, p.position.z);
         mesh.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
         mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);        
     }
 
-    changeItemParam(e:CustomEvent):void{
+    changeGeometryParam(p: any):void{
         let mesh = this.transformControls.object;
         let geo;
-        let p = e.detail;
         if(mesh.name == "BoxBufferGeometry"){
             geo = new THREE.BoxBufferGeometry(p.width, p.height, p.depth, p.widthSegments, p.heightSegments, p.depthSegments);
         }
@@ -188,59 +187,62 @@ export default class Game {
         }
     }
 
-    changeMaterial(e:CustomEvent):void{
+    changeCommonMaterial(key:string, data:any):void{
         let mesh:any = this.transformControls.object;
-        let data = e.detail.value;
-        let type = ParamTooler.getType(e.detail.name);
+        let type = ParamTooler.getType(key);
         if(type == ParamTooler.TYPE_COLOR){
-            mesh.material[e.detail.name] = new THREE.Color(data);
+            mesh.material[key] = new THREE.Color(data);
         }
         else if(type == ParamTooler.TYPE_NUMBER){
-            mesh.material[e.detail.name] = Number(data);
-        }
-        else if(type == ParamTooler.TYPE_IMAGE){
-            mesh.material[e.detail.name] = new THREE.TextureLoader().load(data);
+            mesh.material[key] = Number(data);
         }
         else if(type == ParamTooler.TYPE_SWITCH){
-            mesh.material[e.detail.name] = Boolean(data);
+            mesh.material[key] = Boolean(data);
         }
     }
 
-    sendInfo(mesh: any):void{
-        let parameters = mesh.geometry.parameters;     
-        let material = mesh.material;
-        GameEvent.ins.send(GameEvent.SELECT_ITEM, {
-            name: mesh.name,
-            parameters: parameters,
-            material: material
-        });
-        
-        this.sendTransform(mesh);
+    changeRepeatMaterial(key:string, type:string, data:any):void{
+        let mesh:any = this.transformControls.object;
+        if(mesh.material[key]){
+            if(type == "repeatX"){
+                mesh.material[key].repeat.x = Number(data);
+            }
+            else{
+                mesh.material[key].repeat.y = Number(data);
+            }
+            mesh.material[key].needsUpdate = true;
+            mesh.material.needsUpdate = true;
+        }
     }
 
-    sendTransform(mesh: THREE.Object3D):void{
+    changeTextureMaterial(key:string, data:any):void{
+        let mesh:any = this.transformControls.object;
+        let texture = new THREE.TextureLoader().load(data, ()=>{
+            mesh.material[key].needsUpdate = true;
+            mesh.material.needsUpdate = true;
+        });
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        mesh.material[key] = texture;
+    }
+
+    /**
+     * 点击物体发送当前对象全部数据
+     * @param mesh 
+     */
+    sendInfo(mesh: any):void{
         if(!mesh){
             return;
         }
-        let position = mesh.position;
-        let rotation = mesh.rotation;
-        let scale = mesh.scale;
-        GameEvent.ins.send(GameEvent.CHANGE_TRANSFORM, {
-            position: {
-                x: position.x,
-                y: position.y,
-                z: position.z
-            },
-            rotation: {
-                x: rotation.x,
-                y: rotation.y,
-                z: rotation.z
-            },
-            scale: {
-                x: scale.x,
-                y: scale.y,
-                z: scale.z
-            }
+        let parameters = mesh.geometry.parameters;     
+        let material = ParamTooler.copyMaterialParam(mesh.material);
+        let transform = ParamTooler.copyTransform(mesh);
+
+        GameEvent.ins.send(GameEvent.SELECT_ITEM, {
+            parameters: parameters,
+            material: material,
+            materialType: mesh.material.type,
+            transform: transform
         });
     }
 

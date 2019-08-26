@@ -6,6 +6,9 @@ export default class GameEvent{
     public static COPY_ITEM: string = "copy item";
 
     public static DELETE_TEXTURE:string = "delete texture";
+
+    public static ADD_LIGHT:string = "add light";
+    public static SELECT_LIGHT:string = "select light";
     
     public static CHANGE_PARAM: string = "change param";
     public static CHANGE_TRANSFORM: string = "change transform";

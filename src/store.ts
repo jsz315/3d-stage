@@ -14,7 +14,8 @@ export default new Vuex.Store({
     texureViewVisible: false,
     texureViewType: null,
     materialType: null,
-    chooseImage: null
+    chooseImage: null,
+    curDragType: null
   },
   mutations: {
     changeDrag(state, item){
@@ -43,6 +44,9 @@ export default new Vuex.Store({
     },
     changeMaterialType(state, materialType){
       state.materialType = materialType;
+    },
+    changeCurDragType(state, curDragType){
+      state.curDragType = curDragType;
     }
   },
   actions: {

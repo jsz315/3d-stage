@@ -28,6 +28,8 @@ export default class Stage extends Vue {
 
     //threejs发过来的消息
     GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
+    GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
+    
     // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
 
     //vue组件发过来的消息
@@ -39,13 +41,18 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
     GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
 
+    GameEvent.ins.on(GameEvent.ADD_LIGHT, (e:any) => {this.addLight(e)});
+
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
 
   }
 
+  addLight(e: any){
+    game.addLight(e.detail);
+  }
+
   changeMaterial(e: any){
-    console.log(e);
     game.toggerMaterial(e.detail);
   }
 
@@ -89,9 +96,9 @@ export default class Stage extends Vue {
         material[list[1]] = value;
         game.changeCommonMaterial(list[1], value);
       }
-      // ParamTooler.setObjectValue(material, list[1], value);
-      // this.$store.commit("changeCurMaterial", material);
-      
+    }
+    else if(list[0] == "light"){
+      game.changeLightParam(list[1], value);
     }
   }
 
@@ -110,13 +117,21 @@ export default class Stage extends Vue {
   }
 
   changeSelectItem(e:CustomEvent):void{
-    console.log(e.detail);
+    this.$store.commit("changeCurDragType", "mesh");
     this.$store.commit("changeDrawer", true);
     this.$store.commit("changeMaterialType", e.detail.materialType);
     this.$store.commit("changeCurMaterial", e.detail.material);
     this.$store.commit("changeCurParams", e.detail.parameters);
     this.$store.commit("changeCurTransform", e.detail.transform);
-    
+  }
+
+  changeSelectLight(e:CustomEvent):void{
+    this.$store.commit("changeCurDragType", "light");
+    this.$store.commit("changeDrawer", true);
+    console.log("light parameters");
+    console.log(e.detail.parameters);
+    this.$store.commit("changeCurParams", e.detail.parameters);
+    this.$store.commit("changeCurTransform", e.detail.transform);
   }
 
   changeCurTransform(e:CustomEvent):void{

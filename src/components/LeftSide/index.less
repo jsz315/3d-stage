@@ -11,24 +11,43 @@
     box-shadow: 1px 2px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-.type {
-    padding: 10px;
-    width: 160px;
-    margin: auto;
-}
-
-.img {
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.tip {
-    font-size: 12px;
+.geometry {
+    font-size: 0;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     color: #999999;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 100%;
     white-space: nowrap;
+    padding: 10px;
+    width: 160px;
+    margin: auto;
+    .img {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    .tip{
+        font-size: 12px;
+    }
+}
+
+.light{
+    .tip{
+        text-align: center;
+        width: 180px;
+        margin: 10px auto;
+        background: #999999;
+        border: solid 1px #666;
+        color: #666;
+    }
+}
+
+/deep/.el-collapse-item__header{
+	padding-left: 20px;
+	color: #0084ff;
+}
+/deep/.el-button{
+    display: block;
+    width: 90%;
+    margin: 4px auto;
 }

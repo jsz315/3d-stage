@@ -6,6 +6,8 @@ import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import GameEvent from '@/event';
 import GLTFTooler from './GLTFTooler'
 import ParamTooler from './ParamTooler';
+import CustomAmbientLight from './light/CustomAmbientLight';
+import CustomDirectionalLight from './light/CustomDirectionalLight';
 
 export default class Game {
 
@@ -44,7 +46,14 @@ export default class Game {
 
         this.transformControls.addEventListener('objectChange', (event) => {
             // this.sendTransform(this.transformControls.object);
-            this.sendInfo(this.transformControls.object);
+            // this.orbitControls.enabled = ! event.value;
+            if(this.transformControls.object.name.indexOf("Light") != -1){
+                this.sendLightInfo(this.transformControls.object);
+            }
+            else{
+                this.sendMeshInfo(this.transformControls.object);
+            }
+            
         })
 
         this.rayCaster = new THREE.Raycaster();
@@ -127,7 +136,7 @@ export default class Game {
         // this.orbitControls.enabled = false;
         this.scene.add( this.transformControls );
         this.dragList.push(newMesh);
-        this.sendInfo(newMesh);
+        this.sendMeshInfo(newMesh);
 
     }
 
@@ -136,7 +145,7 @@ export default class Game {
         mesh.position.set(p.position.x, p.position.y, p.position.z);
         mesh.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
         mesh.scale.set(p.scale.x, p.scale.y, p.scale.z);      
-        this.sendInfo(mesh);  
+        this.sendMeshInfo(mesh);  
     }
 
     changeGeometryParam(p: any):void{
@@ -163,8 +172,11 @@ export default class Game {
         else if(mesh.name == "ConeBufferGeometry"){
             geo = new THREE.ConeBufferGeometry(p.radius, p.height, p.radialSegments, p.heightSegments, p.openEnded, p.thetaStart, p.thetaLength);
         }
+        else if(mesh.name == "PlaneBufferGeometry"){
+            geo = new THREE.PlaneBufferGeometry(p.width, p.height, p.widthSegments, p.heightSegments);
+        }
         this.updateGroupGeometry(mesh, geo);
-        this.sendInfo(mesh);
+        this.sendMeshInfo(mesh);
     }
 
     toggerMaterial(type:string):void{
@@ -189,7 +201,7 @@ export default class Game {
             mat = new THREE.MeshStandardMaterial();
         }
         mesh.material = mat;
-        this.sendInfo(mesh);
+        this.sendMeshInfo(mesh);
     }
 
     changeCommonMaterial(key:string, data:any):void{
@@ -204,7 +216,7 @@ export default class Game {
         else if(type == ParamTooler.TYPE_SWITCH){
             mesh.material[key] = Boolean(data);
         }
-        this.sendInfo(mesh);
+        this.sendMeshInfo(mesh);
     }
 
     changeRepeatMaterial(key:string, type:string, data:any):void{
@@ -218,7 +230,7 @@ export default class Game {
             }
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
-            this.sendInfo(mesh);
+            this.sendMeshInfo(mesh);
         }
     }
 
@@ -227,7 +239,7 @@ export default class Game {
         let texture = new THREE.TextureLoader().load(data, ()=>{
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
-            this.sendInfo(mesh);
+            this.sendMeshInfo(mesh);
         });
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
@@ -238,15 +250,48 @@ export default class Game {
         let mesh:any = this.transformControls.object;
         mesh.material[key] = null;
         mesh.material.needsUpdate = true;
-        this.sendInfo(mesh);
+        this.sendMeshInfo(mesh);
+    }
+
+    changeLightParam(key:string, data:any):void{
+        let light:any = this.transformControls.object;
+        let type = ParamTooler.getType(key);
+        if(type == ParamTooler.TYPE_COLOR){
+            light[key] = new THREE.Color(data);
+        }
+        else if(type == ParamTooler.TYPE_NUMBER){
+            light[key] = Number(data);
+        }
+        else if(type == ParamTooler.TYPE_SWITCH){
+            light[key] = Boolean(data);
+        }
+        this.sendLightInfo(light);
+    }
+
+    sendLightInfo(light: any):void{
+        if(light.name == "CustomDirectionalLight"){
+            let transform = ParamTooler.copyTransform(light);
+            GameEvent.ins.send(GameEvent.SELECT_LIGHT, {
+                name: light.name,
+                parameters: light.parameters,
+                transform: transform
+            });
+            light.update();
+        }
+        
     }
 
     /**
      * 点击物体发送当前对象全部数据
      * @param mesh 
      */
-    sendInfo(mesh: any):void{
+    sendMeshInfo(mesh: any):void{
         if(!mesh){
+            return;
+        }
+        if(mesh.type != "Mesh"){
+            console.log("选中的不是物体");
+            mesh.update();
             return;
         }
         let parameters = mesh.geometry.parameters;     
@@ -270,8 +315,15 @@ export default class Game {
         this.rayCaster.setFromCamera(mouse, this.camera);
         let intersectObjects = this.rayCaster.intersectObjects(this.dragList, true);
         if(intersectObjects[0]){
-            this.transformControls.attach(intersectObjects[0].object);
-            this.sendInfo(intersectObjects[0].object as THREE.Mesh);
+            let obj:any = intersectObjects[0].object;
+            if(obj.name == "custom drag"){
+                this.transformControls.attach(obj.parent);
+                this.sendLightInfo(obj);
+            }
+            else{
+                this.transformControls.attach(obj);
+                this.sendMeshInfo(obj as THREE.Mesh);
+            }
         }
         else{
             this.orbitControls.enabled = true;
@@ -345,6 +397,23 @@ export default class Game {
         this.animate();        
     }
 
+    addLight(type:string):void {
+        let light: any;
+        if(type == "AmbientLight"){
+            light = new CustomAmbientLight(0xff0000);
+        }
+        else if(type == "DirectionalLight"){
+            light = new CustomDirectionalLight(0xff0000);
+        }
+        if(light){
+            this.scene.add(light);
+            this.dragList.push(light);
+            this.transformControls.attach( light );
+            this.scene.add( this.transformControls );
+            this.orbitControls.enabled = false;
+        }
+    }
+
     animate(): void {
         requestAnimationFrame(() => { this.animate() });
         this.renderer.render(this.scene, this.camera);
@@ -390,6 +459,9 @@ export default class Game {
             case "ConeBufferGeometry":
                 geo = new THREE.ConeBufferGeometry(1, 3, 8, 3);
                 break;
+            case "PlaneBufferGeometry":
+                geo = new THREE.PlaneBufferGeometry(20, 20);
+                break;
             default: 
                 break;
         }
@@ -409,13 +481,6 @@ export default class Game {
         var dir = vector.sub( this.camera.position ).normalize();
         var distance = - this.camera.position.z / dir.z;
         var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
-        
-        // var material = new THREE.MeshStandardMaterial( {
-        //     color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
-        //     roughness: 0.5,
-        //     metalness: 0,
-        //     flatShading: true
-        // } );
 
         var material = new THREE.MeshPhongMaterial( { 
             color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
@@ -461,18 +526,6 @@ export default class Game {
 
     loadObject(data:any):void{
         let loader = new GLTFLoader();
-        // var reader = new FileReader();
-        // reader.readAsArrayBuffer(blob);
-        // reader.onload = (r) => {
-        //     console.info(reader.result);
-        //     var rs = new DataView(reader.result as ArrayBuffer);
-        //     console.log(rs);
-        //     reader.readAsText(new Blob( [rs] ), 'utf-8');
-        //     reader.onload = function(){
-        //         console.info(reader.result);
-        //     }
-        //     this.download(new Blob( [rs], { type: 'text/plain' } ), filename);
-        // }
         loader.parse(data, "", (gltf: GLTF) => {
             this.scene.add(...gltf.scene.children);
         })

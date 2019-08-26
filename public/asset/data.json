@@ -1,9 +1,10 @@
-[
-    {
+{
+  "geometry": [{
       "name": "BoxBufferGeometry",
       "img": "asset/img/s1.jpg"
     },
     {
+
       "name": "SphereBufferGeometry",
       "img": "asset/img/s2.jpg"
     },
@@ -26,5 +27,35 @@
     {
       "name": "ConeBufferGeometry",
       "img": "asset/img/s7.jpg"
+    },
+    {
+      "name": "PlaneBufferGeometry",
+      "img": "asset/img/s8.jpg"
     }
-]
+  ],
+  "light": [{
+      "name": "AmbientLight",
+      "label": "AmbientLight"
+    },
+    {
+      "name": "DirectionalLight",
+      "label": "DirectionalLight"
+    },
+    {
+      "name": "HemisphereLight",
+      "label": "HemisphereLight"
+    },
+    {
+      "name": "PointLight",
+      "label": "PointLight"
+    },
+    {
+      "name": "RectAreaLight",
+      "label": "RectAreaLight"
+    },
+    {
+      "name": "SpotLight",
+      "label": "SpotLight"
+    }
+  ]
+}

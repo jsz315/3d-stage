@@ -1,0 +1,87 @@
+.right-side{
+	width: 300px;
+	background: #ffffff;
+	box-shadow: -4px 1px 4px 0px rgba(0, 0, 0, 0.25);
+	position: fixed;
+	right: 0;
+	top: 0;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	transform: translateX(300px);
+	transition: all 300ms;
+	&.open{
+		transform: translateX(0);
+	}
+}
+.title{
+	font-size: 20px;
+	font-weight: 600;
+	display: flex;
+	padding: 20px;
+	.name{
+		flex: 1;
+	}
+	.close{
+		width: 30px;
+		height: 30px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}
+.param{
+	padding: 12px 20px;
+	.label{
+		text-align: left;
+		font-size: 16px;
+		color: #808080;
+	}
+}
+.normal{
+	padding: 8px 20px;
+	.state{
+		.value{
+			width: 180px;
+		}
+	}
+}
+.state{
+	display: flex;
+	justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+	.label{
+		flex: 1;
+	}
+	.value{
+		width: 90px;
+	}
+}
+.block{
+    display: flex;
+    background: #f7f7f7;
+	.range{
+		flex: 1;
+        display: block;
+	}
+}
+.nav{
+	padding: 4px 16px;
+	background: #808080;
+	color: #ffffff;
+	text-align: left;
+	font-size: 16px;
+}
+
+.btns{
+	width: 100%;
+	text-align: center;
+	margin-top: 20px;
+	padding-bottom: 30px;
+}
+
+/deep/.el-collapse-item__header{
+	padding-left: 20px;
+	color: #0084ff;
+}

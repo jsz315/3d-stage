@@ -13,7 +13,7 @@ export default class ParamTooler{
         }
         let type:string;
         name = name.split(".")[0];
-        if(name == "wireframe" || name == "transparent" || name == "visible"){
+        if(name == "wireframe" || name == "transparent" || name == "visible" || name == "helpVisible"){
             type = this.TYPE_SWITCH;
         }
         else if(name == "map" || name == "bumpMap"){

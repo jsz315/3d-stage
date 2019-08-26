@@ -19,7 +19,7 @@ export default class ParamTooler{
         else if(name == "map" || name == "bumpMap"){
             type = this.TYPE_IMAGE;
         }
-        else if(name == "color" || name == "emissive" || name == "specular"){
+        else if(name == "color" || name == "emissive" || name == "specular" || name == "skyColor" || name == "groundColor"){
             type = this.TYPE_COLOR;
         }
         else{

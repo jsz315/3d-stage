@@ -5,7 +5,7 @@
       <el-button type="primary" icon="el-icon-sold-out" @click="handleLoad">加载模型</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleSave">导出模型</el-button>
     </div>
-    <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
+    <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放 | G-参考线</p>
     <canvas ref="canvas" class="canvas"></canvas>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default class Stage extends Vue {
     }
     else if(list[0] == "material"){
       let material = Object.assign(this.$store.state.curMaterial, {});
-      if(list[1] == "map"){
+      if(list[1] == "map" || list[1] == "bumpMap"){
         if(list[2] == "image"){
           game.changeTextureMaterial(list[1], value);
         }
@@ -117,6 +117,7 @@ export default class Stage extends Vue {
   }
 
   changeSelectItem(e:CustomEvent):void{
+    this.$store.commit("changeCurItemName", e.detail.name);
     this.$store.commit("changeCurDragType", "mesh");
     this.$store.commit("changeDrawer", true);
     this.$store.commit("changeMaterialType", e.detail.materialType);
@@ -126,10 +127,9 @@ export default class Stage extends Vue {
   }
 
   changeSelectLight(e:CustomEvent):void{
+    this.$store.commit("changeCurItemName", e.detail.name);
     this.$store.commit("changeCurDragType", "light");
     this.$store.commit("changeDrawer", true);
-    console.log("light parameters");
-    console.log(e.detail.parameters);
     this.$store.commit("changeCurParams", e.detail.parameters);
     this.$store.commit("changeCurTransform", e.detail.transform);
   }

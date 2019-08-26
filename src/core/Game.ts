@@ -8,6 +8,10 @@ import GLTFTooler from './GLTFTooler'
 import ParamTooler from './ParamTooler';
 import CustomAmbientLight from './light/CustomAmbientLight';
 import CustomDirectionalLight from './light/CustomDirectionalLight';
+import CustomHemisphereLight from './light/CustomHemisphereLight';
+import CustomPointLight from './light/CustomPointLight';
+import CustomSpotLight from './light/CustomSpotLight';
+import CustomRectAreaLight from './light/CustomRectAreaLight';
 
 export default class Game {
 
@@ -20,6 +24,7 @@ export default class Game {
     rayCaster: THREE.Raycaster;
     // dragControls: DragControls;
     dragList: Array<THREE.Object3D> = [];
+    grid: THREE.GridHelper;
 
     constructor(canvas: any) {
 
@@ -36,6 +41,8 @@ export default class Game {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0xffffff));
+        this.renderer.shadowMap.enabled = true;
+
         this.camera.position.set(3, 4, 5);
         this.camera.lookAt(new THREE.Vector3());
         this.orbitControls = new OrbitControls(this.camera, canvas);
@@ -53,6 +60,7 @@ export default class Game {
             else{
                 this.sendMeshInfo(this.transformControls.object);
             }
+            this.scene.add(this.transformControls);
             
         })
 
@@ -76,6 +84,7 @@ export default class Game {
         // });
 
         window.addEventListener( 'keydown',  ( event ) => {
+            console.log(event.keyCode);
             switch ( event.keyCode ) {
 
                 case 81: // Q
@@ -94,9 +103,18 @@ export default class Game {
                     this.transformControls.setMode( "scale" );
                     break;
 
+                case 71: // G
+                    this.grid.visible = !this.grid.visible;
+                    break;
+
             }
 
         } );
+
+        this.grid = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
+        (this.grid.material as any).transparent = true;
+        (this.grid.material as any).opacity = 0.4;
+        this.scene.add(this.grid);
 
         this.init();
 
@@ -117,8 +135,9 @@ export default class Game {
         //     mesh.remove(frame);
         // }
 
-        mesh.geometry.dispose();
-        mesh.material.dispose();
+        mesh.geometry && mesh.geometry.dispose();
+        mesh.material && mesh.material.dispose();
+
         this.scene.remove(mesh);
         this.scene.remove(this.transformControls);
 
@@ -136,8 +155,12 @@ export default class Game {
         // this.orbitControls.enabled = false;
         this.scene.add( this.transformControls );
         this.dragList.push(newMesh);
-        this.sendMeshInfo(newMesh);
-
+        if(oldMesh.name.match(/Custom.*Light/)){
+            this.sendLightInfo(newMesh);
+        }
+        else{
+            this.sendMeshInfo(newMesh);
+        }
     }
 
     changeItemTransform(p:any):void{
@@ -269,7 +292,7 @@ export default class Game {
     }
 
     sendLightInfo(light: any):void{
-        if(light.name == "CustomDirectionalLight"){
+        if(light.name.match(/Custom.*Light/)){
             let transform = ParamTooler.copyTransform(light);
             GameEvent.ins.send(GameEvent.SELECT_LIGHT, {
                 name: light.name,
@@ -278,7 +301,6 @@ export default class Game {
             });
             light.update();
         }
-        
     }
 
     /**
@@ -289,16 +311,12 @@ export default class Game {
         if(!mesh){
             return;
         }
-        if(mesh.type != "Mesh"){
-            console.log("选中的不是物体");
-            mesh.update();
-            return;
-        }
         let parameters = mesh.geometry.parameters;     
         let material = ParamTooler.copyMaterialParam(mesh.material);
         let transform = ParamTooler.copyTransform(mesh);
 
         GameEvent.ins.send(GameEvent.SELECT_ITEM, {
+            name: mesh.name,
             parameters: parameters,
             material: material,
             materialType: mesh.material.type,
@@ -318,12 +336,13 @@ export default class Game {
             let obj:any = intersectObjects[0].object;
             if(obj.name == "custom drag"){
                 this.transformControls.attach(obj.parent);
-                this.sendLightInfo(obj);
+                this.sendLightInfo(obj.parent);
             }
             else{
                 this.transformControls.attach(obj);
                 this.sendMeshInfo(obj as THREE.Mesh);
             }
+            this.scene.add(this.transformControls);
         }
         else{
             this.orbitControls.enabled = true;
@@ -370,19 +389,15 @@ export default class Game {
         var spriteMaterial = new THREE.SpriteMaterial( { map: spriteMap, transparent: true, sizeAttenuation: true } );
         var sprite = new THREE.Sprite( spriteMaterial );
         sprite.position.copy(position);
-        this.scene.add( sprite );
+        this.grid.add( sprite );
     }
 
     init(): void {
-        let light = new THREE.HemisphereLight(0xaaaaaa, 0x444444);
-        this.scene.add(light);
+        // let light = new THREE.HemisphereLight(0xaaaaaa, 0x444444);
+        // this.scene.add(light);
         
         // let helper = new THREE.HemisphereLightHelper(light, 4)
         // this.scene.add(helper);
-        let grid:any = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
-        grid.material.transparent = true;
-        grid.material.opacity = 0.4;
-        this.scene.add(grid);
 
         this.addWorldTip("x", "#ff0000", new THREE.Vector3(42, 0.5, 0));
         this.addWorldTip("-x", "#ff0000", new THREE.Vector3(-42, 0.5, 0));
@@ -393,7 +408,7 @@ export default class Game {
         // let box = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
         // this.scene.add(box);
         // this.transformControls.attach( helper );
-        this.renderer.domElement.click();
+        // this.renderer.domElement.click();
         this.animate();        
     }
 
@@ -404,6 +419,18 @@ export default class Game {
         }
         else if(type == "DirectionalLight"){
             light = new CustomDirectionalLight(0xff0000);
+        }
+        else if(type == "HemisphereLight"){
+            light = new CustomHemisphereLight(0xff0000);
+        }
+        else if(type == "PointLight"){
+            light = new CustomPointLight(0xff0000);
+        }
+        else if(type == "SpotLight"){
+            light = new CustomSpotLight(0xff0000);
+        }
+        else if(type == "RectAreaLight"){
+            light = new CustomRectAreaLight(0xff0000);
         }
         if(light){
             this.scene.add(light);
@@ -482,7 +509,7 @@ export default class Game {
         var distance = - this.camera.position.z / dir.z;
         var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
 
-        var material = new THREE.MeshPhongMaterial( { 
+        var material = new THREE.MeshStandardMaterial( { 
             color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
             emissive: 0x072534, 
             side: THREE.FrontSide,
@@ -494,6 +521,10 @@ export default class Game {
 
         let mesh = new THREE.Mesh(geo, material);
         mesh.name = type;
+
+        mesh.castShadow = true; //default is false
+        mesh.receiveShadow = true; //default
+
         this.scene.add(mesh);
 
         // mesh.add(this.getFrame(geo));//不需要网格-----------------

@@ -7,7 +7,9 @@
 			</div>
 		</div>
 
-		<el-collapse v-model="activeNames" @change="handleCollapse">
+		<div class="cur-name">{{curItemName}}</div>
+
+		<el-collapse v-model="activeNames" @change="handleCollapse" accordion>
 			<el-collapse-item title="状态参数" name="1">
 				<TransformView label="light" :list="list"></TransformView>
 			</el-collapse-item>
@@ -25,6 +27,11 @@
 			</el-collapse-item>
 
 		</el-collapse>
+
+		<div class="btns">
+			<el-button type="primary" @click="handleCopy">原地复制</el-button>
+			<el-button type="danger" @click="handleDelete">删除物体</el-button>
+		</div>
 	</div>
 </template>
 
@@ -38,7 +45,7 @@
 			return {
 				value: 0,
 				direction: "rtl",
-				activeNames: ['0']
+				activeNames: '0'
 			};
 		},
 		components: {
@@ -66,6 +73,9 @@
 			},
 			drawer() {
 				return this.$store.state.drawer;
+			},
+			curItemName(){
+				return this.$store.state.curItemName;
 			}
 		},
 

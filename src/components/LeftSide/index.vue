@@ -1,7 +1,7 @@
 <template>
   <div class="left-side">
 
-    <el-collapse v-model="activeNames" @change="handleCollapse">
+    <el-collapse v-model="activeNames" @change="handleCollapse" accordion>
 
 			<el-collapse-item title="几何物体" name="0">
         <div class="geometry" v-for="(item, idx) in geometryList" :key="item.name">
@@ -31,7 +31,7 @@ export default class LeftSide extends Vue {
 	
   @Provide() tip:string = "ok";
   
-  @Provide() activeNames: Array<Object> = ['0'];
+  @Provide() activeNames: string = '0';
 
   @Provide() geometryList: Array<Object> = [];
   @Provide() lightList: Array<Object> = [];

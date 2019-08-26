@@ -7,7 +7,9 @@
 			</div>
 		</div>
 
-		<el-collapse v-model="activeNames" @change="handleCollapse">
+		<div class="cur-name">{{curItemName}}</div>
+
+		<el-collapse v-model="activeNames" @change="handleCollapse" accordion>
 			<el-collapse-item title="材质" name="0">
 				<MaterialView :material-type="materialType" :material="material" />
 			</el-collapse-item>
@@ -46,7 +48,7 @@
 			return {
 				value: 0,
 				direction: "rtl",
-				activeNames: ['0']
+				activeNames: '0'
 			};
 		},
 		components: {
@@ -74,6 +76,9 @@
 			},
 			drawer() {
 				return this.$store.state.drawer;
+			},
+			curItemName(){
+				return this.$store.state.curItemName;
 			}
 		},
 

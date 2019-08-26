@@ -1,26 +1,22 @@
 import * as THREE from 'three';
 
-export default class CustomDirectionalLight extends THREE.DirectionalLight{
+export default class CustomPointLight extends THREE.PointLight{
 
     dragItem: THREE.Mesh;
     helpVisible: boolean = true;
 
-    constructor(color?: THREE.Color | string | number, intensity?: number){
-        super(color, intensity);
+    constructor(color?: THREE.Color | string | number, intensity?: number, distance?: number, decay?: number){
+        super(color, intensity, distance, decay);
 
         this.dragItem = new THREE.Mesh(
-            new THREE.BoxBufferGeometry(1, 1, 0.2),
+            new THREE.SphereBufferGeometry(0.4),
             new THREE.MeshNormalMaterial()
         )
 
         this.dragItem.name = "custom drag";
-        this.name = "CustomDirectionalLight";
+        this.name = "CustomPointLight";
 
         this.castShadow = true;
-        this.shadow.mapSize.width = 512;  // default
-        this.shadow.mapSize.height = 512; // default
-        this.shadow.camera.near = 0.5;    // default
-        this.shadow.camera.far = 500;     // default
 
         this.add(this.dragItem);
     }
@@ -29,6 +25,8 @@ export default class CustomDirectionalLight extends THREE.DirectionalLight{
         return {
             color: this.color,
             intensity: this.intensity,
+            distance: this.distance,
+            decay: this.decay,
             helpVisible: this.helpVisible
         }
     }

@@ -17,6 +17,10 @@
         </div>
 			</el-collapse-item>
 
+      <el-collapse-item title="雾气" name="2">
+        <FogView />
+			</el-collapse-item>
+
     </el-collapse>
   </div>
 </template>
@@ -24,8 +28,13 @@
 <script lang="ts">
 import { Component, Prop, Vue, Provide } from "vue-property-decorator";
 import GameEvent from "@/event/index";
+import FogView from "@/components/FogView/index.vue";
 
-@Component
+@Component({
+  components: {
+    FogView
+  }
+})
 export default class LeftSide extends Vue {
 	@Prop() private msg!: string;
 	

@@ -58,7 +58,13 @@ export default [
             "reflectivity": 0.1,
             "refractionRatio": 0.1,
             "specular": "#ffffff",
-            "shininess": 0.1
+            "shininess": 0.1,
+            "bumpMap": null,
+            "bumpScale": 0.1,
+            "normalMap": null,
+            "normalScale": 0.1,
+            "displacementMap": null,
+	        "displacementScale": 0.1
         }
     },
     {
@@ -88,7 +94,11 @@ export default [
             "roughness": 0.1,
             "metalness": 0.1,
             "bumpMap": null,
-            "bumpScale": 0.1
+            "bumpScale": 0.1,
+            "normalMap": null,
+            "normalScale": 0.1,
+            "displacementMap": null,
+	        "displacementScale": 0.1
         }
     }
 ]

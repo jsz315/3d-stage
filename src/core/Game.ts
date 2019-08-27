@@ -230,14 +230,20 @@ export default class Game {
     changeCommonMaterial(key:string, data:any):void{
         let mesh:any = this.transformControls.object;
         let type = ParamTooler.getType(key);
-        if(type == ParamTooler.TYPE_COLOR){
-            mesh.material[key] = new THREE.Color(data);
+        
+        if(key == "normalScale"){
+            mesh.material[key] && mesh.material[key].set(1, -1).multiplyScalar(Number(data));
         }
-        else if(type == ParamTooler.TYPE_NUMBER){
-            mesh.material[key] = Number(data);
-        }
-        else if(type == ParamTooler.TYPE_SWITCH){
-            mesh.material[key] = Boolean(data);
+        else{
+            if(type == ParamTooler.TYPE_COLOR){
+                mesh.material[key] = new THREE.Color(data);
+            }
+            else if(type == ParamTooler.TYPE_NUMBER){
+                mesh.material[key] = Number(data);
+            }
+            else if(type == ParamTooler.TYPE_SWITCH){
+                mesh.material[key] = Boolean(data);
+            }
         }
         this.sendMeshInfo(mesh);
     }
@@ -248,7 +254,7 @@ export default class Game {
             if(type == "repeatX"){
                 mesh.material[key].repeat.x = Number(data);
             }
-            else{
+            else if(type == "repeatY"){
                 mesh.material[key].repeat.y = Number(data);
             }
             mesh.material[key].needsUpdate = true;
@@ -267,6 +273,24 @@ export default class Game {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         mesh.material[key] = texture;
+    }
+
+    changeFog(data:any):void{
+        if(data.visible){
+            let fog: any = this.scene.fog;
+            if(fog){
+                fog.color = new THREE.Color(data.color);
+                fog.near = Number(data.near);
+                fog.far = Number(data.far);
+            }
+            else{
+                this.scene.fog = new THREE.Fog(new THREE.Color(data.color).getHex(), Number(data.near), Number(data.far));
+            }
+        }
+        else{
+            this.scene.fog = null;
+        }
+        this.renderer.setClearColor(new THREE.Color(data.color));
     }
 
     deleteTexture(key:string):void{

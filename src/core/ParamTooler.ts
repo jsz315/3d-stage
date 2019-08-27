@@ -16,7 +16,7 @@ export default class ParamTooler{
         if(name == "wireframe" || name == "transparent" || name == "visible" || name == "helpVisible"){
             type = this.TYPE_SWITCH;
         }
-        else if(name == "map" || name == "bumpMap"){
+        else if(this.checkMap(name)){
             type = this.TYPE_IMAGE;
         }
         else if(name == "color" || name == "emissive" || name == "specular" || name == "skyColor" || name == "groundColor"){
@@ -26,6 +26,10 @@ export default class ParamTooler{
             type = this.TYPE_NUMBER;
         }
         return type;
+    }
+
+    public static checkMap(name:string):boolean{
+        return name.substr(-3).toLowerCase() == "map";
     }
 
     public static setObjectValue(obj:any, key:string, data:any):void{
@@ -70,20 +74,25 @@ export default class ParamTooler{
         let data:any = config.find(item => item.type == material.type);
         let obj:any = {};
         for(let i in data.param){
-            if(i == "map" || i == "bumpMap"){
-                if(material[i] && material[i].image){
-                    obj[i] = {
-                        image: material[i].image.currentSrc,
-                        repeatX: material[i].repeat.x,
-                        repeatY: material[i].repeat.y
-                    };
-                }
-                else{
-                    obj[i] = {};
-                }
+            if(i == "normalScale"){
+                obj[i] = material[i] ? material[i].x : 0.1;
             }
             else{
-                obj[i] = material[i];
+                if(this.checkMap(i)){
+                    if(material[i] && material[i].image){
+                        obj[i] = {
+                            image: material[i].image.currentSrc,
+                            repeatX: material[i].repeat.x,
+                            repeatY: material[i].repeat.y
+                        };
+                    }
+                    else{
+                        obj[i] = {};
+                    }
+                }
+                else{
+                    obj[i] = material[i];
+                }
             }
         }
         return obj;

@@ -16,7 +16,13 @@ export default new Vuex.Store({
     materialType: null,
     chooseImage: null,
     curDragType: null,
-    curItemName: null
+    curItemName: null,
+    fog: {
+      color: "#ff0000",
+      visible: false,
+      near: 0.1,
+      far: 60
+    }
   },
   mutations: {
     changeDrag(state, item){
@@ -51,6 +57,9 @@ export default new Vuex.Store({
     },
     changeCurItemName(state, curItemName){
       state.curItemName = curItemName;
+    },
+    changeFog(state, fog){
+      state.fog = fog;
     }
   },
   actions: {

@@ -78,8 +78,8 @@ export default {
     return {
 			configVisible: false,
 			min: 0,
-			max: 10,
-			step: 1
+			max: 2,
+			step: 0.01
 		};
 	},
 	props: ["label", "value", "pname"],

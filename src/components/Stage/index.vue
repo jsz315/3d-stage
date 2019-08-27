@@ -14,6 +14,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from '@/event/index'
+import ParamTooler from '../../core/ParamTooler';
 
 let game:Game;
 
@@ -80,7 +81,7 @@ export default class Stage extends Vue {
     }
     else if(list[0] == "material"){
       let material = Object.assign(this.$store.state.curMaterial, {});
-      if(list[1] == "map" || list[1] == "bumpMap"){
+      if(ParamTooler.checkMap(list[1])){
         if(list[2] == "image"){
           game.changeTextureMaterial(list[1], value);
         }
@@ -99,6 +100,12 @@ export default class Stage extends Vue {
     }
     else if(list[0] == "light"){
       game.changeLightParam(list[1], value);
+    }
+    else if(list[0] == "fog"){
+      let fog = Object.assign(this.$store.state.fog, {});
+      fog[list[1]] = value;
+      this.$store.commit("changeFog", fog);
+      game.changeFog(fog);
     }
   }
 

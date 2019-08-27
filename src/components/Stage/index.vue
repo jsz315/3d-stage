@@ -4,6 +4,7 @@
       <input ref="file" class="file" type="file" @change="handleFile"/>
       <el-button type="primary" icon="el-icon-sold-out" @click="handleLoad">加载模型</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleSave">导出模型</el-button>
+      <el-button type="primary" icon="el-icon-position" @click="handleTest">测试</el-button>
     </div>
     <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放 | G-参考线</p>
     <canvas ref="canvas" class="canvas"></canvas>
@@ -15,6 +16,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from '@/event/index'
 import ParamTooler from '../../core/ParamTooler';
+import Stats from 'three/examples/jsm/libs/stats.module';
 
 let game:Game;
 
@@ -47,6 +49,19 @@ export default class Stage extends Vue {
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
 
+    this.initStats();
+
+  }
+
+  initStats(){
+    var stats = new Stats();
+    stats.setMode(0); 
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '204px';
+    stats.domElement.style.top = '90px';
+    document.body.appendChild(stats.domElement);
+    
+    game.setStats(stats);
   }
 
   addLight(e: any){
@@ -170,6 +185,10 @@ export default class Stage extends Vue {
 
   handleSave():void{
     game.exportObject();
+  }
+
+  handleTest():void{
+    game.loadTest();
   }
 }
 </script>

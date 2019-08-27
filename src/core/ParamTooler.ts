@@ -71,6 +71,9 @@ export default class ParamTooler{
     }
 
     public static copyMaterialParam(material: any):any{
+        if(!material){
+            return null;
+        }
         let data:any = config.find(item => item.type == material.type);
         let obj:any = {};
         for(let i in data.param){
@@ -97,5 +100,19 @@ export default class ParamTooler{
         }
         return obj;
 
+    }
+
+    public static getDragParent(mesh: any):any{
+        let aim: any = mesh;
+        let i = 0;
+        while(aim = aim.parent){
+            if(aim.name == "load_scene"){
+                return aim;
+            }
+            if(++i > 20){
+                return null;
+            }
+        }
+        return null;
     }
 } 

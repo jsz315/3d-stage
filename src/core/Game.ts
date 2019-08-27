@@ -25,6 +25,8 @@ export default class Game {
     // dragControls: DragControls;
     dragList: Array<THREE.Object3D> = [];
     grid: THREE.GridHelper;
+    stats: any;
+    curMesh: any;
 
     constructor(canvas: any) {
 
@@ -120,6 +122,10 @@ export default class Game {
 
     }
 
+    setStats(stats:any):void{
+        this.stats = stats;
+    }
+
     onResize(e:Event):void{
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
@@ -203,7 +209,8 @@ export default class Game {
     }
 
     toggerMaterial(type:string):void{
-        let mesh:any = this.transformControls.object;
+        // let mesh:any = this.transformControls.object;
+        let mesh:any = this.curMesh;
         let mat;
         if(type == "MeshBasicMaterial"){
             mat = new THREE.MeshBasicMaterial();
@@ -228,7 +235,8 @@ export default class Game {
     }
 
     changeCommonMaterial(key:string, data:any):void{
-        let mesh:any = this.transformControls.object;
+        // let mesh:any = this.transformControls.object;
+        let mesh:any = this.curMesh;
         let type = ParamTooler.getType(key);
         
         if(key == "normalScale"){
@@ -249,7 +257,8 @@ export default class Game {
     }
 
     changeRepeatMaterial(key:string, type:string, data:any):void{
-        let mesh:any = this.transformControls.object;
+        // let mesh:any = this.transformControls.object;
+        let mesh:any = this.curMesh;
         if(mesh.material[key]){
             if(type == "repeatX"){
                 mesh.material[key].repeat.x = Number(data);
@@ -264,7 +273,8 @@ export default class Game {
     }
 
     changeTextureMaterial(key:string, data:any):void{
-        let mesh:any = this.transformControls.object;
+        // let mesh:any = this.transformControls.object;
+        let mesh:any = this.curMesh;
         let texture = new THREE.TextureLoader().load(data, ()=>{
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
@@ -294,7 +304,8 @@ export default class Game {
     }
 
     deleteTexture(key:string):void{
-        let mesh:any = this.transformControls.object;
+        // let mesh:any = this.transformControls.object;
+        let mesh:any = this.curMesh;
         mesh.material[key] = null;
         mesh.material.needsUpdate = true;
         this.sendMeshInfo(mesh);
@@ -335,7 +346,8 @@ export default class Game {
         if(!mesh){
             return;
         }
-        let parameters = mesh.geometry.parameters;     
+        this.curMesh = mesh;
+        let parameters = mesh.geometry ? mesh.geometry.parameters : null;     
         let material = ParamTooler.copyMaterialParam(mesh.material);
         let transform = ParamTooler.copyTransform(mesh);
 
@@ -343,7 +355,7 @@ export default class Game {
             name: mesh.name,
             parameters: parameters,
             material: material,
-            materialType: mesh.material.type,
+            materialType: mesh.material ? mesh.material.type : "",
             transform: transform
         });
     }
@@ -358,13 +370,21 @@ export default class Game {
         let intersectObjects = this.rayCaster.intersectObjects(this.dragList, true);
         if(intersectObjects[0]){
             let obj:any = intersectObjects[0].object;
+            //自定义光源拖拽物体
             if(obj.name == "custom drag"){
                 this.transformControls.attach(obj.parent);
                 this.sendLightInfo(obj.parent);
             }
+            else if(obj.name == "load_mesh"){
+                let parent = ParamTooler.getDragParent(obj);
+                if(parent){
+                    this.transformControls.attach(parent);
+                    this.sendMeshInfo(obj);
+                }
+            }
             else{
                 this.transformControls.attach(obj);
-                this.sendMeshInfo(obj as THREE.Mesh);
+                this.sendMeshInfo(obj);
             }
             this.scene.add(this.transformControls);
         }
@@ -468,6 +488,7 @@ export default class Game {
     animate(): void {
         requestAnimationFrame(() => { this.animate() });
         this.renderer.render(this.scene, this.camera);
+        this.stats && this.stats.update();
     }
 
     getFrame(geometry: THREE.BufferGeometry):THREE.Mesh {
@@ -583,6 +604,44 @@ export default class Game {
         let loader = new GLTFLoader();
         loader.parse(data, "", (gltf: GLTF) => {
             this.scene.add(...gltf.scene.children);
+        })
+    }
+
+    loadTest():void{
+        let loader = new GLTFLoader();
+        loader.setPath('asset/obj/');
+        loader.load('win.gltf', (gltf) => {
+
+            console.log("gltf");
+            console.log(gltf);
+
+            gltf.scene.traverse((child: any) => {
+                if(child.isMesh){
+                    console.log(child);
+                    child.receiveShadow = true;
+                    child.castShadow = true;
+                    child.uvsNeedUpdate = true;
+                    child.name = "load_mesh";
+
+                    this.dragList.push(child);
+                }
+            })
+            
+            let size = new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
+            let max = Math.max(size.x, size.y, size.z);
+            let scale = 10 / max;            
+            gltf.scene.scale.set(scale, scale, scale);
+
+            this.scene.add(gltf.scene);
+            gltf.scene.name = "load_scene";
+            this.dragList.push(gltf.scene);
+
+
+            let c = new THREE.Box3().setFromObject(gltf.scene);
+            let x = (c.min.x + c.max.x) / 2;
+            let y = (c.min.y + c.max.y) / 2;
+            let z = (c.min.z + c.max.z) / 2;
+            gltf.scene.position.set(0 - x, 0 - y, 0 - z);
         })
     }
 

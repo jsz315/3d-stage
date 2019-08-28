@@ -2,8 +2,11 @@ export default class GameEvent{
     private static _ins: GameEvent;
 
     public static SELECT_ITEM: string = "select item";
+    public static ITEM_INFO: string = "item info";
     public static DELETE_ITEM: string = "delete item";
     public static COPY_ITEM: string = "copy item";
+
+    public static CUSTOM_GEOMETRY: string = "custom geometry";
 
     public static DELETE_TEXTURE:string = "delete texture";
 

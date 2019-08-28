@@ -5,6 +5,8 @@
       <el-button type="primary" icon="el-icon-sold-out" @click="handleLoad">加载模型</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleSave">导出模型</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleTest">测试</el-button>
+      <el-button type="primary" icon="el-icon-position" @click="handleCustomGeometry">自定义模型</el-button>
+      
     </div>
     <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放 | G-参考线</p>
     <canvas ref="canvas" class="canvas"></canvas>
@@ -16,7 +18,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from '@/event/index'
 import ParamTooler from '../../core/ParamTooler';
-import Stats from 'three/examples/jsm/libs/stats.module';
+// import Stats from 'three/examples/jsm/libs/stats.module';
 
 let game:Game;
 
@@ -32,6 +34,10 @@ export default class Stage extends Vue {
     //threejs发过来的消息
     GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
     GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
+
+    GameEvent.ins.on(GameEvent.ITEM_INFO, (e:any) => {this.changeItemInfo(e)});
+
+    
     
     // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
 
@@ -46,6 +52,8 @@ export default class Stage extends Vue {
 
     GameEvent.ins.on(GameEvent.ADD_LIGHT, (e:any) => {this.addLight(e)});
 
+    GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e:any) => {this.addCustomGeometry(e)});
+
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
 
@@ -54,14 +62,14 @@ export default class Stage extends Vue {
   }
 
   initStats(){
-    var stats = new Stats();
-    stats.setMode(0); 
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '204px';
-    stats.domElement.style.top = '90px';
-    document.body.appendChild(stats.domElement);
+    // var stats = new Stats();
+    // stats.setMode(0); 
+    // stats.domElement.style.position = 'absolute';
+    // stats.domElement.style.left = '204px';
+    // stats.domElement.style.top = '90px';
+    // document.body.appendChild(stats.domElement);
     
-    game.setStats(stats);
+    // game.setStats(stats);
   }
 
   addLight(e: any){
@@ -154,6 +162,11 @@ export default class Stage extends Vue {
     this.$store.commit("changeDrawer", true);
     this.$store.commit("changeCurParams", e.detail.parameters);
     this.$store.commit("changeCurTransform", e.detail.transform);
+    
+  }
+
+  changeItemInfo(e:CustomEvent):void{
+    this.$store.commit("changeItemInfo", e.detail);
   }
 
   changeCurTransform(e:CustomEvent):void{
@@ -183,12 +196,20 @@ export default class Stage extends Vue {
     (this.$refs.file as any).click();
   }
 
+  handleCustomGeometry():void{
+    this.$store.commit("changeCustomGeometryVisible", true);
+  }
+
   handleSave():void{
     game.exportObject();
   }
 
   handleTest():void{
     game.loadTest();
+  }
+
+  addCustomGeometry(e:CustomEvent):void{
+    game.addCustomGeometry(e.detail);
   }
 }
 </script>

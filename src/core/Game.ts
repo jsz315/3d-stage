@@ -4,7 +4,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import GameEvent from '@/event';
-import GLTFTooler from './GLTFTooler'
+import GLTFTooler from './GLTFTooler';
 import ParamTooler from './ParamTooler';
 import CustomAmbientLight from './light/CustomAmbientLight';
 import CustomDirectionalLight from './light/CustomDirectionalLight';
@@ -12,7 +12,7 @@ import CustomHemisphereLight from './light/CustomHemisphereLight';
 import CustomPointLight from './light/CustomPointLight';
 import CustomSpotLight from './light/CustomSpotLight';
 import CustomRectAreaLight from './light/CustomRectAreaLight';
-import { Mesh } from 'three';
+import Jsz from './Jsz';
 
 export default class Game {
 
@@ -28,10 +28,9 @@ export default class Game {
     grid: THREE.GridHelper;
     stats: any;
     curMesh: any;
+    jsz: Jsz;
 
     constructor(canvas: any) {
-
-        console.log("THREE.BackSide = " + THREE.BackSide);
         GameEvent.ins.init(canvas);
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
@@ -47,6 +46,7 @@ export default class Game {
         this.renderer.shadowMap.enabled = true;
 
         this.camera.position.set(3, 4, 5);
+
         this.camera.lookAt(new THREE.Vector3());
         this.orbitControls = new OrbitControls(this.camera, canvas);
         this.transformControls = new TransformControls( this.camera, this.renderer.domElement );
@@ -69,7 +69,7 @@ export default class Game {
 
         this.rayCaster = new THREE.Raycaster();
         canvas.addEventListener("mousedown", (e: MouseEvent) => {this.selectObject(e)});
-
+        this.jsz = new Jsz(this.scene);
 
         // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
         // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
@@ -375,22 +375,26 @@ export default class Game {
             if(obj.name == "custom drag"){
                 this.transformControls.attach(obj.parent);
                 this.sendLightInfo(obj.parent);
+                this.sendItemInfo(null);
             }
             else if(obj.name == "load_mesh"){
                 let parent = ParamTooler.getDragParent(obj);
                 if(parent){
                     this.transformControls.attach(parent);
                     this.sendMeshInfo(obj);
+                    this.sendItemInfo(obj);
                 }
             }
             else{
                 this.transformControls.attach(obj);
                 this.sendMeshInfo(obj);
+                this.sendItemInfo(obj);
             }
             this.scene.add(this.transformControls);
         }
         else{
             this.orbitControls.enabled = true;
+            this.sendItemInfo(null);
         }
         console.log(intersectObjects);
     }
@@ -408,6 +412,8 @@ export default class Game {
 
         mesh.geometry.dispose();
         mesh.geometry = geometry;
+
+        this.sendItemInfo(mesh);
         // mesh.add(this.getFrame(geometry));
     }
 
@@ -483,6 +489,8 @@ export default class Game {
             this.scene.add( this.transformControls );
             this.orbitControls.enabled = false;
         }
+
+        this.sendItemInfo(light);
     }
 
     animate(): void {
@@ -584,6 +592,22 @@ export default class Game {
 
         // this.renderer.domElement.click();
         // this.renderer.domElement.dispatchEvent(event);
+
+        this.sendItemInfo(mesh);
+    }
+
+    sendItemInfo(mesh: any):void{
+        let obj = null;
+        if(mesh && mesh.geometry){
+            let temp = mesh.geometry;
+            if ( mesh.geometry.isGeometry ) {
+                temp = new THREE.BufferGeometry().fromGeometry( mesh.geometry );
+            }
+            obj = temp.attributes;
+            obj.index = mesh.geometry.getIndex();
+        }
+        
+        GameEvent.ins.send(GameEvent.ITEM_INFO, obj);
     }
 
     exportObject():void{
@@ -607,7 +631,86 @@ export default class Game {
         })
     }
 
+    mergeTest():void{
+        let n = false;
+        let total = 3000;
+        if(n){
+            for(var i = 0; i < total; i++){
+                let geometry = new THREE.BoxGeometry(1, 1, 1);
+                let material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
+                })
+                let mesh = new THREE.Mesh(geometry, material);
+                let x = (0.5 - Math.random()) * 20;
+                let y = (0.5 - Math.random()) * 20;
+                let z = (0.5 - Math.random()) * 20;
+                mesh.position.set(x, y, z);
+                this.scene.add(mesh);
+    
+                this.dragList.push(mesh);
+            }
+        }
+        else{
+            let all = new THREE.Geometry();
+
+            for(var i = 0; i < total; i++){
+                let geometry = new THREE.BoxGeometry(1, 1, 1);
+                let material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
+                })
+                let mesh = new THREE.Mesh(geometry, material);
+                let x = (0.5 - Math.random()) * 20;
+                let y = (0.5 - Math.random()) * 20;
+                let z = (0.5 - Math.random()) * 20;
+                mesh.position.set(x, y, z);
+
+                mesh.updateMatrix();
+                all.merge(geometry, mesh.matrix);
+            }
+    
+            let mesh = new THREE.Mesh(all);
+            this.scene.add(mesh);
+            this.dragList.push(mesh);
+
+        }
+        
+    }
+
+    testJsz():void{
+        let jsz = new Jsz(this.scene);
+        let position = [0, 1, 0, 0, 1, 0, 0, 1, -0, -0, 1, -0, -0, 1, 0, 0, -1, 1, 1, -1, 6.123234262925839e-17, 1.2246468525851679e-16, -1, -1, -1, -1, -1.8369701465288538e-16, -2.4492937051703357e-16, -1, 1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 1, 1, -1, 6.123234262925839e-17, 1.2246468525851679e-16, -1, -1, -1, -1, -1.8369701465288538e-16, -2.4492937051703357e-16, -1, 1];
+        let normal = [0, 0.4472135901451111, 0.8944271802902222, 0.8944271802902222, 0.4472135901451111, 5.476786989387483e-17, 1.0953573978774966e-16, 0.4472135901451111, -0.8944271802902222, -0.8944271802902222, 0.4472135901451111, -1.6430361299034693e-16, -2.190714795754993e-16, 0.4472135901451111, 0.8944271802902222, 0, 0.4472135901451111, 0.8944271802902222, 0.8944271802902222, 0.4472135901451111, 5.476786989387483e-17, 1.0953573978774966e-16, 0.4472135901451111, -0.8944271802902222, -0.8944271802902222, 0.4472135901451111, -1.6430361299034693e-16, -2.190714795754993e-16, 0.4472135901451111, 0.8944271802902222, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0];
+        let uv = [0, 1, 0.25, 1, 0.5, 1, 0.75, 1, 1, 1, 0, 0, 0.25, 0, 0.5, 0, 0.75, 0, 1, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 0.5, 0.5, 0, 0, 0.5, 0.5, 1, 1, 0.5];
+        let index = [0, 5, 1, 5, 6, 1, 1, 6, 2, 6, 7, 2, 2, 7, 3, 7, 8, 3, 3, 8, 4, 8, 9, 4, 15, 14, 10, 16, 15, 11, 17, 16, 12, 18, 17, 13];
+        let mesh = jsz.drawBufferData(position, normal, uv, index);
+        this.dragList.push(mesh);
+    }
+
+    addCustomGeometry(data){
+        if(!data){
+            return;
+        }
+        let position = JSON.parse(data.position);
+        let normal = JSON.parse(data.normal);
+        let uv = JSON.parse(data.uv);
+        let index = JSON.parse(data.index);
+        let mesh = this.jsz.drawBufferData(position, normal, uv, index);
+        this.dragList.push(mesh);
+    }
+
     loadTest():void{
+        // this.testJsz();
+
+        // let bf = new THREE.BoxBufferGeometry();
+        let bf1 = new THREE.BoxBufferGeometry(1, 1, 1);
+        // bf.getAttribute();
+        console.log(bf1.attributes);
+
+        let bf2 = new THREE.BoxBufferGeometry(1, 1, 1);
+        // bf.getAttribute();
+        console.log(bf1);
+        console.log(bf2);
+
         let loader = new GLTFLoader();
         loader.setPath('asset/obj/');
         loader.load('win.gltf', (gltf) => {
@@ -619,10 +722,9 @@ export default class Game {
 
             gltf.scene.traverse((child: any) => {
                 if(child.isMesh){
-                    console.log(child);
-                    child.receiveShadow = true;
-                    child.castShadow = true;
-                    child.uvsNeedUpdate = true;
+                    // child.receiveShadow = true;
+                    // child.castShadow = true;
+                    // child.uvsNeedUpdate = true;
                     child.name = "load_mesh";
 
                     this.dragList.push(child);

@@ -12,11 +12,13 @@ export default new Vuex.Store({
     isDrag: false,
     drawer: false,
     texureViewVisible: false,
+    customGeometryVisible: false,
     texureViewType: null,
     materialType: null,
     chooseImage: null,
     curDragType: null,
     curItemName: null,
+    itemInfo: null,
     fog: {
       color: "#ff0000",
       visible: false,
@@ -60,6 +62,12 @@ export default new Vuex.Store({
     },
     changeFog(state, fog){
       state.fog = fog;
+    },
+    changeItemInfo(state, itemInfo){
+      state.itemInfo = itemInfo;
+    },
+    changeCustomGeometryVisible(state, customGeometryVisible){
+      state.customGeometryVisible = customGeometryVisible;
     }
   },
   actions: {

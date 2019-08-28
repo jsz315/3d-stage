@@ -12,6 +12,7 @@ import CustomHemisphereLight from './light/CustomHemisphereLight';
 import CustomPointLight from './light/CustomPointLight';
 import CustomSpotLight from './light/CustomSpotLight';
 import CustomRectAreaLight from './light/CustomRectAreaLight';
+import { Mesh } from 'three';
 
 export default class Game {
 
@@ -447,7 +448,6 @@ export default class Game {
         this.addWorldTip("-x", "#ff0000", new THREE.Vector3(-42, 0.5, 0));
         this.addWorldTip("z", "#0000ff", new THREE.Vector3(0, 0.5, 42));
         this.addWorldTip("-z", "#0000ff", new THREE.Vector3(0, 0.5, -42));
-       
 
         // let box = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
         // this.scene.add(box);
@@ -615,6 +615,8 @@ export default class Game {
             console.log("gltf");
             console.log(gltf);
 
+            // let geometry = new THREE.Geometry();
+
             gltf.scene.traverse((child: any) => {
                 if(child.isMesh){
                     console.log(child);
@@ -624,8 +626,26 @@ export default class Game {
                     child.name = "load_mesh";
 
                     this.dragList.push(child);
+                    child.updateMatrix();
+                    // geometry.merge(child.geometry, child.matrix)
                 }
             })
+
+            // let all = new THREE.Mesh(geometry);
+            // let size = new THREE.Box3().setFromObject(all).getSize(new THREE.Vector3());
+            // let max = Math.max(size.x, size.y, size.z);
+            // let scale = 10 / max;            
+            // all.scale.set(scale, scale, scale);
+
+            // this.scene.add(all);
+            // all.name = "load_scene";
+            // this.dragList.push(all);
+
+            // let c = new THREE.Box3().setFromObject(all);
+            // let x = (c.min.x + c.max.x) / 2;
+            // let y = (c.min.y + c.max.y) / 2;
+            // let z = (c.min.z + c.max.z) / 2;
+            // all.position.set(0 - x, 0 - y, 0 - z);
             
             let size = new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
             let max = Math.max(size.x, size.y, size.z);
@@ -635,7 +655,6 @@ export default class Game {
             this.scene.add(gltf.scene);
             gltf.scene.name = "load_scene";
             this.dragList.push(gltf.scene);
-
 
             let c = new THREE.Box3().setFromObject(gltf.scene);
             let x = (c.min.x + c.max.x) / 2;

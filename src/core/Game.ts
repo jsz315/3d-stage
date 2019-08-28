@@ -686,7 +686,7 @@ export default class Game {
         this.dragList.push(mesh);
     }
 
-    addCustomGeometry(data){
+    addCustomGeometry(data: any){
         if(!data){
             return;
         }

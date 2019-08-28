@@ -17,6 +17,7 @@ export default new Vuex.Store({
     chooseImage: null,
     curDragType: null,
     curItemName: null,
+    itemInfo: null,
     fog: {
       color: "#ff0000",
       visible: false,
@@ -60,6 +61,9 @@ export default new Vuex.Store({
     },
     changeFog(state, fog){
       state.fog = fog;
+    },
+    changeItemInfo(state, itemInfo){
+      state.itemInfo = itemInfo;
     }
   },
   actions: {

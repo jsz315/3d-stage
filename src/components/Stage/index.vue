@@ -16,7 +16,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from '@/event/index'
 import ParamTooler from '../../core/ParamTooler';
-import Stats from 'three/examples/jsm/libs/stats.module';
+// import Stats from 'three/examples/jsm/libs/stats.module';
 
 let game:Game;
 
@@ -32,6 +32,10 @@ export default class Stage extends Vue {
     //threejs发过来的消息
     GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
     GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
+
+    GameEvent.ins.on(GameEvent.ITEM_INFO, (e:any) => {this.changeItemInfo(e)});
+
+    
     
     // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
 
@@ -54,14 +58,14 @@ export default class Stage extends Vue {
   }
 
   initStats(){
-    var stats = new Stats();
-    stats.setMode(0); 
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '204px';
-    stats.domElement.style.top = '90px';
-    document.body.appendChild(stats.domElement);
+    // var stats = new Stats();
+    // stats.setMode(0); 
+    // stats.domElement.style.position = 'absolute';
+    // stats.domElement.style.left = '204px';
+    // stats.domElement.style.top = '90px';
+    // document.body.appendChild(stats.domElement);
     
-    game.setStats(stats);
+    // game.setStats(stats);
   }
 
   addLight(e: any){
@@ -154,6 +158,11 @@ export default class Stage extends Vue {
     this.$store.commit("changeDrawer", true);
     this.$store.commit("changeCurParams", e.detail.parameters);
     this.$store.commit("changeCurTransform", e.detail.transform);
+    
+  }
+
+  changeItemInfo(e:CustomEvent):void{
+    this.$store.commit("changeItemInfo", e.detail);
   }
 
   changeCurTransform(e:CustomEvent):void{

@@ -30,6 +30,10 @@
 				<TransformView label="scale" :list="curTransform.scale"></TransformView>
 			</el-collapse-item>
 
+			<el-collapse-item title="数据" name="5">
+				<InfoView></InfoView>
+			</el-collapse-item>
+
 		</el-collapse>
 		<div class="btns">
 			<el-button type="primary" @click="handleCopy">原地复制</el-button>
@@ -42,6 +46,7 @@
 	import GameEvent from "@/event/index";
 	import MaterialView from "@/components/MaterialView/index.vue";
 	import TransformView from "@/components/TransformView/index.vue";
+	import InfoView from "@/components/InfoView/index.vue";
 
 	export default {
 		data() {
@@ -53,7 +58,8 @@
 		},
 		components: {
 			MaterialView,
-			TransformView
+			TransformView,
+			InfoView
 		},
 		computed: {
 			list() {

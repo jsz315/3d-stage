@@ -13,9 +13,12 @@ import CustomPointLight from './light/CustomPointLight';
 import CustomSpotLight from './light/CustomSpotLight';
 import CustomRectAreaLight from './light/CustomRectAreaLight';
 import Jsz from './Jsz';
+import {dataURI2Blob, blob2DataURI, readRemoteBlob, blob2ArrayBuffer} from './Blob2Base64'
+import FocusLight from './FocusLight';
+
 
 export default class Game {
-
+    focusLight: FocusLight;
     canvas: HTMLElement;
     renderer: THREE.WebGLRenderer;
     camera: THREE.PerspectiveCamera;
@@ -31,7 +34,20 @@ export default class Game {
     jsz: Jsz;
 
     constructor(canvas: any) {
+
+        // let bs = "data:application/octet-stream;base64,AAAAPwAAAD8AAAA/AAAAPwAAAD8AAAC/AAAAPwAAAL8AAAA/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAvwAAAD8AAAA/AAAAvwAAAL8AAAC/AAAAvwAAAL8AAAA/AAAAvwAAAD8AAAC/AAAAPwAAAD8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAL8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAPwAAAD8AAAC/AAAAvwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAL8AAAC/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA";
+        // GLTFTooler.save(dataURI2Blob(bs), "test.txt");
+
+        // readRemoteBlob("/test.blo", (rdata: any)=>{
+        //     blob2ArrayBuffer(rdata, (fdata:any) => {
+        //         console.log(fdata);
+        //         var position = new Float32Array(fdata, 0, 288 / 4);
+        //         console.log(position);
+        //     })
+        // })
+
         GameEvent.ins.init(canvas);
+
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
@@ -69,7 +85,11 @@ export default class Game {
 
         this.rayCaster = new THREE.Raycaster();
         canvas.addEventListener("mousedown", (e: MouseEvent) => {this.selectObject(e)});
+
+
         this.jsz = new Jsz(this.scene);
+        this.focusLight = new FocusLight(0xffffff, 1.84);
+        this.scene.add(this.focusLight);
 
         // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
         // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
@@ -497,6 +517,7 @@ export default class Game {
         requestAnimationFrame(() => { this.animate() });
         this.renderer.render(this.scene, this.camera);
         this.stats && this.stats.update();
+        this.focusLight.update(this.camera);
     }
 
     getFrame(geometry: THREE.BufferGeometry):THREE.Mesh {
@@ -618,7 +639,7 @@ export default class Game {
                 temps.push(item);
             }
         })
-        GLTFTooler(this.scene);
+        GLTFTooler.toGLTFData(this.scene);
         temps.forEach(item => {
             item.visible = true;
         })
@@ -712,7 +733,7 @@ export default class Game {
         console.log(bf2);
 
         let loader = new GLTFLoader();
-        loader.setPath('asset/obj/');
+        loader.setPath('/asset/obj/');
         loader.load('win.gltf', (gltf) => {
 
             console.log("gltf");
@@ -748,21 +769,34 @@ export default class Game {
             // let y = (c.min.y + c.max.y) / 2;
             // let z = (c.min.z + c.max.z) / 2;
             // all.position.set(0 - x, 0 - y, 0 - z);
+
+            let aim:any = gltf.scene.children[0].children[0].children[0];
             
-            let size = new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
+            let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
             let max = Math.max(size.x, size.y, size.z);
             let scale = 10 / max;            
-            gltf.scene.scale.set(scale, scale, scale);
+            aim.scale.set(scale, scale, scale);
 
-            this.scene.add(gltf.scene);
-            gltf.scene.name = "load_scene";
-            this.dragList.push(gltf.scene);
+            // let c = new THREE.Box3().setFromObject(aim);
+            // let x = (c.min.x + c.max.x) / 2;
+            // let y = (c.min.y + c.max.y) / 2;
+            // let z = (c.min.z + c.max.z) / 2;
+            // aim.position.set(0 - x, 0 - y, 0 - z);
 
-            let c = new THREE.Box3().setFromObject(gltf.scene);
-            let x = (c.min.x + c.max.x) / 2;
-            let y = (c.min.y + c.max.y) / 2;
-            let z = (c.min.z + c.max.z) / 2;
-            gltf.scene.position.set(0 - x, 0 - y, 0 - z);
+            aim.position.set(0, 0, 0);
+
+            // aim.rotateX(Math.PI / 2);
+            // this.scene.add(aim);
+            // aim.name = "load_scene";
+            // this.dragList.push(aim);
+
+            let group = new THREE.Object3D();
+            group.add(aim);
+            group.rotateX(Math.PI / 2);
+
+            this.scene.add(group);
+            group.name = "load_scene";
+            this.dragList.push(group);
         })
     }
 

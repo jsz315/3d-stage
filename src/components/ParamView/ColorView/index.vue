@@ -34,6 +34,9 @@ export default {
   computed: {
     color(){
       console.log("color ==== " + typeof this.value);
+      if(!this.value){
+        return "#ff0000";
+      }
       let data;
       if(typeof this.value == "string"){
         data = this.value.replace("0x", "#");

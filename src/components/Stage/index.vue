@@ -18,7 +18,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from '@/event/index'
 import ParamTooler from '../../core/ParamTooler';
-// import Stats from 'three/examples/jsm/libs/stats.module';
+import {Stats} from '../../core/Stats';
 
 let game:Game;
 
@@ -62,14 +62,14 @@ export default class Stage extends Vue {
   }
 
   initStats(){
-    // var stats = new Stats();
-    // stats.setMode(0); 
-    // stats.domElement.style.position = 'absolute';
-    // stats.domElement.style.left = '204px';
-    // stats.domElement.style.top = '90px';
-    // document.body.appendChild(stats.domElement);
+    var stats = Stats();
+    stats.setMode(0); 
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '204px';
+    stats.domElement.style.top = '90px';
+    document.body.appendChild(stats.domElement);
     
-    // game.setStats(stats);
+    game.setStats(stats);
   }
 
   addLight(e: any){

@@ -41,13 +41,19 @@
 
         methods: {
             handleSure(){
-                this.$store.commit("changeCustomGeometryVisible", false);
-                GameEvent.ins.send(GameEvent.CUSTOM_GEOMETRY, {
-                    position: this.position,
-                    normal: this.normal,
-                    uv: this.uv,
-                    index: this.index
-                })
+                if(this.position &&　this.normal && this.uv && this.index){
+                    this.$store.commit("changeCustomGeometryVisible", false);
+                    GameEvent.ins.send(GameEvent.CUSTOM_GEOMETRY, {
+                        position: this.position,
+                        normal: this.normal,
+                        uv: this.uv,
+                        index: this.index
+                    })
+                }
+                else{
+                    this.$message("请输入正确数据");
+                }
+                
             },
             handleClose(){
                 this.$store.commit("changeCustomGeometryVisible", false);

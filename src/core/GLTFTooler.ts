@@ -1,21 +1,18 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 
-function GLTFTooler(scene:any){
-    console.log("GLTFTooler");
-    console.log(scene);
-    toGLTFData(scene);
+export default class GLTFTooler{
 
-    function toGLTFData(scene:any){
+    public static toGLTFData(scene:any){
         var embed = false;
         var exporter = new GLTFExporter();
         exporter.parse(scene, (result) => {
             console.log(result);
             if ( result instanceof ArrayBuffer ) {
-                saveArrayBuffer( result, 'scene.glb' );
+                this.saveArrayBuffer( result, 'scene.glb' );
             } else {
                 var output = JSON.stringify( result, null, 2 );
-                saveString( output, 'scene.gltf' );
+                this.saveString( output, 'scene.gltf' );
             }
         }, {
             binary: false,
@@ -25,23 +22,20 @@ function GLTFTooler(scene:any){
         });
     }
     
-    function save( blob:Blob, filename:string ) {
+    public static save( blob:Blob, filename:string ) {
         var link = document.createElement( 'a' );
         link.style.display = 'none';
-        document.body.appendChild( link ); // Firefox workaround, see #6594
+        document.body.appendChild( link );
         link.href = URL.createObjectURL( blob );
         link.download = filename;
         link.click();
     }
     
-    function saveString( text:string, filename:string ) {
-        save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+    public static saveString( text:string, filename:string ) {
+        this.save( new Blob( [ text ], { type: 'text/plain' } ), filename );
     }
-    
-    
-    function saveArrayBuffer( buffer:any, filename:string ) {
-        save( new Blob( [ buffer ], { type: 'application/octet-stream' } ), filename );
+
+    public static saveArrayBuffer( buffer:any, filename:string ) {
+        this.save( new Blob( [ buffer ], { type: 'application/octet-stream' } ), filename );
     }
 }
-
-export default GLTFTooler;

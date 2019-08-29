@@ -16,9 +16,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
-import GameEvent from '@/event/index'
-import ParamTooler from '../../core/ParamTooler';
-import {Stats} from '../../core/Stats';
+import GameEvent from "@/core/event/index";
+import ParamTooler from '@/core/tool/ParamTooler';
+import {Stats} from '@/core/tool/Stats';
 
 let game:Game;
 
@@ -62,7 +62,7 @@ export default class Stage extends Vue {
   }
 
   initStats(){
-    var stats = Stats();
+    var stats:any = new Stats();
     stats.setMode(0); 
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.left = '204px';

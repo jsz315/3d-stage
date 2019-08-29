@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import GameEvent from "@/event/index";
-import RGBtoHex from "@/core/ColorTooler";
+import GameEvent from "@/core/event/index";
+import RGBtoHex from "@/core/tool/ColorTooler";
 
 export default {
   data() {

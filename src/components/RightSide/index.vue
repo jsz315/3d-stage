@@ -5,7 +5,7 @@
 </template>
 
 <script>
-	import GameEvent from "@/event/index";
+	import GameEvent from "@/core/event/index";
 	import MaterialView from "@/components/MaterialView/index.vue";
 	import TransformView from "@/components/TransformView/index.vue";
 	import MeshInfo from "@/components/MeshInfo/index.vue";

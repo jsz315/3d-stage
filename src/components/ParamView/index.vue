@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import GameEvent from "@/event/index";
-import ParamTooler from "@/core/ParamTooler";
+import GameEvent from "@/core/event/index";
+import ParamTooler from "@/core/tool/ParamTooler";
 import NumberView from "./NumberView/index.vue";
 import ColorView from "./ColorView/index.vue";
 import SwitchView from "./SwitchView/index.vue";

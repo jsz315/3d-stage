@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import GameEvent from "@/event/index";
+import GameEvent from "@/core/event/index";
 
 export default {
   data() {

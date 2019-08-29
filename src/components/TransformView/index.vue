@@ -7,10 +7,10 @@
 </template>
 
 <script>
-  import GameEvent from "@/event/index";
+  import GameEvent from "@/core/event/index";
   import ParamView from "@/components/ParamView/index.vue";
-  import config from "@/core/material"
-  import ParamTooler from "@/core/ParamTooler"
+  import config from "@/core/config/material"
+  import ParamTooler from "@/core/tool/ParamTooler"
 
   export default {
     data() {

@@ -3,18 +3,18 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import GameEvent from '@/event';
-import GLTFTooler from './GLTFTooler';
-import ParamTooler from './ParamTooler';
+import GameEvent from '@/core/event';
+import GLTFTooler from './tool/GLTFTooler';
+import ParamTooler from './tool/ParamTooler';
 import CustomAmbientLight from './light/CustomAmbientLight';
 import CustomDirectionalLight from './light/CustomDirectionalLight';
 import CustomHemisphereLight from './light/CustomHemisphereLight';
 import CustomPointLight from './light/CustomPointLight';
 import CustomSpotLight from './light/CustomSpotLight';
 import CustomRectAreaLight from './light/CustomRectAreaLight';
-import Jsz from './Jsz';
-import {dataURI2Blob, blob2DataURI, readRemoteBlob, blob2ArrayBuffer} from './Blob2Base64'
-import FocusLight from './FocusLight';
+import Jsz from './dev/Jsz';
+import {BlobTooler} from './tool/BlobTooler'
+import FocusLight from './light/FocusLight';
 
 
 export default class Game {
@@ -34,12 +34,14 @@ export default class Game {
     jsz: Jsz;
 
     constructor(canvas: any) {
+        
+        // let blobTooler = new BlobTooler();
 
         // let bs = "data:application/octet-stream;base64,AAAAPwAAAD8AAAA/AAAAPwAAAD8AAAC/AAAAPwAAAL8AAAA/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAvwAAAD8AAAA/AAAAvwAAAL8AAAC/AAAAvwAAAL8AAAA/AAAAvwAAAD8AAAC/AAAAPwAAAD8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAL8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAPwAAAD8AAAC/AAAAvwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAL8AAAC/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA";
-        // GLTFTooler.save(dataURI2Blob(bs), "test.txt");
+        // GLTFTooler.save(blobTooler.dataURI2Blob(bs), "test.txt");
 
-        // readRemoteBlob("/test.blo", (rdata: any)=>{
-        //     blob2ArrayBuffer(rdata, (fdata:any) => {
+        // blobTooler.readRemoteBlob("/test.blo", (rdata: any)=>{
+        //     blobTooler.blob2ArrayBuffer(rdata, (fdata:any) => {
         //         console.log(fdata);
         //         var position = new Float32Array(fdata, 0, 288 / 4);
         //         console.log(position);
@@ -161,6 +163,9 @@ export default class Game {
         //     frame.material.dispose();
         //     mesh.remove(frame);
         // }
+        if(!mesh){
+            return;
+        }
 
         mesh.geometry && mesh.geometry.dispose();
         mesh.material && mesh.material.dispose();

@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Provide } from "vue-property-decorator";
-import GameEvent from "@/event/index";
+import GameEvent from "@/core/event/index";
 import FogView from "@/components/FogView/index.vue";
 
 @Component({

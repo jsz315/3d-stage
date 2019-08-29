@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import GameEvent from "@/event/index";
+import GameEvent from "@/core/event/index";
 import TransformView from "@/components/TransformView/index.vue";
 
 export default {

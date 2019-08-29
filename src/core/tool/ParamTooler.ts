@@ -1,4 +1,4 @@
-import config from './material';
+import config from '../config/material';
 
 export default class ParamTooler{
 

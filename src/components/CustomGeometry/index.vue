@@ -15,8 +15,8 @@
 </template>
 
 <script>
-    import GameEvent from "@/event/index";
-    import ParamTooler from "@/core/ParamTooler";
+    import GameEvent from "@/core/event/index";
+    import ParamTooler from "@/core/tool/ParamTooler";
 
     export default {
         data() {

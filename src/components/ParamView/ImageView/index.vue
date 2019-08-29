@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import GameEvent from "@/event/index";
+import GameEvent from "@/core/event/index";
 import NumberView from "../NumberView/index.vue";
 
 export default {

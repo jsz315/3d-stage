@@ -16,6 +16,7 @@ import Jsz from './dev/Jsz';
 import {BlobTooler} from './tool/BlobTooler'
 import FocusLight from './light/FocusLight';
 import ColorTooler from "./tool/ColorTooler";
+import Loading from './tool/Loading';
 
 
 export default class Game {
@@ -33,6 +34,7 @@ export default class Game {
     stats: any;
     curMesh: any;
     jsz: Jsz;
+    loading: Loading;
 
     constructor(canvas: any) {
         
@@ -93,6 +95,9 @@ export default class Game {
         this.jsz = new Jsz(this.scene);
         this.focusLight = new FocusLight(0xffffff, 0.84);
         this.scene.add(this.focusLight);
+
+        this.loading = new Loading();
+        // this.scene.add(this.loading);
 
         // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
         // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
@@ -744,6 +749,41 @@ export default class Game {
     }
 
     loadTest():void{
+        console.log("start load");
+        // var xhr = new XMLHttpRequest();
+        // xhr.open("GET", '/asset/obj/win.bin', true);
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/asset/obj/win.bin');
+        xhr.onprogress = (event) =>{
+            if (event.lengthComputable) {
+                // console.log(event.loaded);
+                // console.log(event.total);
+                let n = Math.floor(event.loaded / event.total * 100);
+                console.log(n + "%");
+                this.loading.update(n + "%");
+                this.scene.add(this.loading);
+            }
+        };
+        xhr.onreadystatechange = () => { // 状态发生变化时，函数被回调
+            if (xhr.readyState === 4) { // 成功完成
+                // 判断响应结果:
+                if (xhr.status === 200) {
+                    // 成功，通过responseText拿到响应的文本:
+                    this.startLoad();
+                } else {
+                    // 失败，根据响应码判断失败原因:
+                    alert("加载失败，请刷新页面重新尝试")
+                }
+            } else {
+                // HTTP请求还在继续...
+            }
+        }
+        xhr.send();
+  
+        // xhr.responseType = "blob";
+    }
+
+    startLoad():void{
         let loader = new GLTFLoader();
         loader.setPath('/asset/obj/');
         loader.load('win.gltf', (gltf) => {
@@ -808,6 +848,13 @@ export default class Game {
             this.scene.add(group);
             group.name = "load_scene";
             this.dragList.push(group);
+
+            this.scene.remove(this.loading);
+        }, (e:ProgressEvent) => {
+            let n = Math.floor(e.loaded / e.total * 100);
+            console.log("load " + n + "%");
+            this.loading.update(n + "%");
+            this.scene.add(this.loading);
         })
     }
 

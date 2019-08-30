@@ -19,7 +19,7 @@
 
 <script>
 import GameEvent from "@/core/event/index";
-import RGBtoHex from "@/core/tool/ColorTooler";
+import ColorTooler from "@/core/tool/ColorTooler";
 
 export default {
   data() {
@@ -35,7 +35,7 @@ export default {
     color(){
       console.log("color ==== " + typeof this.value);
       if(!this.value){
-        return "#ff0000";
+        return "#ffffff";
       }
       let data;
       if(typeof this.value == "string"){
@@ -45,7 +45,7 @@ export default {
         let r = this.value.r * 255;
         let g = this.value.g * 255;
         let b = this.value.b * 255;
-        data = "#" + RGBtoHex(r, g, b);
+        data = "#" + ColorTooler.RGBtoHex(r, g, b);
       }
       // let data = "#" + this.value.toString(16);
       console.log(this.value, data);

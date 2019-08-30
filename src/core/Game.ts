@@ -15,6 +15,7 @@ import CustomRectAreaLight from './light/CustomRectAreaLight';
 import Jsz from './dev/Jsz';
 import {BlobTooler} from './tool/BlobTooler'
 import FocusLight from './light/FocusLight';
+import ColorTooler from "./tool/ColorTooler";
 
 
 export default class Game {
@@ -90,7 +91,7 @@ export default class Game {
 
 
         this.jsz = new Jsz(this.scene);
-        this.focusLight = new FocusLight(0xffffff, 1.84);
+        this.focusLight = new FocusLight(0xffffff, 0.84);
         this.scene.add(this.focusLight);
 
         // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
@@ -131,10 +132,22 @@ export default class Game {
                 case 71: // G
                     this.grid.visible = !this.grid.visible;
                     break;
+                case 17: // ctrl
+                    this.jsz.multiple = true;
+                    break;
 
             }
 
         } );
+
+        window.addEventListener( 'keyup',  ( event ) => {
+            switch ( event.keyCode ) {
+                case 17: // ctrl
+                    this.jsz.multiple = false;
+                    break;
+            }
+
+        });
 
         this.grid = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
         (this.grid.material as any).transparent = true;
@@ -172,6 +185,8 @@ export default class Game {
 
         this.scene.remove(mesh);
         this.scene.remove(this.transformControls);
+
+        this.jsz.remove(mesh);
 
         this.dragList = this.dragList.filter(item=>{
             return item != mesh;
@@ -399,6 +414,7 @@ export default class Game {
             //自定义光源拖拽物体
             if(obj.name == "custom drag"){
                 this.transformControls.attach(obj.parent);
+                this.jsz.selectObject(obj.parent);
                 this.sendLightInfo(obj.parent);
                 this.sendItemInfo(null);
             }
@@ -406,12 +422,14 @@ export default class Game {
                 let parent = ParamTooler.getDragParent(obj);
                 if(parent){
                     this.transformControls.attach(parent);
+                    this.jsz.selectObject(parent);
                     this.sendMeshInfo(obj);
                     this.sendItemInfo(obj);
                 }
             }
             else{
                 this.transformControls.attach(obj);
+                this.jsz.selectObject(obj);
                 this.sendMeshInfo(obj);
                 this.sendItemInfo(obj);
             }
@@ -490,22 +508,22 @@ export default class Game {
     addLight(type:string):void {
         let light: any;
         if(type == "AmbientLight"){
-            light = new CustomAmbientLight(0xff0000);
+            light = new CustomAmbientLight(0xffffff);
         }
         else if(type == "DirectionalLight"){
-            light = new CustomDirectionalLight(0xff0000);
+            light = new CustomDirectionalLight(0xffffff);
         }
         else if(type == "HemisphereLight"){
-            light = new CustomHemisphereLight(0xff0000);
+            light = new CustomHemisphereLight(0xffffff);
         }
         else if(type == "PointLight"){
-            light = new CustomPointLight(0xff0000);
+            light = new CustomPointLight(0xffffff);
         }
         else if(type == "SpotLight"){
-            light = new CustomSpotLight(0xff0000);
+            light = new CustomSpotLight(0xffffff);
         }
         else if(type == "RectAreaLight"){
-            light = new CustomRectAreaLight(0xff0000);
+            light = new CustomRectAreaLight(0xffffff);
         }
         if(light){
             this.scene.add(light);
@@ -523,6 +541,7 @@ export default class Game {
         this.renderer.render(this.scene, this.camera);
         this.stats && this.stats.update();
         this.focusLight.update(this.camera);
+        this.jsz.update();
     }
 
     getFrame(geometry: THREE.BufferGeometry):THREE.Mesh {
@@ -589,7 +608,7 @@ export default class Game {
         var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
 
         var material = new THREE.MeshStandardMaterial( { 
-            color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
+            color: ColorTooler.getRandomColor(),
             emissive: 0x072534, 
             side: THREE.FrontSide,
             transparent: true,
@@ -638,12 +657,12 @@ export default class Game {
 
     exportObject():void{
         let temps:THREE.Object3D[] = [];
-        this.scene.children.forEach(item => {
-            if(this.dragList.indexOf(item) == -1){
-                item.visible = false;
-                temps.push(item);
-            }
-        })
+        // this.scene.children.forEach(item => {
+        //     if(this.dragList.indexOf(item) == -1){
+        //         item.visible = false;
+        //         temps.push(item);
+        //     }
+        // })
         GLTFTooler.toGLTFData(this.scene);
         temps.forEach(item => {
             item.visible = true;
@@ -725,18 +744,6 @@ export default class Game {
     }
 
     loadTest():void{
-        // this.testJsz();
-
-        // let bf = new THREE.BoxBufferGeometry();
-        let bf1 = new THREE.BoxBufferGeometry(1, 1, 1);
-        // bf.getAttribute();
-        console.log(bf1.attributes);
-
-        let bf2 = new THREE.BoxBufferGeometry(1, 1, 1);
-        // bf.getAttribute();
-        console.log(bf1);
-        console.log(bf2);
-
         let loader = new GLTFLoader();
         loader.setPath('/asset/obj/');
         loader.load('win.gltf', (gltf) => {
@@ -746,12 +753,17 @@ export default class Game {
 
             // let geometry = new THREE.Geometry();
 
+            let all = {mesh: 0, total: 0};
             gltf.scene.traverse((child: any) => {
+                all.total++;
                 if(child.isMesh){
+                    all.mesh++;
                     // child.receiveShadow = true;
                     // child.castShadow = true;
                     // child.uvsNeedUpdate = true;
                     child.name = "load_mesh";
+                    child.material.roughness = 0.3;
+                    child.material.metalness = 0.1;
 
                     this.dragList.push(child);
                     child.updateMatrix();
@@ -759,23 +771,17 @@ export default class Game {
                 }
             })
 
-            // let all = new THREE.Mesh(geometry);
-            // let size = new THREE.Box3().setFromObject(all).getSize(new THREE.Vector3());
-            // let max = Math.max(size.x, size.y, size.z);
-            // let scale = 10 / max;            
-            // all.scale.set(scale, scale, scale);
-
-            // this.scene.add(all);
-            // all.name = "load_scene";
-            // this.dragList.push(all);
-
-            // let c = new THREE.Box3().setFromObject(all);
-            // let x = (c.min.x + c.max.x) / 2;
-            // let y = (c.min.y + c.max.y) / 2;
-            // let z = (c.min.z + c.max.z) / 2;
-            // all.position.set(0 - x, 0 - y, 0 - z);
-
             let aim:any = gltf.scene.children[0].children[0].children[0];
+            let res = {mesh: 0, total: 0};
+            aim.traverse((child: any) => {
+                res.total++;
+                if(child.isMesh){
+                    res.mesh++;
+                }
+            })
+
+            console.log(all, res);
+
             
             let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
             let max = Math.max(size.x, size.y, size.z);

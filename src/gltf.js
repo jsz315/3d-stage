@@ -24,7 +24,7 @@
     * 访问器，定义了如何从二进制数据源中获取数据，在mesh、animation、skin中都会用到访问器。其指向buffer和bufferview，在这里面存着真正的几何数据
     * type属性用来表明数据元素是标量（SCALLAR）、矢量（VEC3）还是矩阵（MAT4）
     * componentType属性用来表明数据类型，如5126为FLOAT类型
-    * min和max属性定义了几何对象的包围盒边界，这对碰撞检测和视锥体裁剪非常有用
+    * min和max属性定义了几何对象的包围盒边界，这对碰撞检测和视锥体裁剪非常有用(此属性可不加)
     */
     accessors: [
         {bufferView: 0, componentType: 5123, count: 46356, max: [14555], min: [0], type: "SCALAR"},
@@ -109,7 +109,27 @@
             mesh: 1
         }
     ],
-    extensions: [],
+    /*扩展内容，包括灯光等*/
+    extensions: {
+        "KHR_lights_punctual": {
+            "lights": [
+              {
+                "color": [
+                  1,
+                  1,
+                  1
+                ],
+                "intensity": 0.84,
+                "type": "directional"
+              }
+            ]
+        }
+    },
+    /*使用的扩展内容索引*/
+    "extensionsUsed": [
+        "KHR_materials_unlit",
+        "KHR_lights_punctual"
+    ],
     /*整个场景的入口点，由node构成树组成*/
     scenes: [
         {

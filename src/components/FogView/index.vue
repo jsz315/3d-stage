@@ -1,12 +1,12 @@
 <template>
   <div class="fog-view">
-    <TransformView label="fog" :list="fog"></TransformView>
+    <ProtoView label="fog" :list="fog"></ProtoView>
   </div>
 </template>
 
 <script>
 import GameEvent from "@/core/event/index";
-import TransformView from "@/components/TransformView/index.vue";
+import ProtoView from "@/components/ProtoView/index.vue";
 
 export default {
 		data() {
@@ -15,7 +15,7 @@ export default {
 			};
 		},
 		components: {
-		  TransformView
+		  ProtoView
     },
     computed: {
       fog(){

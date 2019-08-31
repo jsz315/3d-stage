@@ -31,17 +31,17 @@ export default {
       list: []
     };
   },
-  props: ["materialType", "material"],
+  // props: ["materialType", "material"],
   components: {
     ParamView
   },
   computed: {
-    // materialType(){
-    //   return this.$store.state.materialType;
-    // },
-    // material() {
-    //   return this.$store.state.curMaterial;
-    // }
+    materialType(){
+      return this.$store.state.extra.materialType;
+    },
+    material() {
+      return this.$store.state.extra.material;
+    },
   },
 
   mounted() {

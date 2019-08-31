@@ -1,6 +1,6 @@
 <template>
-  <div class="transform-view">
-    <div class="edit" v-for="(item, index) in list" :key="index">
+  <div class="proto-view">
+    <div class="edit" v-for="(item, index) in parameters" :key="index">
       <ParamView :label="index" :value="item" :pname="label + '.' + index" />
     </div>
   </div>
@@ -18,7 +18,7 @@
         
       };
     },
-    props: ["list", "label"],
+    props: ["parameters", "label"],
     components: {
       ParamView
     },

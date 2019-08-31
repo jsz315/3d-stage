@@ -8,7 +8,7 @@
       <el-button type="primary" icon="el-icon-position" @click="handleCustomGeometry">自定义模型</el-button>
       
     </div>
-    <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放 | G-参考线</p>
+    <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
     <canvas ref="canvas" class="canvas"></canvas>
   </div>
 </template>
@@ -32,8 +32,8 @@ export default class Stage extends Vue {
     (<any>this.$refs.canvas).addEventListener("mouseenter", this.mouseenter);
 
     //threejs发过来的消息
-    GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
-    GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
+    // GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
+    // GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
 
     GameEvent.ins.on(GameEvent.ITEM_INFO, (e:any) => {this.changeItemInfo(e)});
 
@@ -53,6 +53,9 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.ADD_LIGHT, (e:any) => {this.addLight(e)});
 
     GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e:any) => {this.addCustomGeometry(e)});
+    GameEvent.ins.on(GameEvent.MAKE_GROUP, (e:any) => {this.makeGroup(e)});
+    GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e:any) => {this.splitGroup(e)});
+    
 
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
@@ -89,20 +92,21 @@ export default class Stage extends Vue {
     console.log(e.detail);
     let value = e.detail.value;
     let list = e.detail.name.split(".");
+    let type = list[0];
 
-    if(list[0] == "geometry"){
+    if(type == "geometry"){
       let param:any = Object.assign(this.$store.state.curParam, {});
       param[list[1]] = Number(value);
       game.changeGeometryParam(param);
       // this.$store.commit("changeCurParams", param);
     }
-    else if(list[0] == "position" || list[0] == "rotation" || list[0] == "scale"){
-      let transform:any = Object.assign(this.$store.state.curTransform, {});
-			transform[list[0]][list[1]] = Number(value);
+    else if(type == "position" || type == "rotation" || type == "scale"){
+      let transform:any = Object.assign(this.$store.state.transform, {});
+			transform[type][list[1]] = Number(value);
       game.changeItemTransform(transform);
       // this.$store.commit("changeCurTransform", transform);
     }
-    else if(list[0] == "material"){
+    else if(type == "material"){
       let material = Object.assign(this.$store.state.curMaterial, {});
       if(ParamTooler.checkMap(list[1])){
         if(list[2] == "image"){
@@ -121,14 +125,15 @@ export default class Stage extends Vue {
         game.changeCommonMaterial(list[1], value);
       }
     }
-    else if(list[0] == "light"){
+    else if(type == "light"){
       game.changeLightParam(list[1], value);
     }
-    else if(list[0] == "fog"){
-      let fog = Object.assign(this.$store.state.fog, {});
-      fog[list[1]] = value;
-      this.$store.commit("changeFog", fog);
-      game.changeFog(fog);
+    else if(type == "scene"){
+      let data = Object.assign(this.$store.state, {});
+      let parameters = data.parameters;
+      parameters[list[1]] = value;
+      this.$store.commit("changeItemInfo", data);
+      game.changeScene(parameters);
     }
   }
 
@@ -162,11 +167,11 @@ export default class Stage extends Vue {
     this.$store.commit("changeDrawer", true);
     this.$store.commit("changeCurParams", e.detail.parameters);
     this.$store.commit("changeCurTransform", e.detail.transform);
-    
   }
 
   changeItemInfo(e:CustomEvent):void{
     this.$store.commit("changeItemInfo", e.detail);
+    this.$store.commit("changeDrawer", true);
   }
 
   changeCurTransform(e:CustomEvent):void{
@@ -210,6 +215,14 @@ export default class Stage extends Vue {
 
   addCustomGeometry(e:CustomEvent):void{
     game.addCustomGeometry(e.detail);
+  }
+
+  makeGroup(e:CustomEvent):void{
+    game.makeGroup();
+  }
+
+  splitGroup(e:CustomEvent):void{
+    game.splitGroup();
   }
 }
 </script>

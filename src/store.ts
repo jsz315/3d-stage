@@ -16,17 +16,38 @@ export default new Vuex.Store({
     texureViewType: null,
     materialType: null,
     chooseImage: null,
+
+    //light,mesh,scene,group
     curDragType: null,
+    
     curItemName: null,
     itemInfo: null,
+    
     fog: {
       color: "#ff0000",
       visible: false,
       near: 0.1,
       far: 60
-    }
+    },
+
+    type: null,
+    name: null,
+    parameters: null,
+    transform: null,
+    extra: null
   },
   mutations: {
+
+    changeItemInfo(state, info){
+
+      state.type = info.type;
+      state.name = info.name;
+      state.parameters = info.parameters;
+      state.transform = info.transform;
+      state.extra = info.extra;
+
+    },
+
     changeDrag(state, item){
       state.dragItem = item;
     },
@@ -63,9 +84,9 @@ export default new Vuex.Store({
     changeFog(state, fog){
       state.fog = fog;
     },
-    changeItemInfo(state, itemInfo){
-      state.itemInfo = itemInfo;
-    },
+    // changeItemInfo(state, itemInfo){
+    //   state.itemInfo = itemInfo;
+    // },
     changeCustomGeometryVisible(state, customGeometryVisible){
       state.customGeometryVisible = customGeometryVisible;
     }

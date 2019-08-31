@@ -8,18 +8,21 @@ export default class ParamTooler{
     public static TYPE_SWITCH: string = "type switch";
 
     public static getType(name:string):string{
-        if(!name){
-            debugger
-        }
         let type:string;
         name = name.split(".")[0];
-        if(name == "wireframe" || name == "transparent" || name == "visible" || name == "helpVisible"){
+        if(name.substr(-7).toLowerCase() == "visible"){
+            type = this.TYPE_SWITCH;
+        }
+        else if(name.substr(-5).toLowerCase() == "color"){
+            type = this.TYPE_COLOR;
+        }
+        else if(name == "wireframe" || name == "transparent"){
             type = this.TYPE_SWITCH;
         }
         else if(this.checkMap(name)){
             type = this.TYPE_IMAGE;
         }
-        else if(name == "color" || name == "emissive" || name == "specular" || name == "skyColor" || name == "groundColor"){
+        else if(name == "emissive" || name == "specular"){
             type = this.TYPE_COLOR;
         }
         else{

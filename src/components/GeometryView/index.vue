@@ -45,7 +45,6 @@
 
 <script>
   import GameEvent from "@/core/event/index";
-  import TransformView from "@/components/TransformView/index.vue";
 
   export default {
     data() {
@@ -56,7 +55,7 @@
     },
     computed: {
       info() {
-        return this.$store.state.itemInfo;
+        return this.$store.state.extra.geometry;
       }
     },
     methods: {

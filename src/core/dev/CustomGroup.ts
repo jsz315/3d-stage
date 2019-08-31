@@ -9,16 +9,28 @@ export default class CustomGroup extends THREE.Group{
         super();
         this.list = [];
         this.scene = scene;
+        this.name = "CustomGroup";
     }
 
     push(obj: THREE.Object3D):void{
-        this.list.push(obj);
-        this.add(obj);
+        if(!this.hasItem(obj)){
+            this.list.push(obj);
+            this.add(obj);
+        }
+    }
+
+    hasItem(item:any):boolean{
+        let m = this.list.find((obj:any) => {
+            return obj == item;
+        })
+        return !!m;
     }
 
     clear():void{
         this.list.forEach((item:THREE.Object3D) => {
             item.position.copy(item.getWorldPosition(new THREE.Vector3()));
+            item.rotation.setFromQuaternion(item.getWorldQuaternion(new THREE.Quaternion()));
+            item.scale.copy(item.getWorldScale(new THREE.Vector3()));
             this.scene.add(item);
         })
     }

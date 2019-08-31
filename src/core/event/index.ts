@@ -6,6 +6,9 @@ export default class GameEvent{
     public static DELETE_ITEM: string = "delete item";
     public static COPY_ITEM: string = "copy item";
 
+    public static MAKE_GROUP: string = "make group";
+    public static SPLIT_GROUP: string = "split group";
+
     public static CUSTOM_GEOMETRY: string = "custom geometry";
 
     public static DELETE_TEXTURE:string = "delete texture";

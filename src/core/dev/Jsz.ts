@@ -1,17 +1,50 @@
 import * as THREE from 'three';
 import CustomGroup from './CustomGroup';
+import {BlobTooler} from '../tool/BlobTooler'
 
 export default class Jsz{
 
     scene: THREE.Scene;
     lines: Array<Object>;
     multiple: boolean = false;
+    customGroup: CustomGroup;
 
     constructor(scene: THREE.Scene){
         this.scene = scene;
         this.lines = [];
-        
-        this.test();
+        this.customGroup = new CustomGroup(this.scene);
+                
+        // let blobTooler = new BlobTooler();
+
+        // let bs = "data:application/octet-stream;base64,AAAAPwAAAD8AAAA/AAAAPwAAAD8AAAC/AAAAPwAAAL8AAAA/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAC/AAAAvwAAAD8AAAA/AAAAvwAAAL8AAAC/AAAAvwAAAL8AAAA/AAAAvwAAAD8AAAC/AAAAPwAAAD8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAvwAAAL8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAD8AAAA/AAAAPwAAAD8AAAA/AAAAvwAAAL8AAAA/AAAAPwAAAL8AAAA/AAAAPwAAAD8AAAC/AAAAvwAAAD8AAAC/AAAAPwAAAL8AAAC/AAAAvwAAAL8AAAC/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAgD8AAAAAAAAAAAAAgD8AAAAAAAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA";
+        // GLTFTooler.save(blobTooler.dataURI2Blob(bs), "test.txt");
+
+        // blobTooler.readRemoteBlob("/test.blo", (rdata: any)=>{
+        //     blobTooler.blob2ArrayBuffer(rdata, (fdata:any) => {
+        //         console.log(fdata);
+        //         var position = new Float32Array(fdata, 0, 288 / 4);
+        //         console.log(position);
+        //     })
+        // })
+    }
+
+    makeGroup():CustomGroup{
+        // this.customGroup.clear();
+        let customGroup = new CustomGroup(this.scene);
+        this.lines.forEach((item:any) => {
+            this.scene.remove(item.line);
+            customGroup.push(item.obj);
+        })
+        this.lines = [];
+        this.scene.add(customGroup);
+        this.selectObject(customGroup);
+        return customGroup;
+    }
+
+    splitGroup():void{
+        this.lines = [];
+        this.customGroup.clear();
+        this.scene.remove(this.customGroup);
     }
 
 
@@ -30,8 +63,11 @@ export default class Jsz{
         g.push(m2);
 
         this.selectObject(g);
+        g.scale.set(0.5, 0.5, 0.5);
+        g.rotation.y = 0.4;
 
         setTimeout(()=>{
+            // console.log("Quaternion", m2.getWorldQuaternion(new THREE.Quaternion()));
             g.clear();
             this.scene.remove(g);
         }, 2400);
@@ -85,7 +121,6 @@ export default class Jsz{
         })
 
         if(has && this.multiple){
-            console.log("has obj line");
             return;
         }
 
@@ -115,14 +150,14 @@ export default class Jsz{
                     line: line
                 }];
 
-                console.log("group");
-                console.log(new THREE.Group());
-                console.log("line");
-                console.log(line);
-                console.log("mesh");
-                console.log(obj);
-                console.log("object3d");
-                console.log(new THREE.Object3D());
+                // console.log("group");
+                // console.log(new THREE.Group());
+                // console.log("line");
+                // console.log(line);
+                // console.log("mesh");
+                // console.log(obj);
+                // console.log("object3d");
+                // console.log(new THREE.Object3D());
             }
         }
         
@@ -187,5 +222,47 @@ export default class Jsz{
         let mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(0, 0, 0)
         this.scene.add(mesh);
+    }
+
+    mergeTest():void{
+        let n = false;
+        let total = 3000;
+        if(n){
+            for(var i = 0; i < total; i++){
+                let geometry = new THREE.BoxGeometry(1, 1, 1);
+                let material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
+                })
+                let mesh = new THREE.Mesh(geometry, material);
+                let x = (0.5 - Math.random()) * 20;
+                let y = (0.5 - Math.random()) * 20;
+                let z = (0.5 - Math.random()) * 20;
+                mesh.position.set(x, y, z);
+                this.scene.add(mesh);
+            }
+        }
+        else{
+            let all = new THREE.Geometry();
+
+            for(var i = 0; i < total; i++){
+                let geometry = new THREE.BoxGeometry(1, 1, 1);
+                let material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color().setHSL( Math.random(), 1, 0.75 ),
+                })
+                let mesh = new THREE.Mesh(geometry, material);
+                let x = (0.5 - Math.random()) * 20;
+                let y = (0.5 - Math.random()) * 20;
+                let z = (0.5 - Math.random()) * 20;
+                mesh.position.set(x, y, z);
+
+                mesh.updateMatrix();
+                all.merge(geometry, mesh.matrix);
+            }
+    
+            let mesh = new THREE.Mesh(all);
+            this.scene.add(mesh);
+
+        }
+        
     }
 }

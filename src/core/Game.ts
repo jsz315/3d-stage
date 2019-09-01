@@ -12,6 +12,7 @@ import Loading from './tool/Loading';
 import Factory from './tool/Factory';
 import LoadTooler from './tool/LoadTooler';
 import WorldTooler from './tool/WorldTooler';
+import SelectTooler from './tool/SelectTooler';
 
 export default class Game {
     focusLight: FocusLight;
@@ -25,9 +26,13 @@ export default class Game {
     dragList: Array<THREE.Object3D> = [];
     grid: THREE.GridHelper;
     stats: any;
-    curMesh: any;
+    // curMesh: any;
     jsz: Jsz;
     loading: Loading;
+    isRoot: boolean = true;
+    outsideObj: any;
+    insideObj: any;
+    isInside: boolean = false;
 
     constructor(canvas: any) {
 
@@ -129,6 +134,17 @@ export default class Game {
         });
     }
 
+    changeIsRoot(m: boolean):void{
+        this.isRoot = m;
+    }
+
+    get curMesh():any{
+        if(this.isRoot){
+            return this.outsideObj;
+        }
+        return this.insideObj;
+    }
+
     setStats(stats: any): void {
         this.stats = stats;
     }
@@ -140,7 +156,8 @@ export default class Game {
     }
 
     deleteItem(): void {
-        let mesh: any = this.transformControls.object;
+        // let mesh: any = this.transformControls.object;
+        let mesh: any = this.curMesh;
         if (!mesh) {
             return;
         }
@@ -159,7 +176,8 @@ export default class Game {
     }
 
     copyItem(): void {
-        let oldMesh = this.transformControls.object;
+        // let oldMesh = this.transformControls.object;
+        let oldMesh = this.curMesh;
         let newMesh = oldMesh.clone();
         this.scene.add(newMesh);
 
@@ -176,7 +194,8 @@ export default class Game {
     }
 
     changeItemTransform(p: any): void {
-        let obj = this.transformControls.object;
+        // let obj = this.transformControls.object;
+        let obj = this.curMesh;
         obj.position.set(p.position.x, p.position.y, p.position.z);
         obj.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
         obj.scale.set(p.scale.x, p.scale.y, p.scale.z);
@@ -184,7 +203,8 @@ export default class Game {
     }
 
     changeGeometryParam(p: any): void {
-        let mesh = this.transformControls.object;
+        // let mesh = this.transformControls.object;
+        let mesh = this.curMesh;
         let geo = Factory.getBufferGeometry(mesh.name, p);
         if (geo) {
             this.updateGroupGeometry(mesh, geo);
@@ -283,7 +303,8 @@ export default class Game {
     }
 
     changeLightParam(key: string, data: any): void {
-        let light: any = this.transformControls.object;
+        // let light: any = this.transformControls.object;
+        let light:any = this.curMesh;
         let type = ParamTooler.getType(key);
         if (type == ParamTooler.TYPE_COLOR) {
             light[key] = new THREE.Color(data);
@@ -318,7 +339,7 @@ export default class Game {
             return;
         }
         console.log(mesh.type);
-        this.curMesh = mesh;
+        // this.curMesh = mesh;
         let parameters = mesh.geometry ? mesh.geometry.parameters : null;
         let material = ParamTooler.copyMaterialParam(mesh.material);
         let transform = ParamTooler.copyTransform(mesh);
@@ -334,15 +355,6 @@ export default class Game {
     }
 
     selectObject(obj: THREE.Object3D):void{
-        console.log(obj);
-        if(obj){
-            this.transformControls.attach(obj);
-            this.scene.add(this.transformControls);
-            this.jsz.selectObject(obj);
-        }
-        else{
-            this.scene.remove(this.transformControls);
-        }
         this.sendItemInfo(obj);
     }
 
@@ -357,37 +369,7 @@ export default class Game {
         let intersectObjects = this.rayCaster.intersectObjects(this.dragList, true);
         if (intersectObjects[0]) {
             let obj: any = intersectObjects[0].object;
-            //自定义光源拖拽物体
-            if (obj.name == "custom drag") {
-                // this.transformControls.attach(obj.parent);
-                // this.jsz.selectObject(obj.parent);
-                // this.sendLightInfo(obj.parent);
-                // this.sendItemInfo(null);
-                aim = obj.parent;
-                
-            }
-            else if (obj.name == "load_mesh") {
-                let parent = ParamTooler.getDragParent(obj);
-                if (parent) {
-                    aim = parent;
-                    // this.transformControls.attach(parent);
-                    // this.jsz.selectObject(parent);
-                    // this.sendMeshInfo(obj);
-                    // this.sendItemInfo(obj);
-                }
-            }
-            else {
-                // this.transformControls.attach(obj);
-                // this.jsz.selectObject(obj);
-                // this.sendMeshInfo(obj);
-                // this.sendItemInfo(obj);
-                aim = obj;
-            }
-            // this.scene.add(this.transformControls);
-        }
-        else {
-            // this.orbitControls.enabled = true;
-            // this.sendItemInfo(null);
+            aim = obj;
         }
         this.selectObject(aim);
         console.log(intersectObjects);
@@ -460,70 +442,27 @@ export default class Game {
         this.sendItemInfo(mesh);
     }
 
-    sendItemInfo(obj: any): void {
-        let type: any;
-        let name: any;
-        let parameters: any;
-        let transform: any;
-        let extra: any;
+    sendItemInfo(m: any): void {
+        this.outsideObj = SelectTooler.getOutSideObject(m);
+        this.insideObj = SelectTooler.getInsideObject(m);
+        let obj:any = this.outsideObj;
+        // let more = this.outsideObj != this.insideObj;
+        this.curMesh = this.isRoot ? this.outsideObj : this.insideObj;
 
-        if (obj) {
+        let data1 = ParamTooler.getObjectData(this.outsideObj, this.scene, this.grid.visible);
+        let data2 = ParamTooler.getObjectData(this.insideObj, this.scene, this.grid.visible);
+        let list = [data1, data2];
 
-            type = obj.type;
-            transform = ParamTooler.copyTransform(obj);
-
-            if(type == "Mesh"){
-
-                name = "Mesh";
-
-                let material = ParamTooler.copyMaterialParam(obj.material);
-                let temp = obj.geometry;
-                if (obj.geometry.isGeometry) {
-                    temp = new THREE.BufferGeometry().fromGeometry(obj.geometry);
-                }
-
-                parameters = obj.geometry.parameters;
-                
-                extra = {
-                    geometry: {
-                        ...temp.attributes,
-                        index: obj.geometry.getIndex()
-                    },
-                    material: material,
-                    materialType: obj.material ? obj.material.type : "",
-                }
-            }
-            else if(type.substr(-5) == "Light"){
-                name = obj.name;
-                parameters = obj.parameters;
-            }
-            else if(type == "Group"){
-                name = "Group";
-
-            }
-            else if(type == "Object3D"){
-                name = "Object3D";
-            }
+        if(obj){
+            this.transformControls.attach(obj);
+            this.scene.add(this.transformControls);
+            this.jsz.selectObject(obj);
         }
         else{
-            type = "Scene";
-            name = "Scene";
-            parameters = {
-                fogVisible: !!this.scene.fog,
-                fogColor: this.scene.fog ? (this.scene.fog as THREE.Fog).color : "#ffffff",
-                gridVisible: this.grid.visible,
-                near: this.scene.fog ? (this.scene.fog as THREE.Fog).near : 0,
-                far: this.scene.fog ? (this.scene.fog as THREE.Fog).far : 100
-            }
+            this.scene.remove(this.transformControls);
         }
 
-        GameEvent.ins.send(GameEvent.ITEM_INFO, {
-            type,
-            name,
-            parameters,
-            transform,
-            extra
-        });
+        GameEvent.ins.send(GameEvent.ITEM_INFO, list);
 
     }
 
@@ -634,7 +573,6 @@ export default class Game {
         this.dragList.push(group);
         this.dragList = this.dragList.filter((item: any) => {
             if(group.hasItem(item)){
-                console.log("delete from drag list");
                 return false;
             }
             return true;

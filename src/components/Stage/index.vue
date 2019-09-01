@@ -21,6 +21,7 @@ import ParamTooler from '@/core/tool/ParamTooler';
 import {Stats} from '@/core/tool/Stats';
 
 let game:Game;
+let dataList: any;
 
 @Component
 export default class Stage extends Vue {
@@ -55,6 +56,7 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e:any) => {this.addCustomGeometry(e)});
     GameEvent.ins.on(GameEvent.MAKE_GROUP, (e:any) => {this.makeGroup(e)});
     GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e:any) => {this.splitGroup(e)});
+    GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
     
 
     //Paramview组件发过来的消息
@@ -132,7 +134,7 @@ export default class Stage extends Vue {
       let data = Object.assign(this.$store.state, {});
       let parameters = data.parameters;
       parameters[list[1]] = value;
-      this.$store.commit("changeItemInfo", data);
+      this.$store.commit("changeItemInfo", [data]);
       game.changeScene(parameters);
     }
   }
@@ -170,7 +172,8 @@ export default class Stage extends Vue {
   }
 
   changeItemInfo(e:CustomEvent):void{
-    this.$store.commit("changeItemInfo", e.detail);
+    dataList = e.detail;
+    this.$store.commit("changeItemInfo", dataList);
     this.$store.commit("changeDrawer", true);
   }
 
@@ -223,6 +226,13 @@ export default class Stage extends Vue {
 
   splitGroup(e:CustomEvent):void{
     game.splitGroup();
+  }
+
+  changeIsRoot(e:CustomEvent):void{
+    let n = e.detail;
+    this.$store.commit("changeIsRoot", n);
+    this.$store.commit("changeItemInfo", dataList);
+    game.changeIsRoot(n);
   }
 }
 </script>

@@ -4,94 +4,90 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-    dragItem: Object,
-    curParam: Object,
-    curMaterial: Object,
-    curTransform: {},
-    isDrag: false,
-    drawer: false,
-    texureViewVisible: false,
-    customGeometryVisible: false,
-    texureViewType: null,
-    materialType: null,
-    chooseImage: null,
+    state: {
+        dragItem: Object,
+        curParam: Object,
+        curMaterial: Object,
+        curTransform: {},
+        isDrag: false,
+        drawer: false,
+        texureViewVisible: false,
+        customGeometryVisible: false,
+        texureViewType: null,
+        materialType: null,
+        chooseImage: null,
 
-    //light,mesh,scene,group
-    curDragType: null,
-    
-    curItemName: null,
-    itemInfo: null,
-    
-    fog: {
-      color: "#ff0000",
-      visible: false,
-      near: 0.1,
-      far: 60
-    },
+        //light,mesh,scene,group
+        curDragType: null,
 
-    type: null,
-    name: null,
-    parameters: null,
-    transform: null,
-    extra: null
-  },
-  mutations: {
+        curItemName: null,
+        itemInfo: null,
 
-    changeItemInfo(state, info){
+        isRoot: true,
+        childName: null,
 
-      state.type = info.type;
-      state.name = info.name;
-      state.parameters = info.parameters;
-      state.transform = info.transform;
-      state.extra = info.extra;
+        type: null,
+        name: null,
+        parameters: null,
+        transform: null,
+        extra: null
+    },
+    mutations: {
 
-    },
+        changeItemInfo(state, list) {
+            let info = state.isRoot ? list[0] : list[1];
+            state.type = info.type;
+            state.name = info.name;
+            state.parameters = info.parameters;
+            state.transform = info.transform;
+            state.extra = info.extra;
+            state.childName = list[1] ? list[1].name : "";
+        },
 
-    changeDrag(state, item){
-      state.dragItem = item;
+        changeDrag(state, item) {
+            state.dragItem = item;
+        },
+        changeCurParams(state, curParam) {
+            state.curParam = curParam;
+        },
+        changeCurTransform(state, curTransform) {
+            state.curTransform = curTransform;
+        },
+        changeCurMaterial(state, curMaterial) {
+            state.curMaterial = curMaterial;
+        },
+        changeDrawer(state, drawer) {
+            state.drawer = drawer;
+        },
+        changeTexureViewVisible(state, texureViewVisible) {
+            state.texureViewVisible = texureViewVisible;
+        },
+        changeChooseImage(state, chooseImage) {
+            state.chooseImage = chooseImage;
+        },
+        changeTexureViewType(state, texureViewType) {
+            state.texureViewType = texureViewType;
+        },
+        changeMaterialType(state, materialType) {
+            state.materialType = materialType;
+        },
+        changeCurDragType(state, curDragType) {
+            state.curDragType = curDragType;
+        },
+        changeCurItemName(state, curItemName) {
+            state.curItemName = curItemName;
+        },
+        changeCustomGeometryVisible(state, customGeometryVisible) {
+            state.customGeometryVisible = customGeometryVisible;
+        },
+        changeIsRoot(state, isRoot) {
+            state.isRoot = isRoot;
+        },
+        changeChildName(state, childName) {
+            state.childName = childName;
+        }
     },
-    changeCurParams(state, curParam){
-      state.curParam = curParam;
-    },
-    changeCurTransform(state, curTransform){
-      state.curTransform = curTransform;
-    },
-    changeCurMaterial(state, curMaterial){
-      state.curMaterial = curMaterial;
-    },
-    changeDrawer(state, drawer){
-      state.drawer = drawer;
-    },
-    changeTexureViewVisible(state, texureViewVisible){
-      state.texureViewVisible = texureViewVisible;
-    },
-    changeChooseImage(state, chooseImage){
-      state.chooseImage = chooseImage;
-    },
-    changeTexureViewType(state, texureViewType){
-      state.texureViewType = texureViewType;
-    },
-    changeMaterialType(state, materialType){
-      state.materialType = materialType;
-    },
-    changeCurDragType(state, curDragType){
-      state.curDragType = curDragType;
-    },
-    changeCurItemName(state, curItemName){
-      state.curItemName = curItemName;
-    },
-    changeFog(state, fog){
-      state.fog = fog;
-    },
-    // changeItemInfo(state, itemInfo){
-    //   state.itemInfo = itemInfo;
-    // },
-    changeCustomGeometryVisible(state, customGeometryVisible){
-      state.customGeometryVisible = customGeometryVisible;
+    actions: {
+
     }
-  },
-  actions: {
-
-  }
 });

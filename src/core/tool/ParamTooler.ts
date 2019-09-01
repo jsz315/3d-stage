@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import config from '../config/material';
 
 export default class ParamTooler{
@@ -105,17 +106,70 @@ export default class ParamTooler{
 
     }
 
-    public static getDragParent(mesh: any):any{
-        let aim: any = mesh;
-        let i = 0;
-        while(aim = aim.parent){
-            if(aim.name == "load_scene"){
-                return aim;
+    public static getObjectData(obj:any, scene:THREE.Scene, gridVisible:boolean):any{
+        let type: any;
+        let name: any;
+        let parameters: any;
+        let transform: any;
+        let extra: any;
+
+        if (obj) {
+
+            type = obj.type;
+            transform = ParamTooler.copyTransform(obj);
+
+            if(type == "Mesh"){
+
+                name = "Mesh";
+
+                let material = ParamTooler.copyMaterialParam(obj.material);
+                let temp = obj.geometry;
+                if (obj.geometry.isGeometry) {
+                    temp = new THREE.BufferGeometry().fromGeometry(obj.geometry);
+                }
+
+                parameters = obj.geometry.parameters;
+                
+                extra = {
+                    geometry: {
+                        ...temp.attributes,
+                        index: obj.geometry.getIndex()
+                    },
+                    material: material,
+                    materialType: obj.material ? obj.material.type : "",
+                }
             }
-            if(++i > 20){
-                return null;
+            else if(type.substr(-5) == "Light"){
+                name = obj.name;
+                parameters = obj.parameters;
+            }
+            else if(type == "Group"){
+                name = "Group";
+
+            }
+            else if(type == "Object3D"){
+                name = "Object3D";
             }
         }
-        return null;
+        else{
+            type = "Scene";
+            name = "Scene";
+            parameters = {
+                fogVisible: !!scene.fog,
+                fogColor: scene.fog ? (scene.fog as THREE.Fog).color : "#ffffff",
+                gridVisible: gridVisible,
+                near: scene.fog ? (scene.fog as THREE.Fog).near : 0,
+                far: scene.fog ? (scene.fog as THREE.Fog).far : 100
+            }
+        }
+
+        return {
+            type,
+            name,
+            parameters,
+            transform,
+            extra
+        }
     }
+
 } 

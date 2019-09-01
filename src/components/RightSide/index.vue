@@ -10,7 +10,12 @@
 				</div>
 			</div>
 
-			<div class="cur-name">{{curItemName}}</div>
+			<div class="cur-name">
+                <span @click="handleChangeRoot(true)">{{curItemName}}</span>
+                <template v-if="childName">
+                    | <span @click="handleChangeRoot(false)">{{childName}}</span>
+                </template>
+            </div>
 
 			<el-collapse v-model="activeNames" @change="handleCollapse" accordion>
 				<el-collapse-item title="材质" name="0" v-if="showMaterial">
@@ -94,7 +99,10 @@
 			},
 			curItemName(){
 				return this.$store.state.name;
-			},
+            },
+            childName(){
+                return this.$store.state.childName;
+            },
 			showMaterial(){
 				let extra = this.$store.state.extra;
 				return extra && extra.material;
@@ -163,7 +171,10 @@
 				console.log(e);
 			},
 			handleChange(e) {
-			}
+            },
+            handleChangeRoot(n){
+                GameEvent.ins.send(GameEvent.CHANGE_IS_ROOT, n);
+            }
 		}
 	};
 </script>

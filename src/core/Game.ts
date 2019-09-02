@@ -591,7 +591,9 @@ export default class Game {
     }
 
     splitGroup():void{
-        this.jsz.splitGroup();
+        let group:any = this.transformControls.object;
+        this.jsz.splitGroup(group);
+        
     }
 
     animate(): void {

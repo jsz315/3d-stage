@@ -42,10 +42,12 @@ export default class Jsz{
         return customGroup;
     }
 
-    splitGroup():void{
-        this.lines = [];
-        this.customGroup.clear();
-        this.scene.remove(this.customGroup);
+    splitGroup(group:any):void{
+        if(group){
+            this.lines = [];
+            group.clear();
+            this.scene.remove(group);
+        }
     }
 
 
@@ -152,14 +154,6 @@ export default class Jsz{
                     line: line
                 }];
 
-                // console.log("group");
-                // console.log(new THREE.Group());
-                // console.log("line");
-                // console.log(line);
-                // console.log("mesh");
-                // console.log(obj);
-                // console.log("object3d");
-                // console.log(new THREE.Object3D());
             }
         }
         

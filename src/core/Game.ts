@@ -13,6 +13,7 @@ import Factory from './tool/Factory';
 import LoadTooler from './tool/LoadTooler';
 import WorldTooler from './tool/WorldTooler';
 import SelectTooler from './tool/SelectTooler';
+import ListSceneTooler from './tool/ListSceneTooler';
 
 export default class Game {
     focusLight: FocusLight;
@@ -139,9 +140,9 @@ export default class Game {
     }
 
     get curMesh():any{
-        if(this.isRoot){
-            return this.outsideObj;
-        }
+        // if(this.isRoot){
+        //     return this.outsideObj;
+        // }
         return this.insideObj;
     }
 
@@ -292,6 +293,7 @@ export default class Game {
         }
         this.renderer.setClearColor(new THREE.Color(data.fogColor));
         this.grid.visible = data.gridVisible;
+        this.jsz.selectedColor = data.selectedColor;
     }
 
     deleteTexture(key: string): void {
@@ -445,13 +447,21 @@ export default class Game {
     sendItemInfo(m: any): void {
         this.outsideObj = SelectTooler.getOutSideObject(m);
         this.insideObj = SelectTooler.getInsideObject(m);
-        let obj:any = this.outsideObj;
+        // let obj:any = this.outsideObj;
         // let more = this.outsideObj != this.insideObj;
-        this.curMesh = this.isRoot ? this.outsideObj : this.insideObj;
+        // this.curMesh = this.isRoot ? this.outsideObj : this.insideObj;
 
-        let data1 = ParamTooler.getObjectData(this.outsideObj, this.scene, this.grid.visible);
-        let data2 = ParamTooler.getObjectData(this.insideObj, this.scene, this.grid.visible);
-        let list = [data1, data2];
+        // let data1 = ParamTooler.getObjectData(this.outsideObj, this.scene, this.grid.visible);
+        // let list = [data1];
+
+        // if(this.outsideObj != this.insideObj){
+        //     let data2 = ParamTooler.getObjectData(this.insideObj, this.scene, this.grid.visible);
+        //     list.push(data2);
+        // }
+
+        let obj:any = this.insideObj;
+        let data = ParamTooler.getObjectData(this.insideObj, this.scene, this.grid.visible, this.jsz.selectedColor);
+        let list = [data];
 
         if(obj){
             this.transformControls.attach(obj);
@@ -590,5 +600,21 @@ export default class Game {
         this.stats && this.stats.update();
         this.focusLight.update(this.camera);
         this.jsz.update();
+    }
+
+    getSceneTree():any{
+        let s = ListSceneTooler.parse(this.scene);
+        return s;
+    }
+
+    selectedItemByUUID(uuid:string):any{
+        let obj:any = this.scene.getObjectByProperty('uuid', uuid);
+        if(obj != this.transformControls){
+            this.selectObject(obj);
+        }
+    }
+
+    changeItemName(name:string):any{
+        this.curMesh.name = name;
     }
 }

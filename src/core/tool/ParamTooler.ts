@@ -106,7 +106,7 @@ export default class ParamTooler{
 
     }
 
-    public static getObjectData(obj:any, scene:THREE.Scene, gridVisible:boolean):any{
+    public static getObjectData(obj:any, scene:THREE.Scene, gridVisible:boolean, selectedColor:string):any{
         let type: any;
         let name: any;
         let parameters: any;
@@ -150,6 +150,8 @@ export default class ParamTooler{
             else if(type == "Object3D"){
                 name = "Object3D";
             }
+
+            name = obj.name || name;
         }
         else{
             type = "Scene";
@@ -157,9 +159,10 @@ export default class ParamTooler{
             parameters = {
                 fogVisible: !!scene.fog,
                 fogColor: scene.fog ? (scene.fog as THREE.Fog).color : "#ffffff",
-                gridVisible: gridVisible,
                 near: scene.fog ? (scene.fog as THREE.Fog).near : 0,
-                far: scene.fog ? (scene.fog as THREE.Fog).far : 100
+                far: scene.fog ? (scene.fog as THREE.Fog).far : 100,
+                gridVisible: gridVisible,
+                selectedColor: selectedColor || "#ff0000"
             }
         }
 

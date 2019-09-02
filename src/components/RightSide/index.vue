@@ -11,10 +11,8 @@
 			</div>
 
 			<div class="cur-name">
-                <span @click="handleChangeRoot(true)">{{curItemName}}</span>
-                <template v-if="childName">
-                    | <span @click="handleChangeRoot(false)">{{childName}}</span>
-                </template>
+				<input type="txt" class="name" v-bind:value="curItemName" ref="name" /> 
+				<el-button size="mini" @click="handleChangeName">修改</el-button>
             </div>
 
 			<el-collapse v-model="activeNames" @change="handleCollapse" accordion>
@@ -151,29 +149,35 @@
 		},
 
 		methods: {
+			handleChangeName(e){
+				console.log(this.curItemName, this.$refs.name.value);
+				GameEvent.ins.send(GameEvent.CHANGE_ITEM_NAME, this.$refs.name.value);
+				GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
+			},
 			handleClose() {
 				this.$store.commit("changeDrawer", false);
 			},
 			handleCopy() {
 				GameEvent.ins.send(GameEvent.COPY_ITEM);
+				GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
 			},
 			handleDelete() {
 				this.$store.commit("changeDrawer", false);
 				GameEvent.ins.send(GameEvent.DELETE_ITEM);
+				GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
 			},
 			handleMakeGroup(){
 				GameEvent.ins.send(GameEvent.MAKE_GROUP);
+				GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
 			},
 			handleSplitGroup(){
 				GameEvent.ins.send(GameEvent.SPLIT_GROUP);
+				GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
 			},
 			handleCollapse(e) {
 				console.log(e);
 			},
 			handleChange(e) {
-            },
-            handleChangeRoot(n){
-                GameEvent.ins.send(GameEvent.CHANGE_IS_ROOT, n);
             }
 		}
 	};

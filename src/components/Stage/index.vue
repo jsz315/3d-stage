@@ -57,6 +57,12 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.MAKE_GROUP, (e:any) => {this.makeGroup(e)});
     GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e:any) => {this.splitGroup(e)});
     GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
+
+    GameEvent.ins.on(GameEvent.GET_SCENE_TREE, (e:any) => {this.getSceneTree(e)});
+    GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e:any) => {this.selectTreeItem(e)});
+
+    GameEvent.ins.on(GameEvent.CHANGE_ITEM_NAME, (e:any) => {this.changeItemName(e)});
+    
     
 
     //Paramview组件发过来的消息
@@ -214,6 +220,7 @@ export default class Stage extends Vue {
 
   handleTest():void{
     game.loadTest();
+    // game.listScene();
   }
 
   addCustomGeometry(e:CustomEvent):void{
@@ -233,6 +240,21 @@ export default class Stage extends Vue {
     this.$store.commit("changeIsRoot", n);
     this.$store.commit("changeItemInfo", dataList);
     game.changeIsRoot(n);
+  }
+
+  getSceneTree(e:CustomEvent):void{
+    let s = game.getSceneTree();
+    console.log("game getSceneTree");
+    console.log(s);
+    this.$store.commit("changeSceneTree", [s]);
+  }
+
+  selectTreeItem(e:CustomEvent):void{
+    game.selectedItemByUUID(e.detail);
+  }
+
+  changeItemName(e:CustomEvent):void{
+    game.changeItemName(e.detail);
   }
 }
 </script>

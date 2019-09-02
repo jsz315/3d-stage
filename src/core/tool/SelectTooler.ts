@@ -6,7 +6,11 @@ export default class SelectTooler{
 
     }
 
-    public static getInsideObject(obj:THREE.Object3D):THREE.Object3D{
+    public static getInsideObject(obj:THREE.Object3D):THREE.Object3D|null{
+        if(!obj || obj.type == "Scene"){
+            return null;
+        }
+
         let aim: any;
         if(obj){
             if (obj.name == "custom drag") {
@@ -19,7 +23,11 @@ export default class SelectTooler{
         return aim;
     }
 
-    public static getOutSideObject(obj:THREE.Object3D):THREE.Object3D{
+    public static getOutSideObject(obj:THREE.Object3D):THREE.Object3D|null{
+        if(!obj || obj.type == "Scene"){
+            return null;
+        }
+
         let aim: any = obj;
         let i = 0;
         while(aim){

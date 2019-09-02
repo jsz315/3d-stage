@@ -8,6 +8,7 @@ export default class Jsz{
     lines: Array<Object>;
     multiple: boolean = false;
     customGroup: CustomGroup;
+    selectedColor: string = "#ff0000";
 
     constructor(scene: THREE.Scene){
         this.scene = scene;
@@ -117,6 +118,7 @@ export default class Jsz{
 
     selectObject(obj: THREE.Object3D):void{
         let has = this.lines.find((item:any) => {
+            item.line.material.color = new THREE.Color(this.selectedColor);
             return item.obj == obj;
         })
 
@@ -125,7 +127,7 @@ export default class Jsz{
         }
 
         if(this.multiple){
-            let line = new THREE.BoxHelper(obj);
+            let line = new THREE.BoxHelper(obj, new THREE.Color(this.selectedColor));
             this.scene.add(line);
             this.lines.push({
                 obj: obj,
@@ -143,7 +145,7 @@ export default class Jsz{
                     this.scene.remove(item.line);
                 })
 
-                let line = new THREE.BoxHelper(obj);
+                let line = new THREE.BoxHelper(obj, new THREE.Color(this.selectedColor));
                 this.scene.add(line);
                 this.lines = [{
                     obj: obj,

@@ -30,18 +30,25 @@ export default new Vuex.Store({
         name: null,
         parameters: null,
         transform: null,
-        extra: null
+        extra: null,
+
+        sceneTree: []
     },
     mutations: {
 
         changeItemInfo(state, list) {
             let info = state.isRoot ? list[0] : list[1];
             state.type = info.type;
-            state.name = info.name;
             state.parameters = info.parameters;
             state.transform = info.transform;
             state.extra = info.extra;
+
+            state.name = list[0].name;
             state.childName = list[1] ? list[1].name : "";
+        },
+
+        changeSceneTree(state, sceneTree){
+            state.sceneTree = sceneTree;
         },
 
         changeDrag(state, item) {

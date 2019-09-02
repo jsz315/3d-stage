@@ -17,11 +17,17 @@ export default class GameEvent{
 
     public static ADD_LIGHT:string = "add light";
     public static SELECT_LIGHT:string = "select light";
+
+    public static GET_SCENE_TREE:string = "get scene tree";
+    public static SET_SCENE_TREE:string = "set scene tree";
+    public static SELECT_TREE_ITEM:string = "select tree item";
     
     public static CHANGE_PARAM: string = "change param";
     public static CHANGE_TRANSFORM: string = "change transform";
     public static CHANGE_MATERIAL:string = "change material";
     public static CHANGE_ITEM_PARAM: string = "change item param"; 
+
+    public static CHANGE_ITEM_NAME: string = "change item name";
 
     public version:string;
     private _sender:any;

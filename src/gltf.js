@@ -8,9 +8,60 @@
         generator: "GLTFExporter"
     },
     bufferViews: [
-        {buffer: 0, byteLength: 92712, byteOffset: 0, target: 34963},
-        {buffer: 0, byteLength: 174672, byteOffset: 92712, target: 34962},
-        {buffer: 0, byteLength: 174672, byteOffset: 267384, target: 34962}
+        {
+            "buffer": 0,
+            "byteOffset": 0,
+            "byteLength": 288,
+            "target": 34962,
+            "byteStride": 12
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 288,
+            "byteLength": 288,
+            "target": 34962,
+            "byteStride": 12
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 576,
+            "byteLength": 192,
+            "target": 34962,
+            "byteStride": 8
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 768,
+            "byteLength": 72,
+            "target": 34963
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 840,
+            "byteLength": 2028,
+            "target": 34962,
+            "byteStride": 12
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 2868,
+            "byteLength": 2028,
+            "target": 34962,
+            "byteStride": 12
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 4896,
+            "byteLength": 1352,
+            "target": 34962,
+            "byteStride": 8
+          },
+          {
+            "buffer": 0,
+            "byteOffset": 6248,
+            "byteLength": 1584,
+            "target": 34963
+          }
     ],
     /*几何、动画、蒙皮的真正数据文件，读取出来的数据不需要解析，直接送进GPU进行渲染*/
     buffers: [
@@ -68,22 +119,35 @@
     /*描述了在场景中出现的几何物体，并通过accessor（访问器）来访问其真实的几何数据，通过material（材质）来确定渲染外观*/
     meshes: [
         {
-            primitives：[
-                {
-                    attributes: {
-                        POSITION: 0, 
-                        NORMAL: 1, 
-                        COLOR_0: 2, 
-                        TEXCOORD_0: 3
-                    },
-                    indices: 4,
-                    material: 0,
-                    /*三角形模式*/
-                    mode: 4
-                }
-            ],
-            name: "box2"
-        }
+            "primitives": [
+              {
+                /*三角面模式*/
+                "mode": 4,
+                "attributes": {
+                  "POSITION": 0,
+                  "NORMAL": 1,
+                  "TEXCOORD_0": 2
+                },
+                "indices": 3,
+                "material": 0
+              }
+            ]
+          },
+          {
+            "primitives": [
+              {
+                /*三角面模式*/
+                "mode": 4,
+                "attributes": {
+                  "POSITION": 4,
+                  "NORMAL": 5,
+                  "TEXCOORD_0": 6
+                },
+                "indices": 7,
+                "material": 1
+              }
+            ]
+          }
     ],
     /*定义渲染场景的视点配置（暂不处理）*/
     cameras: [],
@@ -91,24 +155,6 @@
     animations: [],
     /*蒙皮描述模型绑定到骨骼上的参数，用来实现骨骼动画，其真实数据也是通过访问器来获取的（暂不处理）*/
     skins: [],
-    /*场景层级中的一个节点，可以包含位置变换，可以有子节点。同时，node通过指向mesh、camera、skin来描述node的形变*/
-    nodes: [
-        {
-            name: "BoxBufferGeometry",
-            matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 4, -8, 1],
-            mesh: 0,
-            rotation: [-0.0952, 0.00149, 6.201],
-            scale: [-1, -1, -1],
-            translation: [-0.0952, 0.00149, 6.201],
-            /*包含nodes编号为1的mesh子节点*/
-            children: [1]
-        },
-        {
-            name: "BoxBufferGeometry",
-            matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -7, 6, -8, 1],
-            mesh: 1
-        }
-    ],
     /*扩展内容，包括灯光等*/
     extensions: {
         "KHR_lights_punctual": {
@@ -134,10 +180,34 @@
     scenes: [
         {
             name: "scene",
-            nodes: [0]
+            nodes: [2]
         }
     ],
-    scene: 0
+    scene: 0,
+    /*场景层级中的一个节点，可以包含位置变换，可以有子节点。同时，node通过指向mesh、camera、skin来描述node的形变*/
+    nodes: [
+        {
+            name: "BoxBufferGeometry",
+            matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 4, -8, 1],
+            mesh: 0,
+            rotation: [-0.0952, 0.00149, 6.201],
+            scale: [-1, -1, -1],
+            translation: [-0.0952, 0.00149, 6.201]
+        },
+        {
+            name: "BoxBufferGeometry",
+            matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -7, 6, -8, 1],
+            mesh: 1
+        },
+        {
+            name: "CustomGroup",
+            /*包含nodes编号为0,1的mesh子节点*/
+            children: [
+              0,
+              1
+            ]
+        }
+    ],
 }
 
 
@@ -179,3 +249,13 @@ new Float32Array(temp1, byteOffset, byteLength / 4)
 new Float32Array(temp1, byteOffset, byteLength / 4)
 //读取顶点索引数据
 new Uint16Array(temp1, byteOffset, byteLength / 2)
+
+
+//漫反射
+diffuse
+//镜面反射
+specular
+//光泽
+glossiness
+//基于物理的渲染(PBR)
+physically based rendering (PBR)

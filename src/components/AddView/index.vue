@@ -1,14 +1,21 @@
 <template>
   <el-collapse v-model="activeNames" @change="handleCollapse" accordion>
 
-    <el-collapse-item title="几何物体" name="0">
+    <el-collapse-item title="geometry" name="0">
       <div class="geometry" v-for="(item, idx) in geometryList" :key="item.name">
-        <img class="img" draggable="false" :src="item.img" :data-idx="idx" />
+        <img class="img" draggable="false" :src="item.img" data-type="geometry" :data-idx="idx" />
         <div class="tip">{{item.name}}</div>
       </div>
     </el-collapse-item>
 
-    <el-collapse-item title="灯光" name="1">
+    <el-collapse-item title="bufferGeometry" name="1">
+      <div class="geometry" v-for="(item, idx) in bufferGeometryList" :key="item.name">
+        <img class="img" draggable="false" :src="item.img" data-type="bufferGeometry" :data-idx="idx" />
+        <div class="tip">{{item.name}}</div>
+      </div>
+    </el-collapse-item>
+
+    <el-collapse-item title="light" name="2">
       <div class="light" v-for="(item, idx) in lightList" :key="item.name">
         <el-button :data-idx="idx" @click="addLight">{{item.name}}</el-button>
         <!-- <div class="tip" :data-idx="idx" @click="addLight">{{item.name}}</div> -->
@@ -31,18 +38,26 @@ export default class LeftSide extends Vue {
   @Provide() activeNames: string = '0';
 
   @Provide() geometryList: Array<Object> = [];
+  @Provide() bufferGeometryList: Array<Object> = [];
   @Provide() lightList: Array<Object> = [];
 
   mounted() {
     (<any>this).$axios.get('asset/data.json').then((res: any) => {
       this.geometryList = res.data.geometry;
+      this.bufferGeometryList = res.data.bufferGeometry;
       this.lightList = res.data.light;
     })
 
     this.$el.addEventListener("mousedown", e => {
 			let obj:any = e.target;
 			if(obj.className == "img"){
-				let item = this.geometryList[obj.dataset.idx];
+        let item;
+        if(obj.dataset.type == "bufferGeometry"){
+          item = this.bufferGeometryList[obj.dataset.idx];
+        }
+        else{
+          item = this.geometryList[obj.dataset.idx];
+        }
 				this.$store.commit("changeDrag", item);
 				window.addEventListener("mousemove", this.mouseMove);
 				window.addEventListener("mouseup", this.mouseUp);

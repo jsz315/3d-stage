@@ -1,6 +1,6 @@
-import ThreeBSP = require("../../lib/ThreeBSP");
 import * as THREE from "three";
-import { MeshBasicMaterial } from "three";
+import { MeshBasicMaterial, MeshNormalMaterial } from "three";
+const ThreeBSP = require('three-js-csg')(THREE);
 
 
 export default class ComputeGeometry{
@@ -9,28 +9,37 @@ export default class ComputeGeometry{
         
     }
 
-    public static subtract(a:THREE.Mesh, b:THREE.Mesh):THREE.Mesh{
-        let am = new ThreeBSP(a.geometry as any);
-        let bm = new ThreeBSP(b.geometry as any);
+    public static subtract(a:any, b:any):THREE.Mesh{
+        let am = new ThreeBSP(a);
+        let bm = new ThreeBSP(b);
         let newMesh = am.subtract(bm);
-        let material = new MeshBasicMaterial();
-        return newMesh.toMesh(material);
+        let material = new MeshNormalMaterial();
+        let m = newMesh.toMesh(material);
+        (m.geometry as THREE.Geometry).computeFaceNormals();
+        (m.geometry as THREE.Geometry).computeVertexNormals();
+        return m;
     }
 
     public static intersect(a:THREE.Mesh, b:THREE.Mesh):THREE.Mesh{
-        let am = new ThreeBSP(a.geometry as any);
-        let bm = new ThreeBSP(b.geometry as any);
+        let am = new ThreeBSP(a);
+        let bm = new ThreeBSP(b);
         let newMesh = am.intersect(bm);
-        let material = new MeshBasicMaterial();
-        return newMesh.toMesh(material);
+        let material = new MeshNormalMaterial();
+        let m = newMesh.toMesh(material);
+        (m.geometry as THREE.Geometry).computeFaceNormals();
+        (m.geometry as THREE.Geometry).computeVertexNormals();
+        return m;
     }
 
     public static union(a:THREE.Mesh, b:THREE.Mesh):THREE.Mesh{
-        let am = new ThreeBSP(a.geometry as any);
-        let bm = new ThreeBSP(b.geometry as any);
+        let am = new ThreeBSP(a);
+        let bm = new ThreeBSP(b);
         let newMesh = am.union(bm);
-        let material = new MeshBasicMaterial();
-        return newMesh.toMesh(material);
+        let material = new MeshNormalMaterial();
+        let m = newMesh.toMesh(material);
+        (m.geometry as THREE.Geometry).computeFaceNormals();
+        (m.geometry as THREE.Geometry).computeVertexNormals();
+        return m;
     }
 }
 

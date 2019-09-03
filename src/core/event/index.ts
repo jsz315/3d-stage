@@ -29,6 +29,10 @@ export default class GameEvent{
 
     public static CHANGE_ITEM_NAME: string = "change item name";
 
+    public static BSP_SUBTRACT: string = "bsp subtract";
+    public static BSP_INTERSECT: string = "bsp intersect";
+    public static BSP_UNION: string = "bsp union";
+
     public version:string;
     private _sender:any;
     

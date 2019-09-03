@@ -55,6 +55,8 @@
 				</el-button-group>
 
 			</div>
+
+			<ComputeView />
 		</div>
 		
 
@@ -66,6 +68,7 @@
 	import MaterialView from "@/components/MaterialView/index.vue";
 	import ProtoView from "@/components/ProtoView/index.vue";
 	import GeometryView from "@/components/GeometryView/index.vue";
+	import ComputeView from "@/components/ComputeView/index.vue";
 
 	export default {
 		data() {
@@ -78,7 +81,8 @@
 		components: {
 			MaterialView,
 			ProtoView,
-			GeometryView
+			GeometryView,
+			ComputeView
 		},
 		computed: {
 			paramType(){

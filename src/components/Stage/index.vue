@@ -62,8 +62,11 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e:any) => {this.selectTreeItem(e)});
 
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_NAME, (e:any) => {this.changeItemName(e)});
-    
-    
+
+
+    GameEvent.ins.on(GameEvent.BSP_SUBTRACT, (e:any) => {this.bspSubtract(e)});
+    GameEvent.ins.on(GameEvent.BSP_INTERSECT, (e:any) => {this.bspIntersect(e)});
+    GameEvent.ins.on(GameEvent.BSP_UNION, (e:any) => {this.bspUnion(e)}); 
 
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
@@ -255,6 +258,18 @@ export default class Stage extends Vue {
 
   changeItemName(e:CustomEvent):void{
     game.changeItemName(e.detail);
+  }
+
+  bspSubtract(e:CustomEvent):void{
+    game.bspSubtract();
+  }
+
+  bspIntersect(e:CustomEvent):void{
+    game.bspIntersect();
+  }
+
+  bspUnion(e:CustomEvent):void{
+    game.bspUnion();
   }
 }
 </script>

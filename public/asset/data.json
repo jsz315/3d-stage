@@ -1,5 +1,39 @@
 {
   "geometry": [{
+      "name": "BoxGeometry",
+      "img": "asset/img/s1.jpg"
+    },
+    {
+
+      "name": "SphereGeometry",
+      "img": "asset/img/s2.jpg"
+    },
+    {
+      "name": "IcosahedronGeometry",
+      "img": "asset/img/s3.jpg"
+    },
+    {
+      "name": "CylinderGeometry",
+      "img": "asset/img/s4.jpg"
+    },
+    {
+      "name": "OctahedronGeometry",
+      "img": "asset/img/s5.jpg"
+    },
+    {
+      "name": "TorusGeometry",
+      "img": "asset/img/s6.jpg"
+    },
+    {
+      "name": "ConeGeometry",
+      "img": "asset/img/s7.jpg"
+    },
+    {
+      "name": "PlaneGeometry",
+      "img": "asset/img/s8.jpg"
+    }
+  ],
+  "bufferGeometry": [{
       "name": "BoxBufferGeometry",
       "img": "asset/img/s1.jpg"
     },

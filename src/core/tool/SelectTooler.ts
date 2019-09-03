@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import Root from '../view/Root';
 
 export default class SelectTooler{
 
@@ -31,7 +32,7 @@ export default class SelectTooler{
         let aim: any = obj;
         let i = 0;
         while(aim){
-            if(aim.parent.type == "Scene"){
+            if(aim.parent && aim.parent.name == Root.SINGLE_ROOT){
                 return aim;
             }
             if(++i > 20){

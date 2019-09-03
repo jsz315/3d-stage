@@ -1,39 +1,27 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import GameEvent from '@/core/event';
 import GLTFTooler from './tool/GLTFTooler';
 import ParamTooler from './tool/ParamTooler';
-import Jsz from './dev/Jsz';
-import FocusLight from './light/FocusLight';
-import ColorTooler from "./tool/ColorTooler";
 import Loading from './tool/Loading';
 import Factory from './tool/Factory';
 import LoadTooler from './tool/LoadTooler';
-import WorldTooler from './tool/WorldTooler';
 import SelectTooler from './tool/SelectTooler';
 import ListSceneTooler from './tool/ListSceneTooler';
+import Root from './view/Root';
 
 export default class Game {
-    focusLight: FocusLight;
     canvas: HTMLElement;
     renderer: THREE.WebGLRenderer;
     camera: THREE.PerspectiveCamera;
     scene: THREE.Scene;
-    transformControls: TransformControls;
-    orbitControls: OrbitControls;
-    rayCaster: THREE.Raycaster;
-    dragList: Array<THREE.Object3D> = [];
-    grid: THREE.GridHelper;
     stats: any;
-    // curMesh: any;
-    jsz: Jsz;
     loading: Loading;
     isRoot: boolean = true;
     outsideObj: any;
     insideObj: any;
     isInside: boolean = false;
+    root: Root;
 
     constructor(canvas: any) {
 
@@ -55,71 +43,38 @@ export default class Game {
         this.camera.position.set(3, 4, 5);
         this.camera.lookAt(new THREE.Vector3());
 
-        this.orbitControls = new OrbitControls(this.camera, canvas);
-
-        this.jsz = new Jsz(this.scene);
-        this.focusLight = new FocusLight(0xffffff, 0.84);
-        this.scene.add(this.focusLight);
-
         this.loading = new Loading();
 
-        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
-        this.rayCaster = new THREE.Raycaster();
-
-        this.grid = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
-        (this.grid.material as any).transparent = true;
-        (this.grid.material as any).opacity = 0.4;
-        this.scene.add(this.grid);
-
-        WorldTooler.addAxes("x", "#ff0000", new THREE.Vector3(42, 0.5, 0), this.grid);
-        WorldTooler.addAxes("-x", "#ff0000", new THREE.Vector3(-42, 0.5, 0), this.grid);
-        WorldTooler.addAxes("z", "#0000ff", new THREE.Vector3(0, 0.5, 42), this.grid);
-        WorldTooler.addAxes("-z", "#0000ff", new THREE.Vector3(0, 0.5, -42), this.grid);
+        this.root = new Root(this.scene, this.camera, canvas);
+        this.scene.add(this.root);
 
         this.addEventListener();
         this.animate();
     }
 
     addEventListener(): void {
+        window.addEventListener("resize", e => this.onResize(e), false);
         this.canvas.addEventListener("mousedown", (e: MouseEvent) => {
             console.log('mousedown');
             this.mouseDown(e);
         });
-
-        this.transformControls.addEventListener("dragging-changed", (event) => {
-            console.log('dragging-changed');
-            this.orbitControls.enabled = !event.value;
-        });
-
-        this.transformControls.addEventListener("objectChange", (event) => {
-            console.log('objectChange');
-            // if (this.transformControls.object.name.indexOf("Light") != -1) {
-            //     this.sendLightInfo(this.transformControls.object);
-            // }
-            // else {
-            //     this.sendMeshInfo(this.transformControls.object);
-            // }
-            // this.scene.add(this.transformControls);
-        })
-
-        window.addEventListener("resize", e => this.onResize(e), false);
         window.addEventListener("keydown", (event) => {
             console.log(event.keyCode);
             switch (event.keyCode) {
                 case 81: // Q
-                    this.transformControls.setSpace(this.transformControls.space === "local" ? "world" : "local");
+                    this.root.selectView.toggerSpace();
                     break;
                 case 87: // W
-                    this.transformControls.setMode("translate");
+                    this.root.selectView.setMode("translate");
                     break;
                 case 69: // E
-                    this.transformControls.setMode("rotate");
+                    this.root.selectView.setMode("rotate");
                     break;
                 case 82: // R
-                    this.transformControls.setMode("scale");
+                    this.root.selectView.setMode("scale");
                     break;
                 case 17: // ctrl
-                    this.jsz.multiple = true;
+                    this.root.multiple = true;
                     break;
             }
 
@@ -128,7 +83,7 @@ export default class Game {
         window.addEventListener("keyup", (event) => {
             switch (event.keyCode) {
                 case 17: // ctrl
-                    this.jsz.multiple = false;
+                    this.root.multiple = false;
                     break;
             }
 
@@ -140,9 +95,6 @@ export default class Game {
     }
 
     get curMesh():any{
-        // if(this.isRoot){
-        //     return this.outsideObj;
-        // }
         return this.insideObj;
     }
 
@@ -157,39 +109,20 @@ export default class Game {
     }
 
     deleteItem(): void {
-        // let mesh: any = this.transformControls.object;
-        let mesh: any = this.curMesh;
-        if (!mesh) {
-            return;
-        }
-
-        mesh.geometry && mesh.geometry.dispose();
-        mesh.material && mesh.material.dispose();
-
-        this.scene.remove(mesh);
-        this.scene.remove(this.transformControls);
-
-        this.jsz.remove(mesh);
-
-        this.dragList = this.dragList.filter(item => {
-            return item != mesh;
-        });
+        this.root.deleteItem();
     }
 
     copyItem(): void {
-        // let oldMesh = this.transformControls.object;
         let oldMesh = this.curMesh;
         let newMesh = oldMesh.clone();
-        this.scene.add(newMesh);
+        // this.scene.add(newMesh);
 
-        this.transformControls.attach(newMesh);
-        // this.orbitControls.enabled = false;
-        this.scene.add(this.transformControls);
-        this.dragList.push(newMesh);
         if (oldMesh.name.match(/Custom.*Light/)) {
+            this.root.addLight(newMesh);
             this.sendLightInfo(newMesh);
         }
         else {
+            this.root.addObject(newMesh);
             this.sendMeshInfo(newMesh);
         }
     }
@@ -206,7 +139,14 @@ export default class Game {
     changeGeometryParam(p: any): void {
         // let mesh = this.transformControls.object;
         let mesh = this.curMesh;
-        let geo = Factory.getBufferGeometry(mesh.name, p);
+        let geo;
+        if(mesh.name.indexOf("Buffer") != -1){
+            geo = Factory.getBufferGeometry(mesh.name, p);
+        }
+        else{
+            geo = Factory.getGeometry(mesh.name, p);
+        }
+
         if (geo) {
             this.updateGroupGeometry(mesh, geo);
             this.sendMeshInfo(mesh);
@@ -292,8 +232,8 @@ export default class Game {
             this.scene.fog = null;
         }
         this.renderer.setClearColor(new THREE.Color(data.fogColor));
-        this.grid.visible = data.gridVisible;
-        this.jsz.selectedColor = data.selectedColor;
+        this.root.grid.visible = data.gridVisible;
+        this.root.selectedColor = data.selectedColor;
     }
 
     deleteTexture(key: string): void {
@@ -321,15 +261,7 @@ export default class Game {
     }
 
     sendLightInfo(light: any): void {
-        // if (light.name.match(/Custom.*Light/)) {
-        //     let transform = ParamTooler.copyTransform(light);
-        //     GameEvent.ins.send(GameEvent.SELECT_LIGHT, {
-        //         name: light.name,
-        //         parameters: light.parameters,
-        //         transform: transform
-        //     });
-        //     light.update();
-        // }
+        
     }
 
     /**
@@ -357,31 +289,17 @@ export default class Game {
     }
 
     selectObject(obj: THREE.Object3D):void{
+        this.root.selectView.select(obj);
         this.sendItemInfo(obj);
     }
 
     mouseDown(e: MouseEvent): void {
         e.preventDefault();
-        let mouse = new THREE.Vector2();
-        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-        let aim: any;
-        this.rayCaster.setFromCamera(mouse, this.camera);
-        let intersectObjects = this.rayCaster.intersectObjects(this.dragList, true);
-        if (intersectObjects[0]) {
-            let obj: any = intersectObjects[0].object;
-            aim = obj;
-        }
+        let aim: any = this.root.select(e, this.camera);
         this.selectObject(aim);
-        console.log(intersectObjects);
     }
 
     updateGroupGeometry(mesh: any, geometry: any): void {
-        if (geometry.isGeometry) {
-            geometry = new THREE.BufferGeometry().fromGeometry(geometry);
-        }
-
         mesh.geometry.dispose();
         mesh.geometry = geometry;
 
@@ -391,109 +309,35 @@ export default class Game {
     addLight(type: string): void {
         let light: any = Factory.getLight(type);
         if (light) {
-            this.scene.add(light);
-            this.dragList.push(light);
-            this.transformControls.attach(light);
-            this.scene.add(this.transformControls);
-            this.orbitControls.enabled = false;
+            this.root.addLight(light);
             this.sendItemInfo(light);
         }
-
     }
 
     addObject(type: string, event: MouseEvent) {
-        let geo = Factory.getBufferGeometry(type, null);
-        if (!geo) {
-            return;
+        let mesh = this.root.addItem(type);
+        if(mesh){
+            this.sendItemInfo(mesh);
         }
-
-        //屏幕坐标转三维坐标对象
-        var vector = new THREE.Vector3();
-        vector.set(
-            (event.clientX / window.innerWidth) * 2 - 1,
-            - (event.clientY / window.innerHeight) * 2 + 1,
-            0.5
-        );
-        vector.unproject(this.camera);
-        // var dir = vector.sub(this.camera.position).normalize();
-        // var distance = - this.camera.position.z / dir.z;
-        // var pos = this.camera.position.clone().add(dir.multiplyScalar(distance));
-
-        var material = new THREE.MeshStandardMaterial({
-            color: ColorTooler.getRandomColor(),
-            emissive: 0x072534,
-            side: THREE.FrontSide,
-            transparent: true,
-            opacity: 1,
-            flatShading: true,
-            wireframe: false
-        });
-
-        let mesh = new THREE.Mesh(geo, material);
-        mesh.name = type;
-
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
-        this.scene.add(mesh);
-
-        this.transformControls.attach(mesh);
-        this.orbitControls.enabled = false;
-        this.scene.add(this.transformControls);
-        this.dragList.push(mesh);
-        this.sendItemInfo(mesh);
     }
 
     sendItemInfo(m: any): void {
-        this.outsideObj = SelectTooler.getOutSideObject(m);
         this.insideObj = SelectTooler.getInsideObject(m);
-        // let obj:any = this.outsideObj;
-        // let more = this.outsideObj != this.insideObj;
-        // this.curMesh = this.isRoot ? this.outsideObj : this.insideObj;
-
-        // let data1 = ParamTooler.getObjectData(this.outsideObj, this.scene, this.grid.visible);
-        // let list = [data1];
-
-        // if(this.outsideObj != this.insideObj){
-        //     let data2 = ParamTooler.getObjectData(this.insideObj, this.scene, this.grid.visible);
-        //     list.push(data2);
-        // }
-
-        let obj:any = this.insideObj;
-        let data = ParamTooler.getObjectData(this.insideObj, this.scene, this.grid.visible, this.jsz.selectedColor);
+        let data = ParamTooler.getObjectData(this.insideObj, this.scene, this.root.grid.visible, this.root.selectedColor);
         let list = [data];
-
-        if(obj){
-            this.transformControls.attach(obj);
-            this.scene.add(this.transformControls);
-            this.jsz.selectObject(obj);
-        }
-        else{
-            this.scene.remove(this.transformControls);
-        }
-
         GameEvent.ins.send(GameEvent.ITEM_INFO, list);
-
     }
 
     exportObject(): void {
-        let temps: THREE.Object3D[] = [];
-        this.scene.children.forEach(item => {
-            if (this.dragList.indexOf(item) == -1) {
-                item.visible = false;
-                temps.push(item);
-            }
-        })
-        GLTFTooler.toGLTFData(this.scene);
-        temps.forEach(item => {
-            item.visible = true;
-        })
+        this.root.exportObject();
     }
 
     loadObject(data: any): void {
         let loader = new GLTFLoader();
         loader.parse(data, "", (gltf: GLTF) => {
-            this.scene.add(...gltf.scene.children);
+            gltf.scene.children.forEach((item: any)=>{
+                this.root.addObject(item);
+            })
         })
     }
 
@@ -505,8 +349,8 @@ export default class Game {
         let normal = JSON.parse(data.normal);
         let uv = JSON.parse(data.uv);
         let index = JSON.parse(data.index);
-        let mesh = this.jsz.drawBufferData(position, normal, uv, index);
-        this.dragList.push(mesh);
+        let mesh = Factory.getDrawBufferMesh(position, normal, uv, index);
+        this.root.addObject(mesh);
     }
 
     loadTest(): void {
@@ -530,14 +374,9 @@ export default class Game {
             console.log(gltf);
             gltf.scene.traverse((child: any) => {
                 if (child.isMesh) {
-                    // child.receiveShadow = true;
-                    // child.castShadow = true;
-                    // child.uvsNeedUpdate = true;
                     child.name = "load_mesh";
                     child.material.roughness = 0.3;
                     child.material.metalness = 0.1;
-
-                    this.dragList.push(child);
                     child.updateMatrix();
                 }
             })
@@ -548,26 +387,16 @@ export default class Game {
             let scale = 10 / max;
             aim.scale.set(scale, scale, scale);
 
-            // let c = new THREE.Box3().setFromObject(aim);
-            // let x = (c.min.x + c.max.x) / 2;
-            // let y = (c.min.y + c.max.y) / 2;
-            // let z = (c.min.z + c.max.z) / 2;
-            // aim.position.set(0 - x, 0 - y, 0 - z);
 
             aim.position.set(0, 0, 0);
-
-            // aim.rotateX(Math.PI / 2);
-            // this.scene.add(aim);
-            // aim.name = "load_scene";
-            // this.dragList.push(aim);
 
             let group = new THREE.Object3D();
             group.add(aim);
             group.rotateX(Math.PI / 2);
 
-            this.scene.add(group);
+            this.root.addObject(group);
+
             group.name = "load_scene";
-            this.dragList.push(group);
 
             this.scene.remove(this.loading);
         }, (e: ProgressEvent) => {
@@ -579,29 +408,19 @@ export default class Game {
     }
 
     makeGroup():void{
-        let group = this.jsz.makeGroup();
-        this.dragList.push(group);
-        this.dragList = this.dragList.filter((item: any) => {
-            if(group.hasItem(item)){
-                return false;
-            }
-            return true;
-        })
+        let group = this.root.makeGroup();
         this.selectObject(group);
     }
 
     splitGroup():void{
-        let group:any = this.transformControls.object;
-        this.jsz.splitGroup(group);
-        
+        this.root.splitGroup();
     }
 
     animate(): void {
         requestAnimationFrame(() => { this.animate() });
         this.renderer.render(this.scene, this.camera);
         this.stats && this.stats.update();
-        this.focusLight.update(this.camera);
-        this.jsz.update();
+        this.root.update();
     }
 
     getSceneTree():any{
@@ -611,12 +430,22 @@ export default class Game {
 
     selectedItemByUUID(uuid:string):any{
         let obj:any = this.scene.getObjectByProperty('uuid', uuid);
-        if(obj != this.transformControls){
-            this.selectObject(obj);
-        }
+        this.selectObject(obj);
     }
 
     changeItemName(name:string):any{
         this.curMesh.name = name;
+    }
+
+    bspSubtract():void{
+        this.root.bspSubtract();
+    }
+
+    bspIntersect():void{
+        this.root.bspIntersect();
+    }
+
+    bspUnion():void{
+        this.root.bspUnion();
     }
 }

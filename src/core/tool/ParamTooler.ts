@@ -124,17 +124,22 @@ export default class ParamTooler{
 
                 let material = ParamTooler.copyMaterialParam(obj.material);
                 let temp = obj.geometry;
+                let geometry;
+
                 if (obj.geometry.isGeometry) {
-                    temp = new THREE.BufferGeometry().fromGeometry(obj.geometry);
+                    geometry = {};
+                }
+                else{
+                    geometry = {
+                        ...temp.attributes,
+                        index: obj.geometry.getIndex()
+                    };
                 }
 
                 parameters = obj.geometry.parameters;
                 
                 extra = {
-                    geometry: {
-                        ...temp.attributes,
-                        index: obj.geometry.getIndex()
-                    },
+                    geometry: geometry,
                     material: material,
                     materialType: obj.material ? obj.material.type : "",
                 }

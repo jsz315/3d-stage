@@ -1,6 +1,6 @@
 <template>
     <div class="texture-view">
-        <el-dialog title="选择贴图" :visible="visible" @close="handleClose" v-dialogDrag>
+        <el-dialog title="选择贴图" :visible="visible" @close="handleClose">
             <div class="block" v-for="(item, index) in list" :key="index" @click="handleChange(item.url)">
                 
                 <div class="img" :style="{'background-image': 'url(' + item.url + ')'}"></div>

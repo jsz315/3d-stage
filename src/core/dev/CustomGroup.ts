@@ -3,12 +3,10 @@ import * as THREE from 'three'
 export default class CustomGroup extends THREE.Group{
 
     list: Array<THREE.Object3D>;
-    scene:THREE.Scene;
 
-    constructor(scene: THREE.Scene){
+    constructor(){
         super();
         this.list = [];
-        this.scene = scene;
         this.name = "CustomGroup";
     }
 
@@ -26,12 +24,12 @@ export default class CustomGroup extends THREE.Group{
         return !!m;
     }
 
-    clear():void{
+    clear(parent:THREE.Object3D):void{
         this.list.forEach((item:THREE.Object3D) => {
             item.position.copy(item.getWorldPosition(new THREE.Vector3()));
             item.rotation.setFromQuaternion(item.getWorldQuaternion(new THREE.Quaternion()));
             item.scale.copy(item.getWorldScale(new THREE.Vector3()));
-            this.scene.add(item);
+            parent.add(item);
         })
     }
 

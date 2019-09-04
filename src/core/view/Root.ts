@@ -68,6 +68,7 @@ export default class Root extends THREE.Object3D{
             if(obj.name == "custom drag"){
                 obj = obj.parent;
             }
+            console.log(obj);
         }
         this.selectView.select(obj);
         return obj;

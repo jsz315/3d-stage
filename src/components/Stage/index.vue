@@ -4,6 +4,7 @@
       <input ref="file" class="file" type="file" @change="handleFile"/>
       <el-button type="primary" icon="el-icon-sold-out" @click="handleLoad">加载模型</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleSave">导出模型</el-button>
+      <el-button type="primary" icon="el-icon-position" @click="handleExport">自定义导出</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleTest">测试</el-button>
       <el-button type="primary" icon="el-icon-position" @click="handleCustomGeometry">自定义模型</el-button>
       
@@ -224,6 +225,10 @@ export default class Stage extends Vue {
   handleTest():void{
     game.loadTest();
     // game.listScene();
+  }
+
+  handleExport(){
+    game.exportTest();
   }
 
   addCustomGeometry(e:CustomEvent):void{

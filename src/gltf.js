@@ -124,7 +124,7 @@
                 /*三角面模式*/
                 "mode": 4,
                 "attributes": {
-                  "POSITION": 0,
+                  "POSITION": 0,//accessors索引
                   "NORMAL": 1,
                   "TEXCOORD_0": 2
                 },
@@ -174,7 +174,8 @@
     /*使用的扩展内容索引*/
     "extensionsUsed": [
         "KHR_materials_unlit",
-        "KHR_lights_punctual"
+        "KHR_lights_punctual",
+        "KHR_texture_transform"
     ],
     /*整个场景的入口点，由node构成树组成*/
     scenes: [

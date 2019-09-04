@@ -9,6 +9,7 @@ import LoadTooler from './tool/LoadTooler';
 import SelectTooler from './tool/SelectTooler';
 import ListSceneTooler from './tool/ListSceneTooler';
 import Root from './view/Root';
+import ExportModel from './dev/ExportModel';
 
 export default class Game {
     canvas: HTMLElement;
@@ -166,7 +167,6 @@ export default class Game {
     }
 
     changeCommonMaterial(key: string, data: any): void {
-        // let mesh:any = this.transformControls.object;
         let mesh: any = this.curMesh;
         let type = ParamTooler.getType(key);
 
@@ -188,7 +188,6 @@ export default class Game {
     }
 
     changeRepeatMaterial(key: string, type: string, data: any): void {
-        // let mesh:any = this.transformControls.object;
         let mesh: any = this.curMesh;
         if (mesh.material[key]) {
             if (type == "repeatX") {
@@ -204,7 +203,6 @@ export default class Game {
     }
 
     changeTextureMaterial(key: string, data: any): void {
-        // let mesh:any = this.transformControls.object;
         let mesh: any = this.curMesh;
         let texture = new THREE.TextureLoader().load(data, () => {
             mesh.material[key].needsUpdate = true;
@@ -237,7 +235,6 @@ export default class Game {
     }
 
     deleteTexture(key: string): void {
-        // let mesh:any = this.transformControls.object;
         let mesh: any = this.curMesh;
         mesh.material[key] = null;
         mesh.material.needsUpdate = true;
@@ -245,7 +242,6 @@ export default class Game {
     }
 
     changeLightParam(key: string, data: any): void {
-        // let light: any = this.transformControls.object;
         let light:any = this.curMesh;
         let type = ParamTooler.getType(key);
         if (type == ParamTooler.TYPE_COLOR) {
@@ -338,6 +334,14 @@ export default class Game {
             gltf.scene.children.forEach((item: any)=>{
                 this.root.addObject(item);
             })
+        })
+    }
+
+    exportTest(){
+        let e = new ExportModel();
+        e.parse(this.root.container, (res:any)=>{
+            console.log(res);
+            GLTFTooler.saveString(JSON.stringify(res), "ok.gltf");
         })
     }
 

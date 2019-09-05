@@ -20,20 +20,23 @@ export default class ModelTooler {
         return output;
     }
 
-    public static getPaddedBufferSize( bufferSize:any ):any {
-        return Math.ceil( bufferSize / 4 ) * 4;
+    public static getPaddedBufferSize(bufferSize: any): any {
+        return Math.ceil(bufferSize / 4) * 4;
     }
 
-    public static getComponentType(constructor: any):any{
-        // if ( constructor === Float32Array ) {
-        //     return WEBGL_CONSTANTS.FLOAT;
-        // } else if ( constructor === Uint32Array ) {
-        //     return WEBGL_CONSTANTS.UNSIGNED_INT;
-        // } else if ( constructor === Uint16Array ) {
-        //     return WEBGL_CONSTANTS.UNSIGNED_SHORT;
-        // } else if ( constructor === Uint8Array ) {
-        //     return WEBGL_CONSTANTS.UNSIGNED_BYTE;
-        // }
-        return null;
+    public static listAdd(list: any, n: any): void {
+        if (list.indexOf(n) == -1) {
+            list.push(n);
+        }
+    }
+
+    public static createIndices(geometry: any): any {
+        if (geometry.index === null) {
+            var indices = [];
+            for (var i = 0, il = geometry.attributes.position.count; i < il; i++) {
+                indices[i] = i;
+            }
+            geometry.setIndex(indices);
+        }
     }
 }

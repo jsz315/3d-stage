@@ -339,10 +339,7 @@ export default class Game {
 
     exportTest(){
         let e = new ExportModel();
-        e.parse(this.root.container, (res:any)=>{
-            console.log(res);
-            GLTFTooler.saveString(JSON.stringify(res), "ok.gltf");
-        })
+        e.parse(this.root.container, "Good");
     }
 
     addCustomGeometry(data: any) {

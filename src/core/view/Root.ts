@@ -52,6 +52,23 @@ export default class Root extends THREE.Object3D{
         WorldTooler.addAxes("-x", "#ff0000", new THREE.Vector3(-42, 0.5, 0), this.grid);
         WorldTooler.addAxes("z", "#0000ff", new THREE.Vector3(0, 0.5, 42), this.grid);
         WorldTooler.addAxes("-z", "#0000ff", new THREE.Vector3(0, 0.5, -42), this.grid);
+
+        // this.test();
+    }
+
+    test(){
+        var geometry = new THREE.BoxGeometry();
+        var materials = [];
+        for(let i = 0; i < 4; i++){
+            let material = new THREE.MeshBasicMaterial();
+            material.color = ColorTooler.getRandomColor();
+            materials.push(material);
+        }
+        for(let i = 0; i < geometry.faces.length; i++){
+            geometry.faces[i].materialIndex = i % materials.length;
+        }
+        let mesh = new THREE.Mesh(geometry, materials);
+        this.container.add(mesh);
     }
 
     select(e: MouseEvent, camera:THREE.PerspectiveCamera):any {

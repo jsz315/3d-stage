@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import ModelTooler from './ModelTooler';
+import { BlobTooler } from '../tool/BlobTooler';
+import GLTFTooler from '../tool/GLTFTooler';
 
 var RepeatWrapping = 1000;
 var ClampToEdgeWrapping = 1001;
@@ -65,6 +67,7 @@ THREE_TO_WEBGL[MirroredRepeatWrapping] = WEBGL_CONSTANTS.MIRRORED_REPEAT;
 
 var byteOffset = 0;
 var buffers: any = [];
+var insertBase64 = true;
 
 export default class ExportModel {
     asset: object = {version: "2.0", generator: "GLTFExporter"};
@@ -86,18 +89,28 @@ export default class ExportModel {
         buffers = [];
     }
 
-    parse(node: THREE.Object3D, callback: Function): void {
+    parse(node: THREE.Object3D, fname: string): void {
         this.processScene(node);
         var blob = new Blob(buffers, { type: 'application/octet-stream' });
         this.buffers[0] = { byteLength: blob.size };
-        var reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-            var base64data = reader.result;
-            this.buffers[0].uri = base64data;
+        if(insertBase64){
+            var reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                var base64data:any = reader.result;
+                this.buffers[0].uri = base64data;
+                let json = this.packageJson();
+                console.log(json);
+                GLTFTooler.saveString(JSON.stringify(json), fname + ".gltf");
+            };
+        }
+        else{
+            this.buffers[0].uri = fname + ".bin";
+            GLTFTooler.save(blob, fname + ".bin");
             let json = this.packageJson();
-            callback(json);
-        };
+            console.log(json);
+            GLTFTooler.saveString(JSON.stringify(json), fname + ".gltf");
+        }
     }
 
     packageJson(): any {
@@ -123,16 +136,10 @@ export default class ExportModel {
             nodes: []
         };
 
-        for (var i = 0, l = obj.children.length; i < l; i++) {
-            var child = obj.children[i];
-            if (child.visible) {
-                var node = this.processNode(child);
-                if (node !== null) {
-                    scene.nodes.push(node);
-                }
-            }
+        let node = this.processNode(obj);
+        if (node !== null) {
+            scene.nodes.push(node);
         }
-
         this.scenes.push(scene);
     }
 
@@ -301,16 +308,21 @@ export default class ExportModel {
 
         var attributes: any = {};
         var nameConversion: any = {
+            position: 'POSITION',
+            normal: 'NORMAL',
+            color: 'COLOR_0',
             uv: 'TEXCOORD_0',
             uv2: 'TEXCOORD_1',
-            color: 'COLOR_0',
             skinWeight: 'WEIGHTS_0',
             skinIndex: 'JOINTS_0'
         };
 
+        ModelTooler.createIndices(geometry);
+        let indices = this.processAccessors(geometry.index, geometry);
+
         for (var attributeName in geometry.attributes) {
             var attribute: any = geometry.attributes[attributeName];
-            attributeName = nameConversion[attributeName] || attributeName.toUpperCase();
+            attributeName = nameConversion[attributeName];
             var accessor = this.processAccessors(attribute, geometry);
             if (accessor !== null) {
                 attributes[attributeName] = accessor;
@@ -318,11 +330,13 @@ export default class ExportModel {
         }
 
         let materialId = this.processMaterial(obj);
+
         let mesh = {
             primitives: [{
                 mode: 4,
                 attributes: attributes,
-                material: materialId
+                material: materialId,
+                indices: indices
             }]
         };
         this.meshes.push(mesh);
@@ -341,27 +355,28 @@ export default class ExportModel {
         };
 
         if (m.map) {
-            let textureId = this.processTexture(m.map);
-            material.pbrMetallicRoughness.baseColorTexture = {
-                index: textureId
-            }
-
-            let repeat = m.map.repeat;
-            if (repeat.x == 1 && repeat.y == 1) {
-                //不需处理贴图缩放
-            }
-            else {
-                material.pbrMetallicRoughness.baseColorTexture.extensions = {
-                    KHR_texture_transform: {
-                        scale: [repeat.x, repeat.y]
-                    }
-                }
-                this.extensionsUsed.push("KHR_texture_transform");
-            }
-            
+            material.pbrMetallicRoughness.baseColorTexture = this.processMap(m.map);
+        }
+        if(m.normalMap){
+            material.normalTexture = this.processMap(m.normalMap);
         }
         this.materials.push(material);
         return this.materials.length - 1;
+    }
+
+    processMap(map:any):any{
+        let textureId = this.processTexture(map);
+        ModelTooler.listAdd(this.extensionsUsed, "KHR_texture_transform");
+        let repeat = map.repeat;
+        return {
+            index: textureId,
+            scale: 1,
+            extensions: {
+                KHR_texture_transform: {
+                    scale: [repeat.x, repeat.y]
+                }
+            }
+        }
     }
 
     processTexture(obj: any): any {
@@ -394,36 +409,4 @@ export default class ExportModel {
         this.textures.push(texture);
         return this.textures.length - 1;
     }
-
-    processNode0(obj: THREE.Object3D): any {
-        let children = [];
-        for (let i = 0; i < obj.children.length; i++) {
-            let child = this.processNode(obj.children[i]);
-            children.push(child);
-        }
-
-        let node: any = {
-            name: obj.name,
-            matrix: obj.matrix.elements
-        }
-
-        if (obj.type == "Mesh") {
-            node.mesh = this.nodes.length;
-            this.processMesh(obj);
-        }
-        if (children.length) {
-            node.children = children.map((item: any) => {
-                return item.nodeId;
-            })
-        }
-
-        this.nodes.push(node);
-
-        return {
-            name: obj.name,
-            nodeId: this.nodes.length,
-            children: children
-        };
-    }
-
 }

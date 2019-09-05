@@ -304,6 +304,11 @@ export default class ExportModel {
     }
 
     processMesh(obj: any): any {
+        var cacheKey = obj.geometry.uuid + ':' + obj.material.uuid;
+        if (this.cacheData.meshes.has(cacheKey)) {
+            return this.cacheData.meshes.get(cacheKey);
+        }
+
         let geometry = obj.geometry;
         if (!geometry.isBufferGeometry) {
             console.warn('GLTFExporter: Exporting THREE.Geometry will increase file size. Use BufferGeometry instead.');
@@ -364,13 +369,14 @@ export default class ExportModel {
             primitives: primitives
         };
         this.meshes.push(mesh);
-        return this.meshes.length - 1;
+        let meshId = this.meshes.length - 1;
+        this.cacheData.meshes.set(cacheKey, meshId);
+        return meshId;
     }
 
     processMaterial(m: any): any {
         let materialId = this.cacheData.materials.get(m);
         if (materialId) {
-            console.log("使用缓存材质");
             return materialId;
         }
 
@@ -431,6 +437,10 @@ export default class ExportModel {
     }
 
     processTexture(obj: any): any {
+        if ( ! this.cacheData.textures.has(obj) ) {
+            return this.cacheData.textures.get(obj);
+        }
+
         let sampler = {
             // magFilter: 9729,//LINEAR: 0x2601
             // minFilter: 9987,//LINEAR_MIPMAP_LINEAR: 0x2703
@@ -445,12 +455,19 @@ export default class ExportModel {
         this.samplers.push(sampler);
         let samplerId = this.samplers.length - 1;
 
-        let source = {
-            mimeType: obj.format == RGBAFormat ? "image/png" : "image/jpeg",
-            uri: obj.image.currentSrc
+        let sourceId;
+        if(this.cacheData.images.has(obj.image.currentSrc)){
+            sourceId = this.cacheData.images.get(obj.image.currentSrc);
         }
-        this.images.push(source);
-        let sourceId = this.images.length - 1;
+        else{
+            let source = {
+                mimeType: obj.format == RGBAFormat ? "image/png" : "image/jpeg",
+                uri: obj.image.currentSrc
+            }
+            this.images.push(source);
+            sourceId = this.images.length - 1;
+            this.cacheData.images.set(obj.image.currentSrc, sourceId);
+        }
 
         let texture = {
             sampler: samplerId,
@@ -458,6 +475,8 @@ export default class ExportModel {
         }
 
         this.textures.push(texture);
-        return this.textures.length - 1;
+        let textureId = this.textures.length - 1;
+        this.cacheData.textures.set(obj, textureId);
+        return textureId;
     }
 }

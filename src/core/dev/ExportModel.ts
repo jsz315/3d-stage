@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import ModelTooler from './ModelTooler';
 import { BlobTooler } from '../tool/BlobTooler';
 import GLTFTooler from '../tool/GLTFTooler';
+import CacheData from './CacheData';
 
 var RepeatWrapping = 1000;
 var ClampToEdgeWrapping = 1001;
@@ -21,7 +22,7 @@ var RGBFormat = 1022;
 var RGBAFormat = 1023;
 
 var WEBGL_CONSTANTS = {
-   
+
     POINTS: 0,
     LINES: 1,
     LINE_LOOP: 2,
@@ -29,12 +30,12 @@ var WEBGL_CONSTANTS = {
     TRIANGLES: 4,
     TRIANGLE_STRIP: 5,
     TRIANGLE_FAN: 6,
-    
+
     UNSIGNED_BYTE: 5121,
     UNSIGNED_SHORT: 5123,
     UNSIGNED_INT: 5125,
     FLOAT: 5126,
-    
+
     NEAREST: 9728,
     LINEAR: 9729,
 
@@ -49,7 +50,7 @@ var WEBGL_CONSTANTS = {
     MIRRORED_REPEAT: 33648,
     ARRAY_BUFFER: 34962,
     ELEMENT_ARRAY_BUFFER: 34963,
-    
+
 };
 
 var THREE_TO_WEBGL: any = {};
@@ -70,7 +71,8 @@ var buffers: any = [];
 var insertBase64 = true;
 
 export default class ExportModel {
-    asset: object = {version: "2.0", generator: "GLTFExporter"};
+
+    asset: object = { version: "2.0", generator: "GLTFExporter" };
     meshes: Array<any> = [];
     materials: Array<any> = [];
     scene: number = 0;
@@ -84,32 +86,36 @@ export default class ExportModel {
     images: Array<any> = [];
     extensionsUsed: Array<any> = [];
 
+    cacheData: CacheData;
+
     constructor() {
         byteOffset = 0;
         buffers = [];
+        this.cacheData = new CacheData();
     }
 
     parse(node: THREE.Object3D, fname: string): void {
+        let ext = ".txt";
         this.processScene(node);
         var blob = new Blob(buffers, { type: 'application/octet-stream' });
         this.buffers[0] = { byteLength: blob.size };
-        if(insertBase64){
+        if (insertBase64) {
             var reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
-                var base64data:any = reader.result;
+                var base64data: any = reader.result;
                 this.buffers[0].uri = base64data;
                 let json = this.packageJson();
                 console.log(json);
-                GLTFTooler.saveString(JSON.stringify(json), fname + ".gltf");
+                GLTFTooler.saveString(JSON.stringify(json), fname + ext);
             };
         }
-        else{
+        else {
             this.buffers[0].uri = fname + ".bin";
             GLTFTooler.save(blob, fname + ".bin");
             let json = this.packageJson();
             console.log(json);
-            GLTFTooler.saveString(JSON.stringify(json), fname + ".gltf");
+            GLTFTooler.saveString(JSON.stringify(json), fname + ext);
         }
     }
 
@@ -318,7 +324,8 @@ export default class ExportModel {
         };
 
         ModelTooler.createIndices(geometry);
-        let indices = this.processAccessors(geometry.index, geometry);
+
+        // let indices = this.processAccessors(geometry.index, geometry);
 
         for (var attributeName in geometry.attributes) {
             var attribute: any = geometry.attributes[attributeName];
@@ -329,42 +336,86 @@ export default class ExportModel {
             }
         }
 
-        let materialId = this.processMaterial(obj);
+        let isMultiMaterial = Array.isArray(obj.material);
+        if (isMultiMaterial && geometry.groups.length === 0) return null;
 
-        let mesh = {
-            primitives: [{
+        var materials = isMultiMaterial ? obj.material : [obj.material];
+        var groups = isMultiMaterial ? geometry.groups : [{ materialIndex: 0, start: undefined, count: undefined }];
+        let primitives = [];
+
+        for (var i = 0, len = groups.length; i < len; i++) {
+            var primitive: any = {
                 mode: 4,
                 attributes: attributes,
-                material: materialId,
-                indices: indices
-            }]
+            };
+
+            if (geometry.index !== null) {
+                primitive.indices = this.processAccessors(geometry.index, geometry, groups[i].start, groups[i].count);
+            }
+
+            var materialId = this.processMaterial(materials[groups[i].materialIndex]);
+            if (materialId !== null) {
+                primitive.material = materialId;
+            }
+            primitives.push(primitive);
+        }
+
+        let mesh = {
+            primitives: primitives
         };
         this.meshes.push(mesh);
         return this.meshes.length - 1;
     }
 
-    processMaterial(obj: any): any {
-        let m = obj.material;
+    processMaterial(m: any): any {
+        let materialId = this.cacheData.materials.get(m);
+        if (materialId) {
+            console.log("使用缓存材质");
+            return materialId;
+        }
+
         let material: any = {
             pbrMetallicRoughness: {
                 baseColorFactor: [m.color.r, m.color.g, m.color.b, m.opacity],
                 metallicFactor: m.metalness,
                 roughnessFactor: m.roughness
-            },
-            emissiveFactor: [m.emissive.r, m.emissive.g, m.emissive.b]
+            }
         };
 
+        if (m.isMeshBasicMaterial) {
+            material.extensions = { KHR_materials_unlit: {} };
+            ModelTooler.listAdd(this.extensionsUsed, "KHR_materials_unlit");
+        }
+
+        if (m.emissive) {
+            material.emissiveFactor = [m.emissive.r, m.emissive.g, m.emissive.b];
+        }
         if (m.map) {
             material.pbrMetallicRoughness.baseColorTexture = this.processMap(m.map);
         }
-        if(m.normalMap){
+        if (m.normalMap) {
             material.normalTexture = this.processMap(m.normalMap);
         }
+
+        if (m.transparent || m.alphaTest > 0.0) {
+            material.alphaMode = m.opacity < 1.0 ? 'BLEND' : 'MASK';
+            if (m.alphaTest > 0.0 && m.alphaTest !== 0.5) {
+                material.alphaCutoff = m.alphaTest;
+            }
+        }
+
+        if (m.side === THREE.DoubleSide) {
+            material.doubleSided = true;
+        }
+
         this.materials.push(material);
-        return this.materials.length - 1;
+        materialId = this.materials.length - 1;
+
+        this.cacheData.materials.set(m, materialId);
+        return materialId;
     }
 
-    processMap(map:any):any{
+    processMap(map: any): any {
         let textureId = this.processTexture(map);
         ModelTooler.listAdd(this.extensionsUsed, "KHR_texture_transform");
         let repeat = map.repeat;

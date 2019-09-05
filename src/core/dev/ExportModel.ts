@@ -437,7 +437,7 @@ export default class ExportModel {
     }
 
     processTexture(obj: any): any {
-        if ( ! this.cacheData.textures.has(obj) ) {
+        if ( this.cacheData.textures.has(obj) ) {
             return this.cacheData.textures.get(obj);
         }
 

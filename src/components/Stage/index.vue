@@ -57,7 +57,7 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e:any) => {this.addCustomGeometry(e)});
     GameEvent.ins.on(GameEvent.MAKE_GROUP, (e:any) => {this.makeGroup(e)});
     GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e:any) => {this.splitGroup(e)});
-    GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
+    // GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
 
     GameEvent.ins.on(GameEvent.GET_SCENE_TREE, (e:any) => {this.getSceneTree(e)});
     GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e:any) => {this.selectTreeItem(e)});
@@ -200,17 +200,10 @@ export default class Stage extends Vue {
           var rs = new DataView(reader.result as ArrayBuffer);
           console.log(rs);
           game.loadObject(rs.buffer);
-          // reader.readAsText(new Blob( [rs] ), 'utf-8');
-          // reader.onload = function(){
-          //     console.info(reader.result);
-          // }
-          // this.download(new Blob( [rs], { type: 'text/plain' } ), filename);
       }
   }
 
   handleLoad():void{
-    // let data:any = null;
-    // game.loadObject(data);
     (this.$refs.file as any).click();
   }
 
@@ -241,13 +234,6 @@ export default class Stage extends Vue {
 
   splitGroup(e:CustomEvent):void{
     game.splitGroup();
-  }
-
-  changeIsRoot(e:CustomEvent):void{
-    let n = e.detail;
-    this.$store.commit("changeIsRoot", n);
-    this.$store.commit("changeItemInfo", dataList);
-    game.changeIsRoot(n);
   }
 
   getSceneTree(e:CustomEvent):void{

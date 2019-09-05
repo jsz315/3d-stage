@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import GameEvent from '@/core/event';
-import GLTFTooler from './tool/GLTFTooler';
 import ParamTooler from './tool/ParamTooler';
 import Loading from './tool/Loading';
 import Factory from './tool/Factory';
@@ -117,15 +116,7 @@ export default class Game {
         let oldMesh = this.curMesh;
         let newMesh = oldMesh.clone();
         // this.scene.add(newMesh);
-
-        if (oldMesh.name.match(/Custom.*Light/)) {
-            this.root.addLight(newMesh);
-            this.sendLightInfo(newMesh);
-        }
-        else {
-            this.root.addObject(newMesh);
-            this.sendMeshInfo(newMesh);
-        }
+        this.sendItemInfo(newMesh);
     }
 
     changeItemTransform(p: any): void {
@@ -134,7 +125,8 @@ export default class Game {
         obj.position.set(p.position.x, p.position.y, p.position.z);
         obj.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
         obj.scale.set(p.scale.x, p.scale.y, p.scale.z);
-        this.sendMeshInfo(obj);
+        // this.sendMeshInfo(obj);
+        this.sendItemInfo(obj);
     }
 
     changeGeometryParam(p: any): void {
@@ -150,7 +142,8 @@ export default class Game {
 
         if (geo) {
             this.updateGroupGeometry(mesh, geo);
-            this.sendMeshInfo(mesh);
+            // this.sendMeshInfo(mesh);
+            this.sendItemInfo(mesh);
         }
     }
 
@@ -162,7 +155,7 @@ export default class Game {
             if (material) {
                 mesh.material = material;
             }
-            this.sendMeshInfo(mesh);
+            this.sendItemInfo(mesh);
         }
     }
 
@@ -184,7 +177,8 @@ export default class Game {
                 mesh.material[key] = Boolean(data);
             }
         }
-        this.sendMeshInfo(mesh);
+        // this.sendMeshInfo(mesh);
+        this.sendItemInfo(mesh);
     }
 
     changeRepeatMaterial(key: string, type: string, data: any): void {
@@ -198,7 +192,7 @@ export default class Game {
             }
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
-            this.sendMeshInfo(mesh);
+            this.sendItemInfo(mesh);
         }
     }
 
@@ -207,7 +201,7 @@ export default class Game {
         let texture = new THREE.TextureLoader().load(data, () => {
             mesh.material[key].needsUpdate = true;
             mesh.material.needsUpdate = true;
-            this.sendMeshInfo(mesh);
+            this.sendItemInfo(mesh);
         });
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
@@ -238,7 +232,7 @@ export default class Game {
         let mesh: any = this.curMesh;
         mesh.material[key] = null;
         mesh.material.needsUpdate = true;
-        this.sendMeshInfo(mesh);
+        this.sendItemInfo(mesh);
     }
 
     changeLightParam(key: string, data: any): void {
@@ -253,37 +247,9 @@ export default class Game {
         else if (type == ParamTooler.TYPE_SWITCH) {
             light[key] = Boolean(data);
         }
-        this.sendLightInfo(light);
+        this.sendItemInfo(light);
     }
-
-    sendLightInfo(light: any): void {
-        
-    }
-
-    /**
-     * 点击物体发送当前对象全部数据
-     * @param mesh 
-     */
-    sendMeshInfo(mesh: any): void {
-        if (!mesh) {
-            return;
-        }
-        console.log(mesh.type);
-        // this.curMesh = mesh;
-        let parameters = mesh.geometry ? mesh.geometry.parameters : null;
-        let material = ParamTooler.copyMaterialParam(mesh.material);
-        let transform = ParamTooler.copyTransform(mesh);
-
-        GameEvent.ins.send(GameEvent.SELECT_ITEM, {
-            name: mesh.name,
-            type: mesh.type,
-            parameters: parameters,
-            material: material,
-            materialType: mesh.material ? mesh.material.type : "",
-            transform: transform
-        });
-    }
-
+    
     selectObject(obj: THREE.Object3D):void{
         this.root.selectView.select(obj);
         this.sendItemInfo(obj);

@@ -3,7 +3,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 
 export default class GLTFTooler{
 
-    public static toGLTFData(scene:any){
+    public static toGLTFData(useBase64:boolean, scene:any, fname:string){
         var embed = false;
         var exporter = new GLTFExporter();
         exporter.parse(scene, (result) => {
@@ -12,10 +12,10 @@ export default class GLTFTooler{
                 this.saveArrayBuffer( result, 'scene.glb' );
             } else {
                 var output = JSON.stringify( result, null, 2 );
-                this.saveString( output, 'scene.gltf' );
+                this.saveString( output, fname + '.gltf' );
             }
         }, {
-            binary: false,
+            binary: !useBase64,
             embedImages: embed,
             forcePowerOfTwoTextures: embed,
             truncateDrawRange: false

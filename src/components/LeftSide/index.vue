@@ -1,15 +1,16 @@
 <template>
   <div class="left-side" :class="{scene:tabName=='second'}">
+    <div class="main">
+      <el-tabs v-model="tabName" type="border-card" @tab-click="handleClick">
+        <el-tab-pane label="新增" name="first">
+          <AddView />
+        </el-tab-pane>
 
-    <el-tabs v-model="tabName" type="border-card" @tab-click="handleClick">
-      <el-tab-pane label="新增" name="first">
-        <AddView />
-      </el-tab-pane>
-
-      <el-tab-pane label="层级" name="second">
-        <TreeView />
-      </el-tab-pane>
-    </el-tabs>
+        <el-tab-pane label="层级" name="second">
+          <TreeView />
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 

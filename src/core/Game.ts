@@ -9,6 +9,7 @@ import SelectTooler from './tool/SelectTooler';
 import ListSceneTooler from './tool/ListSceneTooler';
 import Root from './view/Root';
 import ExportModel from './dev/ExportModel';
+import ExportTooler from './tool/ExportTooler';
 
 export default class Game {
     canvas: HTMLElement;
@@ -88,6 +89,14 @@ export default class Game {
             }
 
         });
+    }
+
+    standardExport(useBase64:boolean):void{
+        ExportTooler.standardExport(useBase64, this.root.container);
+    }
+
+    customExport(useBase64:boolean):void{
+        ExportTooler.customExport(useBase64, this.root.container);
     }
 
     changeIsRoot(m: boolean):void{
@@ -290,10 +299,6 @@ export default class Game {
         GameEvent.ins.send(GameEvent.ITEM_INFO, list);
     }
 
-    exportObject(): void {
-        this.root.exportObject();
-    }
-
     loadObject(data: any): void {
         let loader = new GLTFLoader();
         loader.parse(data, "", (gltf: GLTF) => {
@@ -304,8 +309,8 @@ export default class Game {
     }
 
     exportTest(){
-        let e = new ExportModel();
-        e.parse(this.root.container, "Good");
+        // let e = new ExportModel();
+        // e.parse(this.root.container, "Good");
     }
 
     addCustomGeometry(data: any) {
@@ -329,6 +334,30 @@ export default class Game {
             this.startLoad();
         }, () => {
             alert("加载失败，请刷新页面重新尝试");
+        })
+    }
+
+    testGltfLoad(){
+        let loader = new GLTFLoader();
+        loader.setPath('/asset/obj/');
+        loader.load('Good.txt', (gltf) => {
+            gltf.scene.traverse((child: any) => {
+                if (child.isMesh) {
+                    child.name = "load_mesh";
+                    child.material.roughness = 0.3;
+                    child.material.metalness = 0.1;
+                    child.updateMatrix();
+                }
+            })
+
+            let aim: any = gltf.scene;
+            this.root.addObject(aim);
+            this.scene.remove(this.loading);
+        }, (e: ProgressEvent) => {
+            let n = Math.floor(e.loaded / e.total * 100);
+            console.log("load " + n + "%");
+            this.loading.update(n + "%");
+            this.scene.add(this.loading);
         })
     }
 

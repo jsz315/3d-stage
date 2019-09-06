@@ -56,7 +56,6 @@
 
 			</div>
 
-			<ComputeView />
 		</div>
 		
 
@@ -141,14 +140,6 @@
 			},
 			curDragType(){
 				return this.$store.state.curDragType;
-			},
-			aim(){
-				if(this.$store.state.curDragType == "light"){
-					return "LightInfo";
-				}
-				else{
-					return "MeshInfo";
-				}
 			}
 		},
 

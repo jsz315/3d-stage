@@ -33,6 +33,11 @@ export default class GameEvent{
     public static BSP_INTERSECT: string = "bsp intersect";
     public static BSP_UNION: string = "bsp union";
 
+    public static EXPORT_SCENE: string = "export scene";
+    public static LOAD_SCENE: string = "load scene";
+    public static TOGGLE_STATS: string = "toggle stats";
+    public static IMPORT_SCENE: string = "import scene";
+
     public version:string;
     private _sender:any;
     

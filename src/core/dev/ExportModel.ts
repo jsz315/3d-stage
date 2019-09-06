@@ -68,7 +68,6 @@ THREE_TO_WEBGL[MirroredRepeatWrapping] = WEBGL_CONSTANTS.MIRRORED_REPEAT;
 
 var byteOffset = 0;
 var buffers: any = [];
-var insertBase64 = true;
 
 export default class ExportModel {
 
@@ -94,12 +93,12 @@ export default class ExportModel {
         this.cacheData = new CacheData();
     }
 
-    parse(node: THREE.Object3D, fname: string): void {
+    parse(useBase64:boolean, node: THREE.Object3D, fname: string): void {
         let ext = ".txt";
         this.processScene(node);
         var blob = new Blob(buffers, { type: 'application/octet-stream' });
         this.buffers[0] = { byteLength: blob.size };
-        if (insertBase64) {
+        if (useBase64) {
             var reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {

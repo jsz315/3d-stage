@@ -203,22 +203,6 @@ export default class Root extends THREE.Object3D{
         }
     }
 
-    exportObject(): void {
-        GLTFTooler.toGLTFData(this.container);
-        // let temps: THREE.Object3D[] = [];
-        // this.scene.children.forEach(item => {
-        //     if (this.dragList.indexOf(item) == -1) {
-        //         item.visible = false;
-        //         temps.push(item);
-        //     }
-        // })
-        // GLTFTooler.toGLTFData(this.scene);
-        // temps.forEach(item => {
-        //     item.visible = true;
-        // })
-    }
-
-
     set multiple(n:any){
         this.selectView.selectLine.multiple = n;
     }

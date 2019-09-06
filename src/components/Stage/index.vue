@@ -1,14 +1,5 @@
 <template>
   <div class="stage">
-    <div class="btns">
-      <input ref="file" class="file" type="file" @change="handleFile"/>
-      <el-button type="primary" icon="el-icon-sold-out" @click="handleLoad">加载模型</el-button>
-      <el-button type="primary" icon="el-icon-position" @click="handleSave">导出模型</el-button>
-      <el-button type="primary" icon="el-icon-position" @click="handleExport">自定义导出</el-button>
-      <el-button type="primary" icon="el-icon-position" @click="handleTest">测试</el-button>
-      <el-button type="primary" icon="el-icon-position" @click="handleCustomGeometry">自定义模型</el-button>
-      
-    </div>
     <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
     <canvas ref="canvas" class="canvas"></canvas>
   </div>
@@ -23,6 +14,7 @@ import {Stats} from '@/core/tool/Stats';
 
 let game:Game;
 let dataList: any;
+let stats:any;
 
 @Component
 export default class Stage extends Vue {
@@ -69,6 +61,12 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.BSP_INTERSECT, (e:any) => {this.bspIntersect(e)});
     GameEvent.ins.on(GameEvent.BSP_UNION, (e:any) => {this.bspUnion(e)}); 
 
+    GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e:any) => {this.handleExport(e)}); 
+    GameEvent.ins.on(GameEvent.LOAD_SCENE, (e:any) => {this.handleTest(e)}); 
+    GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e:any) => {this.handleStats(e)}); 
+    GameEvent.ins.on(GameEvent.IMPORT_SCENE, (e:any) => {this.handleFile(e)}); 
+    
+
     //Paramview组件发过来的消息
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
 
@@ -77,7 +75,7 @@ export default class Stage extends Vue {
   }
 
   initStats(){
-    var stats:any = new Stats();
+    stats = new Stats();
     stats.setMode(0); 
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.left = '204px';
@@ -191,10 +189,10 @@ export default class Stage extends Vue {
     this.$store.commit("changeCurTransform", e.detail);
   }
 
-  handleFile(e:any):void{
+  handleFile(e:CustomEvent):void{
     console.log(e);
     var reader = new FileReader();
-      reader.readAsArrayBuffer(e.target.files[0]);
+      reader.readAsArrayBuffer(e.detail);
       reader.onload = (r) => {
           console.info(reader.result);
           var rs = new DataView(reader.result as ArrayBuffer);
@@ -203,25 +201,37 @@ export default class Stage extends Vue {
       }
   }
 
-  handleLoad():void{
-    (this.$refs.file as any).click();
-  }
-
-  handleCustomGeometry():void{
-    this.$store.commit("changeCustomGeometryVisible", true);
-  }
-
-  handleSave():void{
-    game.exportObject();
-  }
-
-  handleTest():void{
+  handleTest(e:CustomEvent):void{
     game.loadTest();
-    // game.listScene();
+    // game.testGltfLoad();
   }
 
-  handleExport(){
-    game.exportTest();
+  handleStats(e:CustomEvent):void{
+    let s = stats.domElement.style;
+    if(s.display == "none"){
+      s.display = "block";
+    }
+    else{
+      s.display = "none";
+    }
+  }
+
+  handleExport(e:CustomEvent){
+    // game.exportTest();
+
+    let type = e.detail;
+    if(type == 1){
+      game.standardExport(true);
+    }
+    else if(type == 2){
+      game.standardExport(false);
+    }
+    else if(type == 3){
+      game.customExport(true);
+    }
+    else if(type == 4){
+      game.customExport(false);
+    }
   }
 
   addCustomGeometry(e:CustomEvent):void{

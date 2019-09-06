@@ -5,6 +5,7 @@
     <RightSide />
     <TextureView />
     <CustomGeometry />
+    <MenuView />
   </div>
 </template>
 
@@ -15,6 +16,7 @@ import LeftSide from "@/components/LeftSide/index.vue";
 import RightSide from "@/components/RightSide/index.vue";
 import TextureView from "@/components/TextureView/index.vue";
 import CustomGeometry from "@/components/CustomGeometry/index.vue";
+import MenuView from "@/components/MenuView/index.vue";
 
 @Component({
   components: {
@@ -22,7 +24,8 @@ import CustomGeometry from "@/components/CustomGeometry/index.vue";
     LeftSide,
     RightSide,
     TextureView,
-    CustomGeometry
+    CustomGeometry,
+    MenuView
   }
 })
 export default class Home extends Vue {}

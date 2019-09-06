@@ -5,20 +5,20 @@
 
         <el-dropdown class="item-nav" @command="handleFile">
             <span class="el-dropdown-link">
-                文件<i class="el-icon-arrow-down el-icon--right"></i>
+                <i class="el-icon-s-promotion"></i>文件
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="0">导入文件</el-dropdown-item>
-                <el-dropdown-item command="1">标准导出（base64）</el-dropdown-item>
-                <el-dropdown-item command="2">标准导出（blob）</el-dropdown-item>
-                <el-dropdown-item command="3">自定义导出（base64）</el-dropdown-item>
-                <el-dropdown-item command="4">自定义导出（blob）</el-dropdown-item>
+                <el-dropdown-item command="1">标准导出(Base64)</el-dropdown-item>
+                <el-dropdown-item command="2">标准导出(Blob)</el-dropdown-item>
+                <el-dropdown-item command="3">自定义导出(Base64)</el-dropdown-item>
+                <el-dropdown-item command="4">自定义导出(Blob)</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
 
         <el-dropdown class="item-nav" @command="handleTest">
             <span class="el-dropdown-link">
-                测试<i class="el-icon-arrow-down el-icon--right"></i>
+                <i class="el-icon-s-opportunity"></i>测试
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="0">加载文件</el-dropdown-item>
@@ -29,12 +29,12 @@
 
         <el-dropdown class="item-nav" @command="handleCompute">
             <span class="el-dropdown-link">
-                运算<i class="el-icon-arrow-down el-icon--right"></i>
+                <i class="el-icon-edit-outline"></i>运算
             </span>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="0">相减</el-dropdown-item>
-                <el-dropdown-item command="1">相加</el-dropdown-item>
-                <el-dropdown-item command="2">相交</el-dropdown-item>
+                <el-dropdown-item command="0">相减(Subtract)</el-dropdown-item>
+                <el-dropdown-item command="1">相交(Intersect)</el-dropdown-item>
+                <el-dropdown-item command="2">相加(Union)</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
     </div>

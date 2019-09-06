@@ -38,6 +38,8 @@ export default class GameEvent{
     public static TOGGLE_STATS: string = "toggle stats";
     public static IMPORT_SCENE: string = "import scene";
 
+    public static FAIL_COMPUTE: string = "fail compute";
+
     public version:string;
     private _sender:any;
     

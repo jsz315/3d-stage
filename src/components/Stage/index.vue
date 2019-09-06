@@ -30,6 +30,7 @@ export default class Stage extends Vue {
     // GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
 
     GameEvent.ins.on(GameEvent.ITEM_INFO, (e:any) => {this.changeItemInfo(e)});
+    GameEvent.ins.on(GameEvent.FAIL_COMPUTE, (e:any) => {this.failCompute(e)});
 
     
     
@@ -208,6 +209,7 @@ export default class Stage extends Vue {
 
   handleStats(e:CustomEvent):void{
     let s = stats.domElement.style;
+    console.log(s);
     if(s.display == "none"){
       s.display = "block";
     }
@@ -271,6 +273,10 @@ export default class Stage extends Vue {
 
   bspUnion(e:CustomEvent):void{
     game.bspUnion();
+  }
+
+  failCompute(e:CustomEvent):void{
+    this.$message(e.detail);
   }
 }
 </script>

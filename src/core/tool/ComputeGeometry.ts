@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { MeshBasicMaterial, MeshNormalMaterial } from "three";
+import GameEvent from '../event';
 const ThreeBSP = require('three-js-csg')(THREE);
 
 
@@ -9,29 +10,56 @@ export default class ComputeGeometry{
         
     }
 
-    public static subtract(a:any, b:any):THREE.Mesh{
+    public static subtract(a:any, b:any):any{
+        if(!this.checkCanCompute(a, b)){
+            return;
+        }
+        a.geometry.computeFaceNormals();
+        a.geometry.computeVertexNormals();
+        b.geometry.computeFaceNormals();
+        b.geometry.computeVertexNormals();
+
         let am = new ThreeBSP(a);
         let bm = new ThreeBSP(b);
         let newMesh = am.subtract(bm);
         let material = new MeshNormalMaterial();
         let m = newMesh.toMesh(material);
-        (m.geometry as THREE.Geometry).computeFaceNormals();
-        (m.geometry as THREE.Geometry).computeVertexNormals();
+        // (m.geometry as THREE.Geometry).normalize();
+        (m.geometry as THREE.Geometry).mergeVertices();
+        // (m.geometry as THREE.Geometry).computeFaceNormals();
+        // (m.geometry as THREE.Geometry).computeVertexNormals();
         return m;
     }
 
-    public static intersect(a:THREE.Mesh, b:THREE.Mesh):THREE.Mesh{
+    public static intersect(a:any, b:any):any{
+        if(!this.checkCanCompute(a, b)){
+            return;
+        }
+
+        a.geometry.computeFaceNormals();
+        a.geometry.computeVertexNormals();
+        b.geometry.computeFaceNormals();
+        b.geometry.computeVertexNormals();
+
         let am = new ThreeBSP(a);
         let bm = new ThreeBSP(b);
         let newMesh = am.intersect(bm);
         let material = new MeshNormalMaterial();
         let m = newMesh.toMesh(material);
-        (m.geometry as THREE.Geometry).computeFaceNormals();
-        (m.geometry as THREE.Geometry).computeVertexNormals();
+       
         return m;
     }
 
-    public static union(a:THREE.Mesh, b:THREE.Mesh):THREE.Mesh{
+    public static union(a:any, b:any):any{
+        if(!this.checkCanCompute(a, b)){
+            return;
+        }
+
+        a.geometry.computeFaceNormals();
+        a.geometry.computeVertexNormals();
+        b.geometry.computeFaceNormals();
+        b.geometry.computeVertexNormals();
+
         let am = new ThreeBSP(a);
         let bm = new ThreeBSP(b);
         let newMesh = am.union(bm);
@@ -40,6 +68,16 @@ export default class ComputeGeometry{
         (m.geometry as THREE.Geometry).computeFaceNormals();
         (m.geometry as THREE.Geometry).computeVertexNormals();
         return m;
+    }
+
+    public static checkCanCompute(a:any, b:any):boolean{
+        if(a.geometry && b.geometry){
+            if(a.geometry.faces && b.geometry.faces){
+                return true;
+            }
+        }
+        GameEvent.ins.send(GameEvent.FAIL_COMPUTE, "操作的物体应为基本的Geometry对象");
+        return false;
     }
 }
 

@@ -124,6 +124,7 @@ export default class Game {
     copyItem(): void {
         let oldMesh = this.curMesh;
         let newMesh = oldMesh.clone();
+        this.root.addObject(newMesh);
         // this.scene.add(newMesh);
         this.sendItemInfo(newMesh);
     }

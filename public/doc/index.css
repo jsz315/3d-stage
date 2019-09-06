@@ -1,0 +1,44 @@
+.main{
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+.left{
+    width: 480px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.right{
+    flex: 1;
+    padding-left: 10px;
+    border-left: solid 1px #909090;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.padding0{
+    padding-left: 0px;
+}
+.padding4{
+    padding-left: 20px;
+}
+.padding8{
+    padding-left: 40px;
+}
+.padding12{
+    padding-left: 60px;
+}
+.padding16{
+    padding-left: 80px;
+}
+.padding20{
+    padding-left: 100px;
+}
+.padding24{
+    padding-left: 120px;
+}
+

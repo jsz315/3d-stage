@@ -1,0 +1,143 @@
+{
+    "asset": {
+        "version": "2.0",
+        "generator": "GLTFExporter"
+    },
+    "scenes": [
+        {
+            "nodes": [1],
+            "name": "AuxScene"
+        }
+    ],
+    "scene": 0,
+    "nodes": [
+        {
+            "name": "BoxGeometry",
+            "mesh": 0
+        },
+        {
+            "name": "Container",
+            "children": [0]
+        }
+    ],
+    "bufferViews": [
+        {
+            "buffer": 0,
+            "byteOffset": 0,
+            "byteLength": 432,
+            "target": 34962,
+            "byteStride": 12
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 432,
+            "byteLength": 432,
+            "target": 34962,
+            "byteStride": 12
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 864,
+            "byteLength": 432,
+            "target": 34962,
+            "byteStride": 12
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 1296,
+            "byteLength": 288,
+            "target": 34962,
+            "byteStride": 8
+        }
+    ],
+    "buffers": [
+        {
+            "byteLength": 1584,
+            "uri": "scene.bin"
+        }
+    ],
+    "accessors": [
+        {
+            "bufferView": 0,
+            "componentType": 5126,
+            "count": 36,
+            "max": [0.5, 0.5, 0.5],
+            "min": [-0.5, -0.5, -0.5],
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 1,
+            "componentType": 5126,
+            "count": 36,
+            "max": [1, 1, 1],
+            "min": [-1, -1, -1],
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 2,
+            "componentType": 5126,
+            "count": 36,
+            "max": [1, 1, 1],
+            "min": [1, 1, 1],
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 3,
+            "componentType": 5126,
+            "count": 36,
+            "max": [1, 1],
+            "min": [0, 0],
+            "type": "VEC2"
+        }
+    ],
+    "materials": [
+        {
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [0.7975199, 0.5, 1, 1],
+                "metallicFactor": 0.5,
+                "roughnessFactor": 0.5,
+                "baseColorTexture": {
+                    "index": 0
+                }
+            },
+            "emissiveFactor": [0.027092, 0.145863, 0.23998],
+            "alphaMode": "MASK"
+        }
+    ],
+    "textures": [
+        {
+            "sampler": 0,
+            "source": 0
+        }
+    ],
+    "samplers": [
+        {
+            "magFilter": 9729,
+            "minFilter": 9987,
+            "wrapS": 10497,
+            "wrapT": 10497
+        }
+    ],
+    "images": [
+        {
+            "mimeType": "image/jpeg",
+            "uri": "http://localhost:8080/asset/texture/p4.jpg"
+        }
+    ],
+    "meshes": [
+        {
+            "primitives": [
+                {
+                    "mode": 4,
+                    "attributes": {
+                        "POSITION": 0,
+                        "NORMAL": 1,
+                        "COLOR_0": 2,
+                        "TEXCOORD_0": 3
+                    },
+                    "material": 0
+                }
+            ]
+        }
+    ]
+}

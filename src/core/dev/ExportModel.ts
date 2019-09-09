@@ -36,8 +36,8 @@ var WEBGL_CONSTANTS = {
     UNSIGNED_INT: 5125,
     FLOAT: 5126,
 
-    NEAREST: 9728,
-    LINEAR: 9729,
+    NEAREST: 9728,//使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
+    LINEAR: 9729,//使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
 
     NEAREST_MIPMAP_NEAREST: 9984,
     LINEAR_MIPMAP_NEAREST: 9985,

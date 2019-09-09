@@ -1,5 +1,5 @@
 <template>
-  <el-tree show-checkbox :data="sceneTree" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+  <el-tree ref="tree" show-checkbox :data="sceneTree" node-key="uuid" :props="defaultProps" :default-expanded-keys="keys" :default-checked-keys="keys" :default-expand-all="false" :accordion="true" @node-click="handleNodeClick"></el-tree>
 </template>
 
 <script lang="ts">
@@ -17,13 +17,21 @@ export default class LeftSide extends Vue {
                 children: 'children',
                 label: 'name'
               }
+  
+  @Provide() keys:string[] = [];
 
   mounted() {
-    
+    GameEvent.ins.on(GameEvent.OPEN_TREE_ITEM, (e:any) => {this.openTreeItem(e)});
   }
 
   handleNodeClick(e: any){
     GameEvent.ins.send(GameEvent.SELECT_TREE_ITEM, e.uuid);
+  }
+
+  openTreeItem(e:CustomEvent){
+    (this.$refs.tree as any).setCheckedKeys([]);
+    let uuid = e.detail;
+    this.keys = [uuid];
   }
 
   get sceneTree():any{

@@ -112,11 +112,13 @@ export default class ParamTooler{
         let parameters: any;
         let transform: any;
         let extra: any;
+        let uuid: any;
 
         if (obj) {
 
             type = obj.type;
             transform = ParamTooler.copyTransform(obj);
+            uuid = obj.uuid;
 
             if(type == "Mesh"){
 
@@ -172,6 +174,7 @@ export default class ParamTooler{
         }
 
         return {
+            uuid,
             type,
             name,
             parameters,

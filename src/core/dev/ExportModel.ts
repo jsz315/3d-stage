@@ -257,22 +257,43 @@ export default class ExportModel {
         var byteLength = ModelTooler.getPaddedBufferSize(count * attribute.itemSize * componentSize);
         var dataView = new DataView(new ArrayBuffer(byteLength));
         var offset = 0;
+        var total = byteLength / componentSize;
 
-        for (var i = start; i < start + count; i++) {
-            for (var a = 0; a < attribute.itemSize; a++) {
-                var value = attribute.array[i * attribute.itemSize + a];
-                if (componentType === WEBGL_CONSTANTS.FLOAT) {
-                    dataView.setFloat32(offset, value, true);
-                } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_INT) {
-                    dataView.setUint32(offset, value, true);
-                } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_SHORT) {
-                    dataView.setUint16(offset, value, true);
-                } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_BYTE) {
-                    dataView.setUint8(offset, value);
-                }
-                offset += componentSize;
+        for (var i = 0; i < total; i++) {
+            var value = attribute.array[i];
+            if (componentType === WEBGL_CONSTANTS.FLOAT) {
+                dataView.setFloat32(offset, value, true);
+            } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_INT) {
+                dataView.setUint32(offset, value, true);
+            } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_SHORT) {
+                dataView.setUint16(offset, value, true);
+            } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_BYTE) {
+                dataView.setUint8(offset, value);
             }
+            offset += componentSize;
         }
+
+        // console.log("byteLength:" + byteLength);
+        // var tt = 0;
+
+        // for (var i = start; i < start + count; i++) {
+        //     for (var a = 0; a < attribute.itemSize; a++) {
+        //         var value = attribute.array[i * attribute.itemSize + a];
+        //         if (componentType === WEBGL_CONSTANTS.FLOAT) {
+        //             dataView.setFloat32(offset, value, true);
+        //         } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_INT) {
+        //             dataView.setUint32(offset, value, true);
+        //         } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_SHORT) {
+        //             dataView.setUint16(offset, value, true);
+        //         } else if (componentType === WEBGL_CONSTANTS.UNSIGNED_BYTE) {
+        //             dataView.setUint8(offset, value);
+        //         }
+        //         offset += componentSize;
+        //         tt++;
+        //     }
+        // }
+        // console.log("tt:" + tt);
+        // console.log("componentSize:" + componentSize);
 
         var bufferView: any = {
             buffer: this.processBuffer(dataView.buffer),

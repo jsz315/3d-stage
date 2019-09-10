@@ -16,17 +16,6 @@
             </el-dropdown-menu>
         </el-dropdown>
 
-        <el-dropdown class="item-nav" @command="handleTest">
-            <span class="el-dropdown-link">
-                <i class="el-icon-s-opportunity"></i>测试
-            </span>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="0">加载文件</el-dropdown-item>
-                <el-dropdown-item command="1">运行状态</el-dropdown-item>
-                <el-dropdown-item command="2">添加自定义模型</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>
-
         <el-dropdown class="item-nav" @command="handleCompute">
             <span class="el-dropdown-link">
                 <i class="el-icon-edit-outline"></i>运算
@@ -37,6 +26,18 @@
                 <el-dropdown-item command="2">相加(Union)</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
+
+        <el-dropdown class="item-nav" @command="handleTest">
+            <span class="el-dropdown-link">
+                <i class="el-icon-s-opportunity"></i>测试
+            </span>
+            <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="0">加载远程GLTF文件</el-dropdown-item>
+                <el-dropdown-item command="1">运行状态</el-dropdown-item>
+                <el-dropdown-item command="2">添加自定义模型</el-dropdown-item>
+            </el-dropdown-menu>
+        </el-dropdown>
+
     </div>
     
 </template>

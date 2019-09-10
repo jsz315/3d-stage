@@ -45,7 +45,7 @@ export default class Root extends THREE.Object3D{
 
         this.grid = new THREE.GridHelper(80, 80, 0xcee8f9, 0xf0f0f0);
         (this.grid.material as any).transparent = true;
-        (this.grid.material as any).opacity = 0.4;
+        (this.grid.material as any).opacity = 0.54;
         this.scene.add(this.grid);
 
         WorldTooler.addAxes("x", "#ff0000", new THREE.Vector3(42, 0.5, 0), this.grid);

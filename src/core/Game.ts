@@ -326,22 +326,22 @@ export default class Game {
         this.root.addObject(mesh);
     }
 
-    loadTest(): void {
-        let loadTooler = new LoadTooler();
-        loadTooler.start('/asset/obj/win.bin', (n: number) => {
-            this.loading.update(n + "%");
-            this.scene.add(this.loading);
-        }, () => {
-            this.startLoad();
-        }, () => {
-            alert("加载失败，请刷新页面重新尝试");
-        })
-    }
+    // loadServeModel(url:string): void {
+    //     let loadTooler = new LoadTooler();
+    //     loadTooler.start('/asset/obj/' + url, (n: number) => {
+    //         this.loading.update(n + "%");
+    //         this.scene.add(this.loading);
+    //     }, () => {
+    //         this.startLoad();
+    //     }, () => {
+    //         alert("加载失败，请刷新页面重新尝试");
+    //     })
+    // }
 
-    testGltfLoad(){
+    loadServeModel(url:string){
         let loader = new GLTFLoader();
-        loader.setPath('/asset/obj/');
-        loader.load('Good.txt', (gltf) => {
+        loader.setPath('./asset/obj/');
+        loader.load(url, (gltf) => {
             gltf.scene.traverse((child: any) => {
                 if (child.isMesh) {
                     child.name = "load_mesh";

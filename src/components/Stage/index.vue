@@ -184,6 +184,9 @@ export default class Stage extends Vue {
     dataList = e.detail;
     this.$store.commit("changeItemInfo", dataList);
     this.$store.commit("changeDrawer", true);
+    if(dataList[0] && dataList[0].uuid){
+      GameEvent.ins.send(GameEvent.OPEN_TREE_ITEM, dataList[0].uuid);
+    }
   }
 
   changeCurTransform(e:CustomEvent):void{
@@ -203,8 +206,17 @@ export default class Stage extends Vue {
   }
 
   handleTest(e:CustomEvent):void{
-    game.loadTest();
-    // game.testGltfLoad();
+    this.$prompt('请输入文件地址', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    }).then((res:any) => {
+      game.loadServeModel(res.value);
+    }).catch(() => {
+      this.$message({
+        type: 'info',
+        message: '取消输入'
+      });       
+    });
   }
 
   handleStats(e:CustomEvent):void{

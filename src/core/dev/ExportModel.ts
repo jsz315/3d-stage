@@ -332,6 +332,7 @@ export default class ExportModel {
         // let indices = this.processAccessors(geometry.index, geometry);
 
         for (var attributeName in geometry.attributes) {
+            console.log("attributeName: " + attributeName);
             var attribute: any = geometry.attributes[attributeName];
             attributeName = nameConversion[attributeName];
             var accessor = this.processAccessors(attribute, geometry);

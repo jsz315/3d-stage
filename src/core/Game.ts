@@ -340,7 +340,7 @@ export default class Game {
 
     loadServeModel(url:string){
         let loader = new GLTFLoader();
-        loader.setPath('/asset/obj/');
+        loader.setPath('./asset/obj/');
         loader.load(url, (gltf) => {
             gltf.scene.traverse((child: any) => {
                 if (child.isMesh) {

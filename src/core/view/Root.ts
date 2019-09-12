@@ -53,10 +53,10 @@ export default class Root extends THREE.Object3D{
         WorldTooler.addAxes("z", "#0000ff", new THREE.Vector3(0, 0.5, 42), this.grid);
         WorldTooler.addAxes("-z", "#0000ff", new THREE.Vector3(0, 0.5, -42), this.grid);
 
-        // this.test();
+        // this.addFaceMaterial();
     }
 
-    test(){
+    addFaceMaterial(){
         var geometry = new THREE.BoxGeometry();
         var materials = [];
         for(let i = 0; i < 4; i++){
@@ -117,7 +117,7 @@ export default class Root extends THREE.Object3D{
 
         var material = new THREE.MeshStandardMaterial({
             color: ColorTooler.getRandomColor(),
-            emissive: 0x072534,
+            emissive: 0x000000,
             side: THREE.FrontSide,
             transparent: true,
             opacity: 1,
@@ -131,22 +131,6 @@ export default class Root extends THREE.Object3D{
         mesh.receiveShadow = true;
         this.container.add(mesh);
         return mesh;
-    }
-
-    copyItem(): void {
-        // let oldMesh = this.curMesh;
-        // let newMesh = oldMesh.clone();
-        // this.scene.add(newMesh);
-
-        // this.transformControls.attach(newMesh);
-        // this.scene.add(this.transformControls);
-        // this.dragList.push(newMesh);
-        // if (oldMesh.name.match(/Custom.*Light/)) {
-        //     this.sendLightInfo(newMesh);
-        // }
-        // else {
-        //     this.sendMeshInfo(newMesh);
-        // }
     }
 
     update(){

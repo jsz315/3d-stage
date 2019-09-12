@@ -231,7 +231,7 @@ export default class Factory {
         geometry.addAttribute("normal", new THREE.BufferAttribute(an, 3));
         geometry.addAttribute("uv", new THREE.BufferAttribute(au, 2));
         geometry.setIndex(index);
-        let mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0xff9900}));
+        let mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0x333333}));
         return mesh;
     }
 }

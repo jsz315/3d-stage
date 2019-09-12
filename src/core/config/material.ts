@@ -91,6 +91,8 @@ export default [
             "transparent": true,
             "side": null,
             "visible": true,
+            "emissive": "#ffffff",
+            "emissiveIntensity": 0.1,
             "roughness": 0.1,
             "metalness": 0.1,
             "bumpMap": null,

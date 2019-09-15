@@ -11,8 +11,8 @@
                 <el-dropdown-item command="0">导入文件</el-dropdown-item>
                 <el-dropdown-item command="1">标准导出(Base64)</el-dropdown-item>
                 <el-dropdown-item command="2">标准导出(Blob)</el-dropdown-item>
-                <el-dropdown-item command="3">自定义导出(Base64)</el-dropdown-item>
-                <el-dropdown-item command="4">自定义导出(Blob)</el-dropdown-item>
+                <el-dropdown-item command="3">自定义导出(embed)</el-dropdown-item>
+                <el-dropdown-item command="4">自定义导出</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
 

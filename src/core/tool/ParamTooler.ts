@@ -165,7 +165,7 @@ export default class ParamTooler{
             name = "Scene";
             parameters = {
                 fogVisible: !!scene.fog,
-                fogColor: scene.fog ? (scene.fog as THREE.Fog).color : "#ffffff",
+                fogColor: scene.fog ? (scene.fog as THREE.Fog).color : "#000000",
                 near: scene.fog ? (scene.fog as THREE.Fog).near : 0,
                 far: scene.fog ? (scene.fog as THREE.Fog).far : 100,
                 gridVisible: gridVisible,

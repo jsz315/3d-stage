@@ -35,7 +35,7 @@ export default class Game {
         })
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0xffffff));
+        this.renderer.setClearColor(new THREE.Color(0x000000));
         this.renderer.shadowMap.enabled = true;
 
         this.scene = new THREE.Scene();
@@ -95,8 +95,8 @@ export default class Game {
         ExportTooler.standardExport(useBase64, this.root.container);
     }
 
-    customExport(useBase64:boolean):void{
-        ExportTooler.customExport(useBase64, this.root.container);
+    customExport(embed:boolean):void{
+        ExportTooler.customExport(embed, this.root.container);
     }
 
     changeIsRoot(m: boolean):void{

@@ -2,7 +2,7 @@
 	<div class="right-side" :class="{open: drawer}">
 		<!-- <component :is="aim"/> -->
 
-		<div class="mesh-info">
+		<div class="param-info">
 			<div class="title">
 				<div class="name">属性</div>
 				<div class="close" @click="handleClose">

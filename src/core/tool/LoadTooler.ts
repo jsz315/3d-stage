@@ -32,5 +32,13 @@ export default class LoadTooler{
         xhr.send();
     }
 
+    public static getUrlPath(url:string):any[]{
+        let list = url.split("/");
+        let aim = list.pop();
+        let path = list.join("/") + "/";
+        console.log(path);
+        console.log(aim);
+        return [path, aim];
+    }
 
 }

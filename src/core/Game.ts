@@ -307,29 +307,32 @@ export default class Game {
         loader.parse(data, "", (gltf: GLTF) => {
             console.log("gltf loaded");
             console.log(gltf);
-            gltf.scene.traverse((child: any) => {
-                if (child.isMesh) {
-                    child.name = "load_mesh";
-                    child.material.roughness = 0.3;
-                    child.material.metalness = 0.1;
-                }
-            })
-
-            let aim = gltf.scene;
-            var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(aim);
-            let scale:number = GLTFTooler.getFitScale(aim, 10);
-            let group = new THREE.Object3D();
-            while(aim.children.length){
-                let obj = aim.children[0];
-                let p = obj.position;
-                obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
-                group.add(obj);
-            }
-            group.scale.multiplyScalar(scale);
-            group.rotateX(-Math.PI / 2);
-            this.root.addObject(group);
-            group.name = "load_scene";
+            this.fitModel(gltf.scene);
         })
+    }
+
+    fitModel(group:THREE.Object3D):void{
+        group.traverse((child: any) => {
+            if (child.isMesh) {
+                child.name = "load_mesh";
+                child.material.roughness = 0.3;
+                child.material.metalness = 0.1;
+            }
+        })
+
+        var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(group);
+        let scale:number = GLTFTooler.getFitScale(group, 10);
+        let aim = new THREE.Object3D();
+        while(group.children.length){
+            let obj = group.children[0];
+            let p = obj.position;
+            obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
+            aim.add(obj);
+        }
+        aim.scale.multiplyScalar(scale);
+        aim.rotateX(-Math.PI / 2);
+        this.root.addObject(aim);
+        aim.name = "load_scene";
     }
 
     loadFbxModel(data: any):void{
@@ -338,28 +341,7 @@ export default class Game {
         // this.root.addObject(group);
         loader.load("asset/obj/fbx/win/win.fbx", (group:THREE.Group)=>{
             console.log(group);
-            group.traverse((child: any) => {
-                if (child.isMesh) {
-                    child.name = "load_mesh";
-                    child.material.roughness = 0.3;
-                    child.material.metalness = 0.1;
-                }
-            })
-
-            let aim = group;
-            var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(aim);
-            let scale:number = GLTFTooler.getFitScale(aim, 10);
-            let parentGroup = new THREE.Object3D();
-            while(aim.children.length){
-                let obj = aim.children[0];
-                let p = obj.position;
-                obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
-                parentGroup.add(obj);
-            }
-            parentGroup.scale.multiplyScalar(scale);
-            // parentGroup.rotateX(-Math.PI / 2);
-            this.root.addObject(parentGroup);
-            parentGroup.name = "load_scene";
+            this.fitModel(group);
         })
     }
 
@@ -389,21 +371,12 @@ export default class Game {
         this.root.addObject(mesh);
     }
 
-    loadServeModel(url:string){
+    loadServeGltf(url:string):void{
         let loader = new GLTFLoader();
-        loader.setPath('./asset/obj/');
-        loader.load(url, (gltf) => {
-            gltf.scene.traverse((child: any) => {
-                if (child.isMesh) {
-                    child.name = "load_mesh";
-                    child.material.roughness = 0.3;
-                    child.material.metalness = 0.1;
-                    child.updateMatrix();
-                }
-            })
-
-            let aim: any = gltf.scene;
-            this.root.addObject(aim);
+        let list = LoadTooler.getUrlPath('./asset/obj/gltf/' + url);
+        loader.setPath(list[0]);
+        loader.load(list[1], (gltf) => {
+            this.fitModel(gltf.scene);
             this.scene.remove(this.loading);
         }, (e: ProgressEvent) => {
             let n = Math.floor(e.loaded / e.total * 100);
@@ -411,6 +384,30 @@ export default class Game {
             this.loading.update(n + "%");
             this.scene.add(this.loading);
         })
+    }
+
+    loadServeFbx(url:string):void{
+        let loader = new FBXLoader();
+        let list = LoadTooler.getUrlPath('./asset/obj/fbx/' + url);
+        loader.setPath(list[0]);
+        loader.load(list[1], (group) => {
+            this.fitModel(group);
+            this.scene.remove(this.loading);
+        }, (e: ProgressEvent) => {
+            let n = Math.floor(e.loaded / e.total * 100);
+            console.log("load " + n + "%");
+            this.loading.update(n + "%");
+            this.scene.add(this.loading);
+        })
+    }
+
+    loadServeModel(url:string){
+        if(url.toLocaleLowerCase().indexOf(".fbx")){
+            this.loadServeFbx(url);
+        }
+        else{
+            this.loadServeGltf(url);
+        }
     }
 
     startLoad(): void {

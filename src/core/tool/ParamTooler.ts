@@ -78,6 +78,9 @@ export default class ParamTooler{
         if(!material){
             return null;
         }
+        if(Array.isArray(material)){
+            material = material[0];
+        }
         let data:any = config.find(item => item.type == material.type);
         let obj:any = {};
         for(let i in data.param){

@@ -8,7 +8,8 @@
                 <i class="el-icon-s-promotion"></i>文件
             </span>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="0">导入文件</el-dropdown-item>
+                <el-dropdown-item command="101">导入文件(gltf)</el-dropdown-item>
+                <el-dropdown-item command="102">导入文件(fbx)</el-dropdown-item>
                 <el-dropdown-item command="1">标准导出(Base64)</el-dropdown-item>
                 <el-dropdown-item command="2">标准导出(Blob)</el-dropdown-item>
                 <el-dropdown-item command="3">自定义导出(embed)</el-dropdown-item>
@@ -90,7 +91,8 @@ export default {
         },
         handleFile(e){
             console.log(e);
-            if(e == 0){
+            if(e == 101 || e == 102){
+                this.$store.commit("changeImportType", e);
                 this.$refs.file.click();
             }
             else if(e == 1){

@@ -32,6 +32,8 @@ export default new Vuex.Store({
         transform: null,
         extra: null,
 
+        importType: null,
+
         sceneTree: []
     },
     mutations: {
@@ -92,6 +94,9 @@ export default new Vuex.Store({
         },
         changeChildName(state, childName) {
             state.childName = childName;
+        },
+        changeImportType(state, importType){
+            state.importType = importType;
         }
     },
     actions: {

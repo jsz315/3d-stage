@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import GameEvent from '@/core/event';
 import ParamTooler from './tool/ParamTooler';
 import Loading from './tool/Loading';
@@ -10,6 +11,7 @@ import ListSceneTooler from './tool/ListSceneTooler';
 import Root from './view/Root';
 import ExportModel from './dev/ExportModel';
 import ExportTooler from './tool/ExportTooler';
+import GLTFTooler from './tool/GLTFTooler';
 
 export default class Game {
     canvas: HTMLElement;
@@ -300,13 +302,74 @@ export default class Game {
         GameEvent.ins.send(GameEvent.ITEM_INFO, list);
     }
 
-    loadObject(data: any): void {
+    loadGltfModel(data: any):void{
         let loader = new GLTFLoader();
         loader.parse(data, "", (gltf: GLTF) => {
-            gltf.scene.children.forEach((item: any)=>{
-                this.root.addObject(item);
+            console.log("gltf loaded");
+            console.log(gltf);
+            gltf.scene.traverse((child: any) => {
+                if (child.isMesh) {
+                    child.name = "load_mesh";
+                    child.material.roughness = 0.3;
+                    child.material.metalness = 0.1;
+                }
             })
+
+            let aim = gltf.scene;
+            var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(aim);
+            let scale:number = GLTFTooler.getFitScale(aim, 10);
+            let group = new THREE.Object3D();
+            while(aim.children.length){
+                let obj = aim.children[0];
+                let p = obj.position;
+                obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
+                group.add(obj);
+            }
+            group.scale.multiplyScalar(scale);
+            group.rotateX(-Math.PI / 2);
+            this.root.addObject(group);
+            group.name = "load_scene";
         })
+    }
+
+    loadFbxModel(data: any):void{
+        let loader = new FBXLoader();
+        // let group = loader.parse(data, "");
+        // this.root.addObject(group);
+        loader.load("asset/obj/fbx/win/win.fbx", (group:THREE.Group)=>{
+            console.log(group);
+            group.traverse((child: any) => {
+                if (child.isMesh) {
+                    child.name = "load_mesh";
+                    child.material.roughness = 0.3;
+                    child.material.metalness = 0.1;
+                }
+            })
+
+            let aim = group;
+            var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(aim);
+            let scale:number = GLTFTooler.getFitScale(aim, 10);
+            let parentGroup = new THREE.Object3D();
+            while(aim.children.length){
+                let obj = aim.children[0];
+                let p = obj.position;
+                obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
+                parentGroup.add(obj);
+            }
+            parentGroup.scale.multiplyScalar(scale);
+            // parentGroup.rotateX(-Math.PI / 2);
+            this.root.addObject(parentGroup);
+            parentGroup.name = "load_scene";
+        })
+    }
+
+    loadObject(data: any, importType: any): void {
+        if(importType == 101){
+            this.loadGltfModel(data);
+        }
+        else if(importType == 102){
+            this.loadFbxModel(data);
+        }
     }
 
     exportTest(){
@@ -325,18 +388,6 @@ export default class Game {
         let mesh = Factory.getDrawBufferMesh(position, normal, uv, index);
         this.root.addObject(mesh);
     }
-
-    // loadServeModel(url:string): void {
-    //     let loadTooler = new LoadTooler();
-    //     loadTooler.start('/asset/obj/' + url, (n: number) => {
-    //         this.loading.update(n + "%");
-    //         this.scene.add(this.loading);
-    //     }, () => {
-    //         this.startLoad();
-    //     }, () => {
-    //         alert("加载失败，请刷新页面重新尝试");
-    //     })
-    // }
 
     loadServeModel(url:string){
         let loader = new GLTFLoader();

@@ -38,4 +38,21 @@ export default class GLTFTooler{
     public static saveArrayBuffer( buffer:any, filename:string ) {
         this.save( new Blob( [ buffer ], { type: 'application/octet-stream' } ), filename );
     }
+
+    public static getOffsetVector3(obj: THREE.Object3D):THREE.Vector3{
+        let box = new THREE.Box3().setFromObject(obj);
+        let x = (box.min.x + box.max.x) / 2;
+        let y = (box.min.y + box.max.y) / 2;
+        let z = (box.min.z + box.max.z) / 2;
+        let offset: THREE.Vector3 = new THREE.Vector3(x, y, z);
+        return offset;
+    }
+
+    public static getFitScale(obj: THREE.Object3D, num: number):number{
+        let box = new THREE.Box3().setFromObject(obj);
+        let size = box.getSize(new THREE.Vector3());
+        let max = Math.max(size.x, size.y, size.z);
+        let scale = num / max;
+        return scale;
+    }
 }

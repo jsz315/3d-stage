@@ -201,7 +201,7 @@ export default class Stage extends Vue {
           console.info(reader.result);
           var rs = new DataView(reader.result as ArrayBuffer);
           console.log(rs);
-          game.loadObject(rs.buffer);
+          game.loadObject(rs.buffer, this.$store.state.importType);
       }
   }
 

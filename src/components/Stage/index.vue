@@ -201,12 +201,12 @@ export default class Stage extends Vue {
           console.info(reader.result);
           var rs = new DataView(reader.result as ArrayBuffer);
           console.log(rs);
-          game.loadObject(rs.buffer, this.$store.state.importType);
+          game.importGltf(rs.buffer);
       }
   }
 
   handleTest(e:CustomEvent):void{
-    this.$prompt('请输入文件地址', '提示', {
+    this.$prompt('请输入文件地址，例：asset/obj/fbx/men/men.fbx', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
     }).then((res:any) => {
@@ -231,8 +231,6 @@ export default class Stage extends Vue {
   }
 
   handleExport(e:CustomEvent){
-    // game.exportTest();
-
     let type = e.detail;
     if(type == 1){
       game.standardExport(true);

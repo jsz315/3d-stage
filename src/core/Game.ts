@@ -37,7 +37,7 @@ export default class Game {
         })
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setClearColor(new THREE.Color(0x000000));
+        this.renderer.setClearColor(new THREE.Color(0x9f9f9f));
         this.renderer.shadowMap.enabled = true;
 
         this.scene = new THREE.Scene();
@@ -127,22 +127,20 @@ export default class Game {
         let oldMesh = this.curMesh;
         let newMesh = oldMesh.clone();
         this.root.addObject(newMesh);
-        // this.scene.add(newMesh);
         this.sendItemInfo(newMesh);
     }
 
     changeItemTransform(p: any): void {
-        // let obj = this.transformControls.object;
         let obj = this.curMesh;
         obj.position.set(p.position.x, p.position.y, p.position.z);
-        obj.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
-        obj.scale.set(p.scale.x, p.scale.y, p.scale.z);
-        // this.sendMeshInfo(obj);
+        obj.rotation.set(ParamTooler.angleToRadian(p.rotation.x), ParamTooler.angleToRadian(p.rotation.y), ParamTooler.angleToRadian(p.rotation.z));
+        // obj.scale.set(p.scale.x, p.scale.y, p.scale.z);
+        let n = p.scale.scalar;
+        obj.scale.set(n, n, n);
         this.sendItemInfo(obj);
     }
 
     changeGeometryParam(p: any): void {
-        // let mesh = this.transformControls.object;
         let mesh = this.curMesh;
         let geo;
         if(mesh.name.indexOf("Buffer") != -1){
@@ -154,7 +152,6 @@ export default class Game {
 
         if (geo) {
             this.updateGroupGeometry(mesh, geo);
-            // this.sendMeshInfo(mesh);
             this.sendItemInfo(mesh);
         }
     }
@@ -162,7 +159,7 @@ export default class Game {
     toggerMaterial(type: string): void {
         let mesh: any = this.curMesh;
         if(mesh){
-            mesh.material && mesh.material.dispose();
+            ParamTooler.disposeMaterial(mesh);
             let material = Factory.getMaterial(type);
             if (material) {
                 mesh.material = material;
@@ -173,51 +170,53 @@ export default class Game {
 
     changeCommonMaterial(key: string, data: any): void {
         let mesh: any = this.curMesh;
+        let material = ParamTooler.getCurMaterial(mesh);
         let type = ParamTooler.getType(key);
 
         if (key == "normalScale") {
-            mesh.material[key] && mesh.material[key].set(1, -1).multiplyScalar(Number(data));
+            material[key] && material[key].set(1, -1).multiplyScalar(Number(data));
         }
         else {
             if (type == ParamTooler.TYPE_COLOR) {
-                mesh.material[key] = new THREE.Color(data);
+                material[key] = new THREE.Color(data);
             }
             else if (type == ParamTooler.TYPE_NUMBER) {
-                mesh.material[key] = Number(data);
+                material[key] = Number(data);
             }
             else if (type == ParamTooler.TYPE_SWITCH) {
-                mesh.material[key] = Boolean(data);
+                material[key] = Boolean(data);
             }
         }
-        // this.sendMeshInfo(mesh);
         this.sendItemInfo(mesh);
     }
 
     changeRepeatMaterial(key: string, type: string, data: any): void {
         let mesh: any = this.curMesh;
-        if (mesh.material[key]) {
+        let material = ParamTooler.getCurMaterial(mesh);
+        if (material[key]) {
             if (type == "repeatX") {
-                mesh.material[key].repeat.x = Number(data);
+                material[key].repeat.x = Number(data);
             }
             else if (type == "repeatY") {
-                mesh.material[key].repeat.y = Number(data);
+                material[key].repeat.y = Number(data);
             }
-            mesh.material[key].needsUpdate = true;
-            mesh.material.needsUpdate = true;
+            material[key].needsUpdate = true;
+            material.needsUpdate = true;
             this.sendItemInfo(mesh);
         }
     }
 
     changeTextureMaterial(key: string, data: any): void {
         let mesh: any = this.curMesh;
+        let material = ParamTooler.getCurMaterial(mesh);
         let texture = new THREE.TextureLoader().load(data, () => {
-            mesh.material[key].needsUpdate = true;
-            mesh.material.needsUpdate = true;
+            material[key].needsUpdate = true;
+            material.needsUpdate = true;
             this.sendItemInfo(mesh);
         });
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        mesh.material[key] = texture;
+        material[key] = texture;
     }
 
     changeScene(data: any): void {
@@ -242,8 +241,9 @@ export default class Game {
 
     deleteTexture(key: string): void {
         let mesh: any = this.curMesh;
-        mesh.material[key] = null;
-        mesh.material.needsUpdate = true;
+        let material = ParamTooler.getCurMaterial(mesh);
+        material[key] = null;
+        material.needsUpdate = true;
         this.sendItemInfo(mesh);
     }
 
@@ -302,61 +302,53 @@ export default class Game {
         GameEvent.ins.send(GameEvent.ITEM_INFO, list);
     }
 
-    loadGltfModel(data: any):void{
+    fitModel(group:THREE.Object3D):void{
+        group.traverse((child: any) => {
+            if (child.isMesh) {
+                child.name = "load_mesh";
+                if(Array.isArray(child.material)){
+                    console.log("array material");
+                    for(var i:number = 0; i < child.material.length; i++){
+                        child.material[i].roughness = 0.3;
+                        child.material[i].metalness = 0.1;
+                    }
+                }
+                
+            }
+        })
+
+        let parent:THREE.Object3D = group;
+        while(parent.children.length == 1){
+            parent = parent.children[0];
+        }
+
+        var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(parent);
+        let scale:number = GLTFTooler.getFitScale(parent, 10);
+        // let aim = new THREE.Object3D();
+        let p = parent.position;
+        // parent.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
+        parent.position.set(0, 0, 0);
+        parent.scale.multiplyScalar(scale);
+
+        // while(parent.children.length){
+        //     let obj = parent.children[0];
+        //     let p = obj.position;
+        //     obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
+        //     aim.add(obj);
+        // }
+        // aim.scale.multiplyScalar(scale);
+        // aim.rotateX(-Math.PI / 2);
+        this.root.addObject(parent);
+        parent.name = "load_scene";
+    }
+
+    importGltf(data: any): void {
         let loader = new GLTFLoader();
         loader.parse(data, "", (gltf: GLTF) => {
             console.log("gltf loaded");
             console.log(gltf);
             this.fitModel(gltf.scene);
         })
-    }
-
-    fitModel(group:THREE.Object3D):void{
-        group.traverse((child: any) => {
-            if (child.isMesh) {
-                child.name = "load_mesh";
-                child.material.roughness = 0.3;
-                child.material.metalness = 0.1;
-            }
-        })
-
-        var offset:THREE.Vector3 = GLTFTooler.getOffsetVector3(group);
-        let scale:number = GLTFTooler.getFitScale(group, 10);
-        let aim = new THREE.Object3D();
-        while(group.children.length){
-            let obj = group.children[0];
-            let p = obj.position;
-            obj.position.set(p.x - offset.x, p.y - offset.y, p.z - offset.z);
-            aim.add(obj);
-        }
-        aim.scale.multiplyScalar(scale);
-        aim.rotateX(-Math.PI / 2);
-        this.root.addObject(aim);
-        aim.name = "load_scene";
-    }
-
-    loadFbxModel(data: any):void{
-        let loader = new FBXLoader();
-        // let group = loader.parse(data, "");
-        // this.root.addObject(group);
-        loader.load("asset/obj/fbx/win/win.fbx", (group:THREE.Group)=>{
-            console.log(group);
-            this.fitModel(group);
-        })
-    }
-
-    loadObject(data: any, importType: any): void {
-        if(importType == 101){
-            this.loadGltfModel(data);
-        }
-        else if(importType == 102){
-            this.loadFbxModel(data);
-        }
-    }
-
-    exportTest(){
-        // let e = new ExportModel();
-        // e.parse(this.root.container, "Good");
     }
 
     addCustomGeometry(data: any) {
@@ -373,7 +365,7 @@ export default class Game {
 
     loadServeGltf(url:string):void{
         let loader = new GLTFLoader();
-        let list = LoadTooler.getUrlPath('./asset/obj/gltf/' + url);
+        let list = LoadTooler.getUrlPath(url);
         loader.setPath(list[0]);
         loader.load(list[1], (gltf) => {
             this.fitModel(gltf.scene);
@@ -388,7 +380,7 @@ export default class Game {
 
     loadServeFbx(url:string):void{
         let loader = new FBXLoader();
-        let list = LoadTooler.getUrlPath('./asset/obj/fbx/' + url);
+        let list = LoadTooler.getUrlPath(url);
         loader.setPath(list[0]);
         loader.load(list[1], (group) => {
             this.fitModel(group);
@@ -408,48 +400,6 @@ export default class Game {
         else{
             this.loadServeGltf(url);
         }
-    }
-
-    startLoad(): void {
-        let loader = new GLTFLoader();
-        loader.setPath('/asset/obj/');
-        loader.load('win.gltf', (gltf) => {
-
-            console.log("gltf");
-            console.log(gltf);
-            gltf.scene.traverse((child: any) => {
-                if (child.isMesh) {
-                    child.name = "load_mesh";
-                    child.material.roughness = 0.3;
-                    child.material.metalness = 0.1;
-                    child.updateMatrix();
-                }
-            })
-
-            let aim: any = gltf.scene.children[0].children[0].children[0];
-            let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
-            let max = Math.max(size.x, size.y, size.z);
-            let scale = 10 / max;
-            aim.scale.set(scale, scale, scale);
-
-
-            aim.position.set(0, 0, 0);
-
-            let group = new THREE.Object3D();
-            group.add(aim);
-            group.rotateX(Math.PI / 2);
-
-            this.root.addObject(group);
-
-            group.name = "load_scene";
-
-            this.scene.remove(this.loading);
-        }, (e: ProgressEvent) => {
-            let n = Math.floor(e.loaded / e.total * 100);
-            console.log("load " + n + "%");
-            this.loading.update(n + "%");
-            this.scene.add(this.loading);
-        })
     }
 
     makeGroup():void{

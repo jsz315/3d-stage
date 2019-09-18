@@ -33,12 +33,20 @@ export default class LoadTooler{
     }
 
     public static getUrlPath(url:string):any[]{
+        url = this.getLink(url);
         let list = url.split("/");
         let aim = list.pop();
         let path = list.join("/") + "/";
         console.log(path);
         console.log(aim);
         return [path, aim];
+    }
+
+    public static getLink(url:string):string{
+        if(url.match(/http(s?):/)){
+            return url;
+        }
+        return (window as any).CFG.baseURL + url;
     }
 
 }

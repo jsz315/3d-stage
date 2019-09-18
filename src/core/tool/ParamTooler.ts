@@ -61,26 +61,53 @@ export default class ParamTooler{
                 z: position.z
             },
             rotation: {
-                x: rotation.x,
-                y: rotation.y,
-                z: rotation.z
+                x: this.radianToAngle(rotation.x),
+                y: this.radianToAngle(rotation.y),
+                z: this.radianToAngle(rotation.z)
             },
             scale: {
-                x: scale.x,
-                y: scale.y,
-                z: scale.z
+                // x: scale.x,
+                // y: scale.y,
+                // z: scale.z,
+                scalar: scale.x
             }
         }
 
+    }
+
+    public static radianToAngle(n: number):number {
+        return n * 180 / Math.PI;
+    }
+
+    public static angleToRadian(n: number):number{
+        return n * Math.PI / 180;
+    }
+
+    public static getCurMaterial(mesh: THREE.Mesh):any{
+        if(Array.isArray(mesh.material)){
+            return mesh.material[0];
+        }
+        return mesh.material;
+    }
+
+    public static disposeMaterial(mesh: THREE.Mesh):any{
+        let list;
+        if(Array.isArray(mesh.material)){
+            list = mesh.material;
+        }
+        else{
+            list = [mesh.material];
+        }
+        list.forEach((m:any) => {
+            m.dispose();
+        })
     }
 
     public static copyMaterialParam(material: any):any{
         if(!material){
             return null;
         }
-        if(Array.isArray(material)){
-            material = material[0];
-        }
+        material = this.getCurMaterial(material);
         let data:any = config.find(item => item.type == material.type);
         let obj:any = {};
         for(let i in data.param){
@@ -127,7 +154,7 @@ export default class ParamTooler{
 
                 name = "Mesh";
 
-                let material = ParamTooler.copyMaterialParam(obj.material);
+                let material = ParamTooler.copyMaterialParam(obj);
                 let temp = obj.geometry;
                 let geometry;
 
@@ -168,7 +195,7 @@ export default class ParamTooler{
             name = "Scene";
             parameters = {
                 fogVisible: !!scene.fog,
-                fogColor: scene.fog ? (scene.fog as THREE.Fog).color : "#000000",
+                fogColor: scene.fog ? (scene.fog as THREE.Fog).color : "#9f9f9f",
                 near: scene.fog ? (scene.fog as THREE.Fog).near : 0,
                 far: scene.fog ? (scene.fog as THREE.Fog).far : 100,
                 gridVisible: gridVisible,

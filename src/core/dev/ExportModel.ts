@@ -68,6 +68,8 @@ THREE_TO_WEBGL[MirroredRepeatWrapping] = WEBGL_CONSTANTS.MIRRORED_REPEAT;
 
 var byteOffset = 0;
 var buffers: any = [];
+var uids = new Map();
+var uid = 0;
 
 export default class ExportModel {
 
@@ -93,38 +95,13 @@ export default class ExportModel {
         this.cacheData = new CacheData();
     }
 
-    // parse(useBase64:boolean, node: THREE.Object3D, fname: string): void {
-    //     let ext = ".txt";
-    //     this.processScene(node);
-    //     var blob = new Blob(buffers, { type: 'application/octet-stream' });
-    //     this.buffers[0] = { byteLength: blob.size };
-    //     if (useBase64) {
-    //         var reader = new FileReader();
-    //         reader.readAsDataURL(blob);
-    //         reader.onloadend = () => {
-    //             var base64data: any = reader.result;
-    //             this.buffers[0].uri = base64data;
-    //             let json = this.packageJson();
-    //             console.log(json);
-    //             GLTFTooler.saveString(JSON.stringify(json), fname + ext);
-    //         };
-    //     }
-    //     else {
-    //         this.buffers[0].uri = fname + ".bin";
-    //         GLTFTooler.save(blob, fname + ".bin");
-    //         let json = this.packageJson();
-    //         console.log(json);
-    //         GLTFTooler.saveString(JSON.stringify(json), fname + ext);
-    //     }
-    // }
-
-    parse(embed:boolean, node: THREE.Object3D, fname: string): void {
+    parse(embed: boolean, node: THREE.Object3D, fname: string): void {
         this.processScene(node);
         var blob = new Blob(buffers, { type: 'application/octet-stream' });
         this.buffers[0] = { byteLength: blob.size };
         if (embed) {
             var reader = new FileReader();
-            reader.readAsArrayBuffer( blob );
+            reader.readAsArrayBuffer(blob);
             reader.onloadend = () => {
                 var GLB_HEADER_BYTES = 12;
                 var GLB_HEADER_MAGIC = 0x46546C67;
@@ -136,36 +113,36 @@ export default class ExportModel {
 
                 let json = this.packageJson();
                 console.log(json);
-                    
-               // Binary chunk.
-                var binaryChunk = ModelTooler.getPaddedArrayBuffer( reader.result );
-                var binaryChunkPrefix = new DataView( new ArrayBuffer( GLB_CHUNK_PREFIX_BYTES ) );
-                binaryChunkPrefix.setUint32( 0, binaryChunk.byteLength, true );
-                binaryChunkPrefix.setUint32( 4, GLB_CHUNK_TYPE_BIN, true );
+
+                // Binary chunk.
+                var binaryChunk = ModelTooler.getPaddedArrayBuffer(reader.result);
+                var binaryChunkPrefix = new DataView(new ArrayBuffer(GLB_CHUNK_PREFIX_BYTES));
+                binaryChunkPrefix.setUint32(0, binaryChunk.byteLength, true);
+                binaryChunkPrefix.setUint32(4, GLB_CHUNK_TYPE_BIN, true);
 
                 // JSON chunk.
-                var jsonChunk = ModelTooler.getPaddedArrayBuffer( ModelTooler.stringToArrayBuffer( JSON.stringify( json ) ), 0x20 );
-                var jsonChunkPrefix = new DataView( new ArrayBuffer( GLB_CHUNK_PREFIX_BYTES ) );
-                jsonChunkPrefix.setUint32( 0, jsonChunk.byteLength, true );
-                jsonChunkPrefix.setUint32( 4, GLB_CHUNK_TYPE_JSON, true );
+                var jsonChunk = ModelTooler.getPaddedArrayBuffer(ModelTooler.stringToArrayBuffer(JSON.stringify(json)), 0x20);
+                var jsonChunkPrefix = new DataView(new ArrayBuffer(GLB_CHUNK_PREFIX_BYTES));
+                jsonChunkPrefix.setUint32(0, jsonChunk.byteLength, true);
+                jsonChunkPrefix.setUint32(4, GLB_CHUNK_TYPE_JSON, true);
 
                 // GLB header.
-                var header = new ArrayBuffer( GLB_HEADER_BYTES );
-                var headerView = new DataView( header );
-                headerView.setUint32( 0, GLB_HEADER_MAGIC, true );
-                headerView.setUint32( 4, GLB_VERSION, true );
+                var header = new ArrayBuffer(GLB_HEADER_BYTES);
+                var headerView = new DataView(header);
+                headerView.setUint32(0, GLB_HEADER_MAGIC, true);
+                headerView.setUint32(4, GLB_VERSION, true);
                 var totalByteLength = GLB_HEADER_BYTES
                     + jsonChunkPrefix.byteLength + jsonChunk.byteLength
                     + binaryChunkPrefix.byteLength + binaryChunk.byteLength;
-                headerView.setUint32( 8, totalByteLength, true );
+                headerView.setUint32(8, totalByteLength, true);
 
-                var glbBlob = new Blob( [
+                var glbBlob = new Blob([
                     header,
                     jsonChunkPrefix,
                     jsonChunk,
                     binaryChunkPrefix,
                     binaryChunk
-                ], { type: 'application/octet-stream' } );
+                ], { type: 'application/octet-stream' });
 
                 GLTFTooler.save(glbBlob, fname + ".glb");
             };
@@ -417,9 +394,20 @@ export default class ExportModel {
             console.log("attributeName: " + attributeName);
             var attribute: any = geometry.attributes[attributeName];
             attributeName = nameConversion[attributeName];
+            if (attributeName) {
+                attributeName = attributeName.toUpperCase();
+            }
+
+            if (this.cacheData.attributes.has(this.getUID(attribute))) {
+                attributes[attributeName] = this.cacheData.attributes.get(this.getUID(attribute));
+                console.log("使用缓存属性");
+                continue;
+            }
+
             var accessor = this.processAccessors(attribute, geometry);
             if (accessor !== null) {
                 attributes[attributeName] = accessor;
+                this.cacheData.attributes.set(this.getUID(attribute), accessor);
             }
         }
 
@@ -519,7 +507,7 @@ export default class ExportModel {
     }
 
     processTexture(obj: any): any {
-        if ( this.cacheData.textures.has(obj) ) {
+        if (this.cacheData.textures.has(obj)) {
             return this.cacheData.textures.get(obj);
         }
 
@@ -538,10 +526,10 @@ export default class ExportModel {
         let samplerId = this.samplers.length - 1;
 
         let sourceId;
-        if(this.cacheData.images.has(obj.image.currentSrc)){
+        if (this.cacheData.images.has(obj.image.currentSrc)) {
             sourceId = this.cacheData.images.get(obj.image.currentSrc);
         }
-        else{
+        else {
             let source = {
                 mimeType: obj.format == RGBAFormat ? "image/png" : "image/jpeg",
                 uri: obj.image.currentSrc
@@ -560,5 +548,12 @@ export default class ExportModel {
         let textureId = this.textures.length - 1;
         this.cacheData.textures.set(obj, textureId);
         return textureId;
+    }
+
+    getUID(object: any): any {
+        if (!uids.has(object)) {
+            uids.set(object, uid++);
+        }
+        return uids.get(object);
     }
 }

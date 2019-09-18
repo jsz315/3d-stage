@@ -38,7 +38,7 @@ export default class Root extends THREE.Object3D{
         this.selectView.name = "SelectView";
         this.add(this.selectView);
 
-        this.focusLight = new FocusLight(0xffffff, 0.84);
+        this.focusLight = new FocusLight(0xffffff, 1.84);
         this.lights.add(this.focusLight);
 
         this.rayCaster = new THREE.Raycaster();

@@ -45,6 +45,8 @@ export default class GLTFTooler{
         let y = (box.min.y + box.max.y) / 2;
         let z = (box.min.z + box.max.z) / 2;
         let offset: THREE.Vector3 = new THREE.Vector3(x, y, z);
+        console.log("box size :");
+        console.log(box);
         return offset;
     }
 
@@ -52,7 +54,9 @@ export default class GLTFTooler{
         let box = new THREE.Box3().setFromObject(obj);
         let size = box.getSize(new THREE.Vector3());
         let max = Math.max(size.x, size.y, size.z);
+        
         let scale = num / max;
+        console.log(max + " --> " + scale);
         return scale;
     }
 }

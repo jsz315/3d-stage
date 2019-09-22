@@ -373,7 +373,8 @@ export default class Game {
 
     loadServeGltf(url:string):void{
         let loader = new GLTFLoader();
-        let list = LoadTooler.getUrlPath('./asset/obj/gltf/' + url);
+        // let list = LoadTooler.getUrlPath('./asset/obj/gltf/' + url);
+        let list = LoadTooler.getUrlPath(url);
         loader.setPath(list[0]);
         loader.load(list[1], (gltf) => {
             this.fitModel(gltf.scene);
@@ -388,7 +389,8 @@ export default class Game {
 
     loadServeFbx(url:string):void{
         let loader = new FBXLoader();
-        let list = LoadTooler.getUrlPath('./asset/obj/fbx/' + url);
+        // let list = LoadTooler.getUrlPath('./asset/obj/fbx/' + url);
+        let list = LoadTooler.getUrlPath(url);
         loader.setPath(list[0]);
         loader.load(list[1], (group) => {
             this.fitModel(group);

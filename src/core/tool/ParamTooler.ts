@@ -85,6 +85,7 @@ export default class ParamTooler{
 
     public static getCurMaterial(mesh: THREE.Mesh):any{
         if(Array.isArray(mesh.material)){
+            console.log("material isArray");
             return mesh.material[0];
         }
         return mesh.material;

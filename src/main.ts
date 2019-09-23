@@ -16,3 +16,7 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount("#app");
+
+axios.get("http://192.168.1.150:8899/abc").then(res=>{
+  console.log(res);
+})

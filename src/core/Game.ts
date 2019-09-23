@@ -365,6 +365,7 @@ export default class Game {
 
     loadServeGltf(url:string):void{
         let loader = new GLTFLoader();
+        loader.setCrossOrigin("anonymous");
         let list = LoadTooler.getUrlPath(url);
         loader.setPath(list[0]);
         loader.load(list[1], (gltf) => {
@@ -380,6 +381,7 @@ export default class Game {
 
     loadServeFbx(url:string):void{
         let loader = new FBXLoader();
+        loader.setCrossOrigin("anonymous");
         let list = LoadTooler.getUrlPath(url);
         loader.setPath(list[0]);
         loader.load(list[1], (group) => {

@@ -11,6 +11,7 @@ import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from "@/core/event/index";
 import ParamTooler from '@/core/tool/ParamTooler';
 import {Stats} from '@/core/tool/Stats';
+import {getQueryString} from '@/lib/urlTooler'
 
 let game:Game;
 let dataList: any;
@@ -63,7 +64,7 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.BSP_UNION, (e:any) => {this.bspUnion(e)}); 
 
     GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e:any) => {this.handleExport(e)}); 
-    GameEvent.ins.on(GameEvent.LOAD_SCENE, (e:any) => {this.handleTest(e)}); 
+    GameEvent.ins.on(GameEvent.LOAD_SCENE, (e:any) => {this.handleLoadScene(e)}); 
     GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e:any) => {this.handleStats(e)}); 
     GameEvent.ins.on(GameEvent.IMPORT_SCENE, (e:any) => {this.handleFile(e)}); 
     
@@ -72,7 +73,16 @@ export default class Stage extends Vue {
     GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
 
     this.initStats();
+    this.checkPreview();
 
+  }
+
+  checkPreview(){
+    var url = getQueryString("url")
+    console.log(url)
+    if(url){
+        game.loadServeModel(url)
+    }
   }
 
   initStats(){
@@ -205,8 +215,8 @@ export default class Stage extends Vue {
       }
   }
 
-  handleTest(e:CustomEvent):void{
-    this.$prompt('请输入文件地址，例：asset/obj/fbx/men/men.fbx', '提示', {
+  handleLoadScene(e:CustomEvent):void{
+    this.$prompt('请输入文件地址', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
     }).then((res:any) => {

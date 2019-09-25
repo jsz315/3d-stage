@@ -396,7 +396,7 @@ export default class Game {
     }
 
     loadServeModel(url:string){
-        if(url.toLocaleLowerCase().indexOf(".fbx")){
+        if(url.toLocaleLowerCase().indexOf(".fbx") != -1){
             this.loadServeFbx(url);
         }
         else{

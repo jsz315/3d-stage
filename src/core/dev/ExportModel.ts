@@ -70,6 +70,7 @@ var byteOffset = 0;
 var buffers: any = [];
 var uids = new Map();
 var uid = 0;
+var relative = true;
 
 export default class ExportModel {
 
@@ -251,7 +252,9 @@ export default class ExportModel {
     processNode(object: any): any {
         var node: any = {};
         node.matrix = object.matrix.elements;
-        node.name = object.name;
+        node.translation = object.position.toArray();
+        node.rotation = object.rotation.toArray().slice(0, 3);
+        node.scale = object.scale.toArray();
 
         if (object.isMesh || object.isLine || object.isPoints) {
             var mesh = this.processMesh(object);
@@ -532,7 +535,7 @@ export default class ExportModel {
         else {
             let source = {
                 mimeType: obj.format == RGBAFormat ? "image/png" : "image/jpeg",
-                uri: obj.image.currentSrc
+                uri: this.getImageSrc(obj.image.currentSrc)
             }
             this.images.push(source);
             sourceId = this.images.length - 1;
@@ -555,5 +558,12 @@ export default class ExportModel {
             uids.set(object, uid++);
         }
         return uids.get(object);
+    }
+
+    getImageSrc(url: String):String|undefined{
+        if(relative){
+            return url.split("/").pop();
+        }
+        return url;
     }
 }

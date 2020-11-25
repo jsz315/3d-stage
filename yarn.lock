@@ -4441,9 +4441,9 @@ hex-color-regex@^1.1.0:
   integrity sha1-TAb8y0YC/iYCs8k9+C1+fb8aio4=
 
 highlight.js@^9.6.0:
-  version "9.15.9"
-  resolved "https://registry.npm.taobao.org/highlight.js/download/highlight.js-9.15.9.tgz#865257da1dbb4a58c4552d46c4b3854f77f0e6d5"
-  integrity sha1-hlJX2h27SljEVS1GxLOFT3fw5tU=
+  version "9.18.5"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.18.5.tgz#d18a359867f378c138d6819edfc2a8acd5f29825"
+  integrity sha512-a5bFyofd/BHCX52/8i8uJkjr9DYwXIPnM/plwI6W7ezItLGqzt7X2G2nXuYSfsIJdkwwj/g9DG1LkcGJI/dDoA==
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -8344,6 +8344,11 @@ thread-loader@^2.1.2:
     loader-runner "^2.3.1"
     loader-utils "^1.1.0"
     neo-async "^2.6.0"
+
+three-js-csg@^72.0.0:
+  version "72.0.0"
+  resolved "https://registry.yarnpkg.com/three-js-csg/-/three-js-csg-72.0.0.tgz#69e6ae441f3f01089e6f13c87c7288e1c4380bbc"
+  integrity sha1-aeauRB8/AQiebxPIfHKI4cQ4C7w=
 
 three@^0.107.0:
   version "0.107.0"

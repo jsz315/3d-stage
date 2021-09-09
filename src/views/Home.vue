@@ -6,6 +6,7 @@
     <TextureView />
     <CustomGeometry />
     <MenuView />
+    <RemoteView />
   </div>
 </template>
 
@@ -17,6 +18,7 @@ import RightSide from "@/components/RightSide/index.vue";
 import TextureView from "@/components/TextureView/index.vue";
 import CustomGeometry from "@/components/CustomGeometry/index.vue";
 import MenuView from "@/components/MenuView/index.vue";
+import RemoteView from "@/components/RemoteView/index.vue";
 
 @Component({
   components: {
@@ -25,7 +27,8 @@ import MenuView from "@/components/MenuView/index.vue";
     RightSide,
     TextureView,
     CustomGeometry,
-    MenuView
+    MenuView,
+    RemoteView
   }
 })
 export default class Home extends Vue {}

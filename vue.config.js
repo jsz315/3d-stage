@@ -1,11 +1,12 @@
 const webpack = require('webpack')
 const path = require('path')
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
-
+const isDev = process.env.NODE_ENV == "development";
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
+    publicPath: isDev ? '/' : './',
     lintOnSave: false,
     configureWebpack: {
+        devtool: isDev ? "cheap-module-eval-source-map" : "cheap-module-source-map",
         plugins: [
             new webpack.DllReferencePlugin({
                 context: __dirname,
@@ -21,5 +22,22 @@ module.exports = {
                 }
             ])
         ]
-    }
+    },
+    devServer: {
+        proxy: {
+            // detail: https://cli.vuejs.org/config/#devserver-proxy
+            '/obj': {
+                target: `https://jsz315.gitee.io/three-web-app/obj`,
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/obj' : ''
+                }
+            }
+        }
+    },
+    chainWebpack: (config) => {
+        // config.externals = cdn.externals;
+        config.resolve.alias
+            .set("@", path.resolve("src"))
+    },
 }

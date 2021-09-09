@@ -195,6 +195,10 @@ export default class Stage extends Vue {
 
   handleFile(e:CustomEvent):void{
     console.log(e);
+    if(e && e.detail){
+      game.loadServeModel(e.detail);
+      return;
+    }
     var reader = new FileReader();
       reader.readAsArrayBuffer(e.detail);
       reader.onload = (r) => {

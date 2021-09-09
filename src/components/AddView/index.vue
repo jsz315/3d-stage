@@ -76,10 +76,10 @@ export default class LeftSide extends Vue {
     }
   }
 
-  handleNodeClick(e: any){
-    console.log(e);
-    GameEvent.ins.send(GameEvent.SELECT_TREE_ITEM, e.uuid);
-  }
+  // handleNodeClick(e: any){
+  //   console.log(e);
+  //   GameEvent.ins.send(GameEvent.SELECT_TREE_ITEM, e.uuid);
+  // }
 
   get sceneTree():any{
     return this.$store.state.sceneTree;

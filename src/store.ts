@@ -32,10 +32,19 @@ export default new Vuex.Store({
         transform: null,
         extra: null,
 
-        sceneTree: []
+        sceneTree: [],
+        visible: {
+            remote: false
+        },
+        uuid: ""
     },
     mutations: {
-
+        changeVisible(state, {key, value}){
+            (state.visible as any)[key] = value;
+        },
+        changeUuid(state, value){
+            state.uuid = value;
+        },
         changeItemInfo(state, list) {
             let info = state.isRoot ? list[0] : list[1];
             state.type = info.type;

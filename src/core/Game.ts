@@ -10,6 +10,7 @@ import ListSceneTooler from './tool/ListSceneTooler';
 import Root from './view/Root';
 import ExportModel from './dev/ExportModel';
 import ExportTooler from './tool/ExportTooler';
+import Tooler from './tool/Toole';
 
 export default class Game {
     canvas: HTMLElement;
@@ -37,6 +38,7 @@ export default class Game {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0xffffff));
         this.renderer.shadowMap.enabled = true;
+        // this.renderer.outputEncoding = THREE.sRGBEncoding;
 
         this.scene = new THREE.Scene();
 
@@ -261,8 +263,14 @@ export default class Game {
     }
     
     selectObject(obj: THREE.Object3D):void{
-        this.root.selectView.select(obj);
-        this.sendItemInfo(obj);
+        if(obj != this.root.selectView){
+            this.root.selectView.select(obj);
+            this.sendItemInfo(obj);
+        }
+        else{
+            console.log("looping")
+        }
+        
     }
 
     mouseDown(e: MouseEvent): void {
@@ -340,7 +348,7 @@ export default class Game {
 
     loadServeModel(url:string){
         let loader = new GLTFLoader();
-        loader.setPath('./asset/obj/');
+        // loader.setPath('./asset/obj/');
         loader.load(url, (gltf) => {
             gltf.scene.traverse((child: any) => {
                 if (child.isMesh) {
@@ -352,6 +360,7 @@ export default class Game {
             })
 
             let aim: any = gltf.scene;
+            Tooler.resize(aim, 20);
             this.root.addObject(aim);
             this.scene.remove(this.loading);
         }, (e: ProgressEvent) => {

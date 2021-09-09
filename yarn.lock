@@ -8345,6 +8345,11 @@ thread-loader@^2.1.2:
     loader-utils "^1.1.0"
     neo-async "^2.6.0"
 
+three-js-csg@^72.0.0:
+  version "72.0.0"
+  resolved "https://registry.npmjs.org/three-js-csg/-/three-js-csg-72.0.0.tgz#69e6ae441f3f01089e6f13c87c7288e1c4380bbc"
+  integrity sha1-aeauRB8/AQiebxPIfHKI4cQ4C7w=
+
 three@^0.107.0:
   version "0.107.0"
   resolved "https://registry.npm.taobao.org/three/download/three-0.107.0.tgz#0c862c348d61bd3f22058e01f5e771c1294315a1"

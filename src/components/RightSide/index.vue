@@ -1,13 +1,15 @@
 <template>
-	<div class="right-side" :class="{open: drawer}">
+	<div class="right-side" :class="{hide}">
 		<!-- <component :is="aim"/> -->
-
+        <div class="toggle" @click="onToggle">
+            <i :class="!hide ? 'el-icon-caret-right' : 'el-icon-caret-left'"></i>
+        </div>
 		<div class="mesh-info">
 			<div class="title">
 				<div class="name">属性</div>
-				<div class="close" @click="handleClose">
+				<!-- <div class="close" @click="handleClose">
 					<i class="el-icon-close"></i>
-				</div>
+				</div> -->
 			</div>
 
 			<div class="cur-name">
@@ -74,7 +76,8 @@
 			return {
 				value: 0,
 				direction: "rtl",
-				activeNames: ['0']
+				activeNames: ['0'],
+                hide: false
 			};
 		},
 		components: {
@@ -150,7 +153,7 @@
 				GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
 			},
 			handleClose() {
-				this.$store.commit("changeDrawer", false);
+				// this.$store.commit("changeDrawer", false);
 			},
 			handleCopy() {
 				GameEvent.ins.send(GameEvent.COPY_ITEM);
@@ -173,7 +176,10 @@
 				console.log(e);
 			},
 			handleChange(e) {
-            }
+            },
+            onToggle(){
+                this.hide = !this.hide;
+            },
 		}
 	};
 </script>

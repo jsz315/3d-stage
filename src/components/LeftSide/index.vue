@@ -1,18 +1,22 @@
 <template>
-  <div class="left-side" :class="{scene:tabName=='second'}">
+  <div class="left-side" :class="cls">
+    <div class="toggle" @click="onToggle">
+        <i :class="hide ? 'el-icon-caret-right' : 'el-icon-caret-left'"></i>
+    </div>
+
     <div class="main">
-      <el-tabs v-model="tabName" type="border-card" @tab-click="handleClick">
-        <el-tab-pane label="新增" name="first">
-          <el-button @click="openRemote">远程资源</el-button>
+      <el-tabs size="mini" v-model="tabName" type="border-card" @tab-click="handleClick">
+        <el-tab-pane size="mini" label="新增" name="first">
+          <el-button size="mini" @click="openRemote">远程资源</el-button>
           <AddView />
         </el-tab-pane>
 
-        <el-tab-pane label="层级" name="second">
+        <el-tab-pane size="mini" label="层级" name="second">
           <TreeView />
         </el-tab-pane>
       </el-tabs>
     </div>
-    <div class="toggle"></div>
+    
   </div>
 </template>
 
@@ -31,6 +35,7 @@ import { mapState, mapMutations } from 'vuex';
 })
 export default class LeftSide extends Vue {
   @Provide() tabName:string = 'first';
+  @Provide() hide:boolean = false;
 
   mounted() {
     
@@ -44,6 +49,21 @@ export default class LeftSide extends Vue {
 
   openRemote(e: any){
     this.$store.commit("changeVisible", {key: "remote", value: true});
+  }
+
+  onToggle(){
+    this.hide = !this.hide;
+  }
+
+  get cls(){
+      var list = [];
+    if(this.tabName == 'second'){
+        list.push("scene");
+    }
+    if(this.hide){
+        list.push("hide");
+    }
+    return list;
   }
   
 }

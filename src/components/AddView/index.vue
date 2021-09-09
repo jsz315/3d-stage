@@ -1,5 +1,5 @@
 <template>
-  <el-collapse v-model="activeNames" @change="handleCollapse" accordion>
+  <el-collapse size="mini" v-model="activeNames" @change="handleCollapse" accordion>
 
     <el-collapse-item title="geometry" name="0">
       <div class="geometry" v-for="(item, idx) in geometryList" :key="item.name">

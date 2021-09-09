@@ -10,6 +10,12 @@
 </template>
 
 <style>
+
+html, body{
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 ::-webkit-scrollbar {
   width: 8px;

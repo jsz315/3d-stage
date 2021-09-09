@@ -3,7 +3,7 @@
 
         <input ref="file" class="file" type="file" @change="handleSelectFile"/>
 
-        <el-dropdown class="item-nav" @command="handleFile">
+        <el-dropdown size="mini" class="item-nav" @command="handleFile">
             <span class="el-dropdown-link">
                 <i class="el-icon-s-promotion"></i>文件
             </span>
@@ -16,7 +16,7 @@
             </el-dropdown-menu>
         </el-dropdown>
 
-        <el-dropdown class="item-nav" @command="handleCompute">
+        <el-dropdown size="mini" class="item-nav" @command="handleCompute">
             <span class="el-dropdown-link">
                 <i class="el-icon-edit-outline"></i>运算
             </span>
@@ -27,7 +27,7 @@
             </el-dropdown-menu>
         </el-dropdown>
 
-        <el-dropdown class="item-nav" @command="handleTest">
+        <el-dropdown size="mini" class="item-nav" @command="handleTest">
             <span class="el-dropdown-link">
                 <i class="el-icon-s-opportunity"></i>测试
             </span>

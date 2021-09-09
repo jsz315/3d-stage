@@ -45,7 +45,8 @@
 			return {
 				value: 0,
 				direction: "rtl",
-				activeNames: '0'
+				activeNames: '0',
+                hide: false
 			};
 		},
 		components: {
@@ -80,6 +81,7 @@
 		},
 
 		methods: {
+            
 			handleClose() {
 				this.$store.commit("changeDrawer", false);
 			},

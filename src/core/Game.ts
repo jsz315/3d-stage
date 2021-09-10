@@ -362,12 +362,13 @@ export default class Game {
             let aim: any = gltf.scene;
             Tooler.resize(aim, 20);
             this.root.addObject(aim);
-            this.scene.remove(this.loading);
+            // this.scene.remove(this.loading);
         }, (e: ProgressEvent) => {
             let n = Math.floor(e.loaded / e.total * 100);
             console.log("load " + n + "%");
-            this.loading.update(n + "%");
-            this.scene.add(this.loading);
+            // this.loading.update(n + "%");
+            GameEvent.ins.send(GameEvent.LOADING, n);
+            // this.scene.add(this.loading);
         })
     }
 

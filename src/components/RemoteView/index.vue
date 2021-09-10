@@ -35,14 +35,18 @@ export default {
       axios.get("/obj/model.json").then(res=>{
         console.log(typeof res.data);
         console.log(res);
+        if(typeof res.data == "object"){
+            this.list = res.data;
+            return;
+        }
         var str = res.data.replace(/\r\n/g, "");
         // console.log(str)
         // this.list = JSON.parse(str);
         var fun = new Function("return " + str);
         var list = fun();
-        this.list = list.filter((v, i)=>{
-          return v.img.indexOf("/thing/") != -1
-        })
+        // this.list = list.filter((v, i)=>{
+        //   return v.img.indexOf("/thing/") != -1
+        // })
       });
     },
     methods: {

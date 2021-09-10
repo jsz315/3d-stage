@@ -1,0 +1,33 @@
+.progress-container {
+    position: fixed;
+    // left: 0;
+    // top: 0;
+    inset: 0;
+    margin: auto;
+    z-index: 4;
+    // background: rgba(255, 255, 255, 0.72);
+    .inner-content {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.72);
+        color: #1093df;
+        border-radius: 50%;
+        font-size: 20px;
+    }
+}
+
+.svg{
+    position: relative;
+    z-index: 2;
+}
+
+.path {
+    transition: stroke-dasharray 400ms ease;
+}

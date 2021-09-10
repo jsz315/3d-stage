@@ -7,10 +7,11 @@
     <CustomGeometry />
     <MenuView />
     <RemoteView />
+    <Loading :progress="progress"/>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { Component, Vue } from "vue-property-decorator";
 import Stage from "@/components/Stage/index.vue";
 import LeftSide from "@/components/LeftSide/index.vue";
@@ -19,17 +20,30 @@ import TextureView from "@/components/TextureView/index.vue";
 import CustomGeometry from "@/components/CustomGeometry/index.vue";
 import MenuView from "@/components/MenuView/index.vue";
 import RemoteView from "@/components/RemoteView/index.vue";
+import Loading from "@/components/Loading/index.vue";
+// import EventCenter from "@/core/EventCenter";
+import GameEvent from "@/core/event/index";
 
-@Component({
-  components: {
-    Stage,
-    LeftSide,
-    RightSide,
-    TextureView,
-    CustomGeometry,
-    MenuView,
-    RemoteView
-  }
-})
-export default class Home extends Vue {}
+export default {
+    data(){
+        return {
+            progress: 30
+        }
+    },
+    components: {
+        Stage,
+        LeftSide,
+        RightSide,
+        TextureView,
+        CustomGeometry,
+        MenuView,
+        RemoteView,
+        Loading
+    },
+    mounted() {
+        GameEvent.ins.on(GameEvent.LOADING, (e)=>{
+            this.progress = e.detail;
+        })
+    },
+}
 </script>

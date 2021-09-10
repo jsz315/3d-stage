@@ -42,6 +42,8 @@ export default class GameEvent{
 
     public static OPEN_TREE_ITEM: string = "open tree item";
 
+    public static LOADING: string = "loading";
+
     public version:string;
     private _sender:any;
     

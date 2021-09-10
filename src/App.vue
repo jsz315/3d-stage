@@ -16,6 +16,13 @@ html, body{
     padding: 0;
     font-size: 12px;
 }
+input{
+  outline: none;
+  border: solid 1px rgb(192, 192, 192);
+}
+input:focus{
+  border-color: rgb(176, 218, 235);
+}
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 ::-webkit-scrollbar {
   width: 8px;

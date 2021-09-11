@@ -44,6 +44,9 @@ export default class GameEvent{
 
     public static LOADING: string = "loading";
 
+    public static MESH_ALIGN: string = "mesh align";
+    public static MODEL_EXPORT: string = "model export";
+
     public version:string;
     private _sender:any;
     

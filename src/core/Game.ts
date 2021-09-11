@@ -1,16 +1,16 @@
-import * as THREE from 'three';
-import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import GameEvent from '@/core/event';
-import ParamTooler from './tool/ParamTooler';
-import Loading from './tool/Loading';
-import Factory from './tool/Factory';
-import LoadTooler from './tool/LoadTooler';
-import SelectTooler from './tool/SelectTooler';
-import ListSceneTooler from './tool/ListSceneTooler';
-import Root from './view/Root';
-import ExportModel from './dev/ExportModel';
-import ExportTooler from './tool/ExportTooler';
-import Tooler from './tool/Toole';
+import * as THREE from "three";
+import { GLTFLoader, GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+import GameEvent from "@/core/event";
+import ParamTooler from "./tool/ParamTooler";
+import Loading from "./tool/Loading";
+import Factory from "./tool/Factory";
+import { LoadTooler } from "./tool/LoadTooler";
+import SelectTooler from "./tool/SelectTooler";
+import ListSceneTooler from "./tool/ListSceneTooler";
+import Root from "./view/Root";
+import ExportModel from "./dev/ExportModel";
+import { ExportTooler } from "./tool/ExportTooler";
+import Tooler from "./tool/Toole";
 
 export default class Game {
     canvas: HTMLElement;
@@ -24,16 +24,17 @@ export default class Game {
     insideObj: any;
     isInside: boolean = false;
     root: Root;
+    mixer: THREE.AnimationMixer = null as any;
+    clock: THREE.Clock = new THREE.Clock();
 
     constructor(canvas: any) {
-
         GameEvent.ins.init(canvas);
 
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
-            antialias: true
-        })
+            antialias: true,
+        });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0xffffff));
@@ -56,9 +57,9 @@ export default class Game {
     }
 
     addEventListener(): void {
-        window.addEventListener("resize", e => this.onResize(e), false);
+        window.addEventListener("resize", (e) => this.onResize(e), false);
         this.canvas.addEventListener("mousedown", (e: MouseEvent) => {
-            console.log('mousedown');
+            console.log("mousedown");
             this.mouseDown(e);
         });
         window.addEventListener("keydown", (event) => {
@@ -80,7 +81,6 @@ export default class Game {
                     this.root.multiple = true;
                     break;
             }
-
         });
 
         window.addEventListener("keyup", (event) => {
@@ -89,23 +89,22 @@ export default class Game {
                     this.root.multiple = false;
                     break;
             }
-
         });
     }
 
-    standardExport(useBase64:boolean):void{
-        ExportTooler.standardExport(useBase64, this.root.container);
+    standardExport(useBase64: boolean): void {
+        // ExportTooler.start(this.curMesh);
     }
 
-    customExport(useBase64:boolean):void{
-        ExportTooler.customExport(useBase64, this.root.container);
+    customExport(useBase64: boolean): void {
+        // ExportTooler.start(this.curMesh);
     }
 
-    changeIsRoot(m: boolean):void{
+    changeIsRoot(m: boolean): void {
         this.isRoot = m;
     }
 
-    get curMesh():any{
+    get curMesh(): any {
         return this.insideObj;
     }
 
@@ -145,10 +144,9 @@ export default class Game {
         // let mesh = this.transformControls.object;
         let mesh = this.curMesh;
         let geo;
-        if(mesh.name.indexOf("Buffer") != -1){
+        if (mesh.name.indexOf("Buffer") != -1) {
             geo = Factory.getBufferGeometry(mesh.name, p);
-        }
-        else{
+        } else {
             geo = Factory.getGeometry(mesh.name, p);
         }
 
@@ -159,9 +157,48 @@ export default class Game {
         }
     }
 
+    changeMeshAlign(n: number): void {
+        let mesh = this.curMesh;
+        console.log(mesh);
+        if (mesh instanceof THREE.Mesh) {
+            mesh.geometry.computeBoundingBox();
+            console.log("geometry bound", mesh.geometry.boundingBox);
+            var box = mesh.geometry.boundingBox;
+            var oldx = (box.min.x + box.max.x) / 2;
+            var oldy = (box.min.y + box.max.y) / 2;
+            var oldz = (box.min.z + box.max.z) / 2;
+
+            var lenx = box.max.x - box.min.x;
+            var leny = box.max.y - box.min.y;
+            var lenz = box.max.z - box.min.z;
+
+            mesh.geometry.translate(0 - oldx, (leny / 2) * n - oldy, 0 - oldz);
+
+            var s = Tooler.getBoxSize(mesh);
+            console.log("mesh bound", s);
+        }
+    }
+
+    changeMeshExport({ type, param }: any) {
+        var name = "custom";
+        switch (type) {
+            case 0:
+                ExportTooler.start(this.curMesh, name + ".obj", param);
+                break;
+            case 1:
+                ExportTooler.start(this.curMesh, name + ".stl", param);
+                break;
+            case 2:
+                ExportTooler.start(this.curMesh, name + ".gltf", param);
+                break;
+            default:
+                break;
+        }
+    }
+
     toggerMaterial(type: string): void {
         let mesh: any = this.curMesh;
-        if(mesh){
+        if (mesh) {
             mesh.material && mesh.material.dispose();
             let material = Factory.getMaterial(type);
             if (material) {
@@ -177,15 +214,12 @@ export default class Game {
 
         if (key == "normalScale") {
             mesh.material[key] && mesh.material[key].set(1, -1).multiplyScalar(Number(data));
-        }
-        else {
+        } else {
             if (type == ParamTooler.TYPE_COLOR) {
                 mesh.material[key] = new THREE.Color(data);
-            }
-            else if (type == ParamTooler.TYPE_NUMBER) {
+            } else if (type == ParamTooler.TYPE_NUMBER) {
                 mesh.material[key] = Number(data);
-            }
-            else if (type == ParamTooler.TYPE_SWITCH) {
+            } else if (type == ParamTooler.TYPE_SWITCH) {
                 mesh.material[key] = Boolean(data);
             }
         }
@@ -198,8 +232,7 @@ export default class Game {
         if (mesh.material[key]) {
             if (type == "repeatX") {
                 mesh.material[key].repeat.x = Number(data);
-            }
-            else if (type == "repeatY") {
+            } else if (type == "repeatY") {
                 mesh.material[key].repeat.y = Number(data);
             }
             mesh.material[key].needsUpdate = true;
@@ -227,12 +260,10 @@ export default class Game {
                 fog.color = new THREE.Color(data.color);
                 fog.near = Number(data.near);
                 fog.far = Number(data.far);
-            }
-            else {
+            } else {
                 this.scene.fog = new THREE.Fog(new THREE.Color(data.fogColor).getHex(), Number(data.near), Number(data.far));
             }
-        }
-        else {
+        } else {
             this.scene.fog = null;
         }
         this.renderer.setClearColor(new THREE.Color(data.fogColor));
@@ -248,29 +279,25 @@ export default class Game {
     }
 
     changeLightParam(key: string, data: any): void {
-        let light:any = this.curMesh;
+        let light: any = this.curMesh;
         let type = ParamTooler.getType(key);
         if (type == ParamTooler.TYPE_COLOR) {
             light[key] = new THREE.Color(data);
-        }
-        else if (type == ParamTooler.TYPE_NUMBER) {
+        } else if (type == ParamTooler.TYPE_NUMBER) {
             light[key] = Number(data);
-        }
-        else if (type == ParamTooler.TYPE_SWITCH) {
+        } else if (type == ParamTooler.TYPE_SWITCH) {
             light[key] = Boolean(data);
         }
         this.sendItemInfo(light);
     }
-    
-    selectObject(obj: THREE.Object3D):void{
-        if(obj != this.root.selectView){
+
+    selectObject(obj: THREE.Object3D): void {
+        if (obj != this.root.selectView) {
             this.root.selectView.select(obj);
             this.sendItemInfo(obj);
+        } else {
+            console.log("looping");
         }
-        else{
-            console.log("looping")
-        }
-        
     }
 
     mouseDown(e: MouseEvent): void {
@@ -296,7 +323,7 @@ export default class Game {
 
     addObject(type: string, event: MouseEvent) {
         let mesh = this.root.addItem(type);
-        if(mesh){
+        if (mesh) {
             this.sendItemInfo(mesh);
         }
     }
@@ -311,13 +338,13 @@ export default class Game {
     loadObject(data: any): void {
         let loader = new GLTFLoader();
         loader.parse(data, "", (gltf: GLTF) => {
-            gltf.scene.children.forEach((item: any)=>{
+            gltf.scene.children.forEach((item: any) => {
                 this.root.addObject(item);
-            })
-        })
+            });
+        });
     }
 
-    exportTest(){
+    exportTest() {
         // let e = new ExportModel();
         // e.parse(this.root.container, "Good");
     }
@@ -334,18 +361,29 @@ export default class Game {
         this.root.addObject(mesh);
     }
 
-    // loadServeModel(url:string): void {
-    //     let loadTooler = new LoadTooler();
-    //     loadTooler.start('/asset/obj/' + url, (n: number) => {
-    //         this.loading.update(n + "%");
-    //         this.scene.add(this.loading);
-    //     }, () => {
-    //         this.startLoad();
-    //     }, () => {
-    //         alert("加载失败，请刷新页面重新尝试");
-    //     })
-    // }
+    loadServeModel(url: string): void {
+        let loadTooler = new LoadTooler();
+        loadTooler.start(url).then((obj) => {
+            if (obj instanceof THREE.Object3D) {
+                Tooler.resize(obj, 20);
+                this.root.addObject(obj);
+                this.checkPlay(obj);
+            }
+        });
+    }
 
+    checkPlay(object: any) {
+        console.log("gltf", object);
+        if (object.animations) {
+            this.mixer = new THREE.AnimationMixer(object);
+            const action = this.mixer.clipAction(object.animations[0]);
+            action.play();
+        } else {
+            this.mixer = null as any;
+        }
+    }
+
+    /*
     loadServeModel(url:string){
         let loader = new GLTFLoader();
         // loader.setPath('./asset/obj/');
@@ -364,6 +402,7 @@ export default class Game {
             this.root.addObject(aim);
             // this.scene.remove(this.loading);
         }, (e: ProgressEvent) => {
+            console.log("ProgressEvent", e);
             let n = Math.floor(e.loaded / e.total * 100);
             console.log("load " + n + "%");
             // this.loading.update(n + "%");
@@ -371,88 +410,95 @@ export default class Game {
             // this.scene.add(this.loading);
         })
     }
+    */
 
     startLoad(): void {
         let loader = new GLTFLoader();
-        loader.setPath('/asset/obj/');
-        loader.load('win.gltf', (gltf) => {
+        loader.setPath("/asset/obj/");
+        loader.load(
+            "win.gltf",
+            (gltf) => {
+                console.log("gltf");
+                console.log(gltf);
+                gltf.scene.traverse((child: any) => {
+                    if (child.isMesh) {
+                        child.name = "load_mesh";
+                        child.material.roughness = 0.3;
+                        child.material.metalness = 0.1;
+                        child.updateMatrix();
+                    }
+                });
 
-            console.log("gltf");
-            console.log(gltf);
-            gltf.scene.traverse((child: any) => {
-                if (child.isMesh) {
-                    child.name = "load_mesh";
-                    child.material.roughness = 0.3;
-                    child.material.metalness = 0.1;
-                    child.updateMatrix();
-                }
-            })
+                let aim: any = gltf.scene.children[0].children[0].children[0];
+                let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
+                let max = Math.max(size.x, size.y, size.z);
+                let scale = 10 / max;
+                aim.scale.set(scale, scale, scale);
 
-            let aim: any = gltf.scene.children[0].children[0].children[0];
-            let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
-            let max = Math.max(size.x, size.y, size.z);
-            let scale = 10 / max;
-            aim.scale.set(scale, scale, scale);
+                aim.position.set(0, 0, 0);
 
+                let group = new THREE.Object3D();
+                group.add(aim);
+                group.rotateX(Math.PI / 2);
 
-            aim.position.set(0, 0, 0);
+                this.root.addObject(group);
 
-            let group = new THREE.Object3D();
-            group.add(aim);
-            group.rotateX(Math.PI / 2);
+                group.name = "load_scene";
 
-            this.root.addObject(group);
-
-            group.name = "load_scene";
-
-            this.scene.remove(this.loading);
-        }, (e: ProgressEvent) => {
-            let n = Math.floor(e.loaded / e.total * 100);
-            console.log("load " + n + "%");
-            this.loading.update(n + "%");
-            this.scene.add(this.loading);
-        })
+                this.scene.remove(this.loading);
+            },
+            (e: ProgressEvent) => {
+                let n = Math.floor((e.loaded / e.total) * 100);
+                console.log("load " + n + "%");
+                this.loading.update(n + "%");
+                this.scene.add(this.loading);
+            }
+        );
     }
 
-    makeGroup():void{
+    makeGroup(): void {
         let group = this.root.makeGroup();
         this.selectObject(group);
     }
 
-    splitGroup():void{
+    splitGroup(): void {
         this.root.splitGroup();
     }
 
     animate(): void {
-        requestAnimationFrame(() => { this.animate() });
+        requestAnimationFrame(() => {
+            this.animate();
+        });
         this.renderer.render(this.scene, this.camera);
         this.stats && this.stats.update();
+        const delta = this.clock.getDelta();
+        if (this.mixer) this.mixer.update(delta);
         this.root.update();
     }
 
-    getSceneTree():any{
+    getSceneTree(): any {
         let s = ListSceneTooler.parse(this.scene);
         return s;
     }
 
-    selectedItemByUUID(uuid:string):any{
-        let obj:any = this.scene.getObjectByProperty('uuid', uuid);
+    selectedItemByUUID(uuid: string): any {
+        let obj: any = this.scene.getObjectByProperty("uuid", uuid);
         this.selectObject(obj);
     }
 
-    changeItemName(name:string):any{
+    changeItemName(name: string): any {
         this.curMesh.name = name;
     }
 
-    bspSubtract():void{
+    bspSubtract(): void {
         this.root.bspSubtract();
     }
 
-    bspIntersect():void{
+    bspIntersect(): void {
         this.root.bspIntersect();
     }
 
-    bspUnion():void{
+    bspUnion(): void {
         this.root.bspUnion();
     }
 }

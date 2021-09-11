@@ -35,6 +35,12 @@ module.exports = {
             }
         }
     },
+    pluginOptions: {
+        "style-resources-loader": {
+            preProcessor: "less",
+            patterns: [path.resolve("src/global.less")],
+        },
+    },
     chainWebpack: (config) => {
         // config.externals = cdn.externals;
         config.resolve.alias

@@ -34,15 +34,15 @@ export default new Vuex.Store({
 
         sceneTree: [],
         visible: {
-            remote: false
+            remote: false,
         },
-        uuid: ""
+        uuid: "",
     },
     mutations: {
-        changeVisible(state, {key, value}){
+        changeVisible(state, { key, value }) {
             (state.visible as any)[key] = value;
         },
-        changeUuid(state, value){
+        changeUuid(state, value) {
             state.uuid = value;
         },
         changeItemInfo(state, list) {
@@ -56,7 +56,7 @@ export default new Vuex.Store({
             state.childName = list[1] ? list[1].name : "";
         },
 
-        changeSceneTree(state, sceneTree){
+        changeSceneTree(state, sceneTree) {
             state.sceneTree = sceneTree;
         },
 
@@ -101,9 +101,7 @@ export default new Vuex.Store({
         },
         changeChildName(state, childName) {
             state.childName = childName;
-        }
+        },
     },
-    actions: {
-
-    }
+    actions: {},
 });

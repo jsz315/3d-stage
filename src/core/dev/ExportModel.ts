@@ -1,8 +1,8 @@
-import * as THREE from 'three'
-import ModelTooler from './ModelTooler';
-import { BlobTooler } from '../tool/BlobTooler';
-import GLTFTooler from '../tool/GLTFTooler';
-import CacheData from './CacheData';
+import * as THREE from "three";
+import ModelTooler from "./ModelTooler";
+import { BlobTooler } from "../tool/BlobTooler";
+import GLTFTooler from "../tool/GLTFTooler";
+import CacheData from "./CacheData";
 
 var RepeatWrapping = 1000;
 var ClampToEdgeWrapping = 1001;
@@ -22,7 +22,6 @@ var RGBFormat = 1022;
 var RGBAFormat = 1023;
 
 var WEBGL_CONSTANTS = {
-
     POINTS: 0,
     LINES: 1,
     LINE_LOOP: 2,
@@ -36,8 +35,8 @@ var WEBGL_CONSTANTS = {
     UNSIGNED_INT: 5125,
     FLOAT: 5126,
 
-    NEAREST: 9728,//使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
-    LINEAR: 9729,//使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
+    NEAREST: 9728, //使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
+    LINEAR: 9729, //使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
 
     NEAREST_MIPMAP_NEAREST: 9984,
     LINEAR_MIPMAP_NEAREST: 9985,
@@ -50,7 +49,6 @@ var WEBGL_CONSTANTS = {
     MIRRORED_REPEAT: 33648,
     ARRAY_BUFFER: 34962,
     ELEMENT_ARRAY_BUFFER: 34963,
-
 };
 
 var THREE_TO_WEBGL: any = {};
@@ -70,7 +68,6 @@ var byteOffset = 0;
 var buffers: any = [];
 
 export default class ExportModel {
-
     asset: object = { version: "2.0", generator: "GLTFExporter" };
     meshes: Array<any> = [];
     materials: Array<any> = [];
@@ -93,10 +90,10 @@ export default class ExportModel {
         this.cacheData = new CacheData();
     }
 
-    parse(useBase64:boolean, node: THREE.Object3D, fname: string): void {
+    parse(useBase64: boolean, node: THREE.Object3D, fname: string): void {
         let ext = ".txt";
         this.processScene(node);
-        var blob = new Blob(buffers, { type: 'application/octet-stream' });
+        var blob = new Blob(buffers, { type: "application/octet-stream" });
         this.buffers[0] = { byteLength: blob.size };
         if (useBase64) {
             var reader = new FileReader();
@@ -108,8 +105,7 @@ export default class ExportModel {
                 console.log(json);
                 GLTFTooler.saveString(JSON.stringify(json), fname + ext);
             };
-        }
-        else {
+        } else {
             this.buffers[0].uri = fname + ".bin";
             GLTFTooler.save(blob, fname + ".bin");
             let json = this.packageJson();
@@ -132,13 +128,13 @@ export default class ExportModel {
             textures: this.textures,
             samplers: this.samplers,
             images: this.images,
-            extensionsUsed: this.extensionsUsed
-        }
+            extensionsUsed: this.extensionsUsed,
+        };
     }
 
     processScene(obj: any): any {
         var scene: any = {
-            nodes: []
+            nodes: [],
         };
 
         let node = this.processNode(obj);
@@ -150,11 +146,11 @@ export default class ExportModel {
 
     processAccessors(attribute: any, geometry: any, start?: any, count?: any): any {
         var types: any = {
-            1: 'SCALAR',
-            2: 'VEC2',
-            3: 'VEC3',
-            4: 'VEC4',
-            16: 'MAT4'
+            1: "SCALAR",
+            2: "VEC2",
+            3: "VEC3",
+            4: "VEC4",
+            16: "MAT4",
         };
 
         var componentType;
@@ -167,7 +163,7 @@ export default class ExportModel {
         } else if (attribute.array.constructor === Uint8Array) {
             componentType = WEBGL_CONSTANTS.UNSIGNED_BYTE;
         } else {
-            throw new Error('THREE.GLTFExporter: Unsupported bufferAttribute component type.');
+            throw new Error("THREE.GLTFExporter: Unsupported bufferAttribute component type.");
         }
 
         if (start === undefined) start = 0;
@@ -203,7 +199,7 @@ export default class ExportModel {
             count: count,
             max: minMax.max,
             min: minMax.min,
-            type: types[attribute.itemSize]
+            type: types[attribute.itemSize],
         };
 
         this.accessors.push(accessor);
@@ -298,7 +294,7 @@ export default class ExportModel {
         var bufferView: any = {
             buffer: this.processBuffer(dataView.buffer),
             byteOffset: byteOffset,
-            byteLength: byteLength
+            byteLength: byteLength,
         };
 
         if (target !== undefined) bufferView.target = target;
@@ -312,7 +308,7 @@ export default class ExportModel {
 
         var output = {
             id: this.bufferViews.length - 1,
-            byteLength: 0
+            byteLength: 0,
         };
 
         return output;
@@ -324,14 +320,14 @@ export default class ExportModel {
     }
 
     processMesh(obj: any): any {
-        var cacheKey = obj.geometry.uuid + ':' + obj.material.uuid;
+        var cacheKey = obj.geometry.uuid + ":" + obj.material.uuid;
         if (this.cacheData.meshes.has(cacheKey)) {
             return this.cacheData.meshes.get(cacheKey);
         }
 
         let geometry = obj.geometry;
         if (!geometry.isBufferGeometry) {
-            console.warn('GLTFExporter: Exporting THREE.Geometry will increase file size. Use BufferGeometry instead.');
+            console.warn("GLTFExporter: Exporting THREE.Geometry will increase file size. Use BufferGeometry instead.");
             var geometryTemp = new THREE.BufferGeometry();
             geometryTemp.fromGeometry(geometry);
             geometry = geometryTemp;
@@ -339,13 +335,13 @@ export default class ExportModel {
 
         var attributes: any = {};
         var nameConversion: any = {
-            position: 'POSITION',
-            normal: 'NORMAL',
-            color: 'COLOR_0',
-            uv: 'TEXCOORD_0',
-            uv2: 'TEXCOORD_1',
-            skinWeight: 'WEIGHTS_0',
-            skinIndex: 'JOINTS_0'
+            position: "POSITION",
+            normal: "NORMAL",
+            color: "COLOR_0",
+            uv: "TEXCOORD_0",
+            uv2: "TEXCOORD_1",
+            skinWeight: "WEIGHTS_0",
+            skinIndex: "JOINTS_0",
         };
 
         ModelTooler.createIndices(geometry);
@@ -387,7 +383,7 @@ export default class ExportModel {
         }
 
         let mesh = {
-            primitives: primitives
+            primitives: primitives,
         };
         this.meshes.push(mesh);
         let meshId = this.meshes.length - 1;
@@ -405,8 +401,8 @@ export default class ExportModel {
             pbrMetallicRoughness: {
                 baseColorFactor: [m.color.r, m.color.g, m.color.b, m.opacity],
                 metallicFactor: m.metalness,
-                roughnessFactor: m.roughness
-            }
+                roughnessFactor: m.roughness,
+            },
         };
 
         if (m.isMeshBasicMaterial) {
@@ -425,7 +421,7 @@ export default class ExportModel {
         }
 
         if (m.transparent || m.alphaTest > 0.0) {
-            material.alphaMode = m.opacity < 1.0 ? 'BLEND' : 'MASK';
+            material.alphaMode = m.opacity < 1.0 ? "BLEND" : "MASK";
             if (m.alphaTest > 0.0 && m.alphaTest !== 0.5) {
                 material.alphaCutoff = m.alphaTest;
             }
@@ -451,14 +447,14 @@ export default class ExportModel {
             scale: 1,
             extensions: {
                 KHR_texture_transform: {
-                    scale: [repeat.x, repeat.y]
-                }
-            }
-        }
+                    scale: [repeat.x, repeat.y],
+                },
+            },
+        };
     }
 
     processTexture(obj: any): any {
-        if ( this.cacheData.textures.has(obj) ) {
+        if (this.cacheData.textures.has(obj)) {
             return this.cacheData.textures.get(obj);
         }
 
@@ -471,20 +467,19 @@ export default class ExportModel {
             magFilter: THREE_TO_WEBGL[obj.magFilter],
             minFilter: THREE_TO_WEBGL[obj.minFilter],
             wrapS: THREE_TO_WEBGL[obj.wrapS],
-            wrapT: THREE_TO_WEBGL[obj.wrapT]
-        }
+            wrapT: THREE_TO_WEBGL[obj.wrapT],
+        };
         this.samplers.push(sampler);
         let samplerId = this.samplers.length - 1;
 
         let sourceId;
-        if(this.cacheData.images.has(obj.image.currentSrc)){
+        if (this.cacheData.images.has(obj.image.currentSrc)) {
             sourceId = this.cacheData.images.get(obj.image.currentSrc);
-        }
-        else{
+        } else {
             let source = {
                 mimeType: obj.format == RGBAFormat ? "image/png" : "image/jpeg",
-                uri: obj.image.currentSrc
-            }
+                uri: obj.image.currentSrc,
+            };
             this.images.push(source);
             sourceId = this.images.length - 1;
             this.cacheData.images.set(obj.image.currentSrc, sourceId);
@@ -492,8 +487,8 @@ export default class ExportModel {
 
         let texture = {
             sampler: samplerId,
-            source: sourceId
-        }
+            source: sourceId,
+        };
 
         this.textures.push(texture);
         let textureId = this.textures.length - 1;

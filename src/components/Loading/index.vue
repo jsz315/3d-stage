@@ -7,7 +7,7 @@
         class="progress-container"
     >
         <svg class="svg" :viewBox="`0 0 ${svgWidth} ${svgWidth}`">
-            <circle :cx="radius + lineWidth / 2" :cy="radius + lineWidth / 2" :r="radius" stroke="#bcbcbc" :stroke-width="lineWidth" fill="none"/>
+            <circle :cx="radius + lineWidth / 2" :cy="radius + lineWidth / 2" :r="radius" stroke="#bcbcbc" :stroke-width="lineWidth" fill="none" />
             <!-- <path :d="backPath" fill="none" :stroke-width="lineWidth" stroke="#bcbcbc"></path> -->
             <path
                 class="path"
@@ -47,7 +47,7 @@ export default {
         stroke: {
             type: String,
             default: "#d5d5d6",
-        }
+        },
     },
     data() {
         return {
@@ -101,7 +101,6 @@ export default {
         },
     },
 };
-
 </script>
 
 <style lang="less" scoped>

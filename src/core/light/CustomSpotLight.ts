@@ -1,17 +1,13 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
-export default class CustomSpotLight extends THREE.SpotLight{
-
+export default class CustomSpotLight extends THREE.SpotLight {
     dragItem: THREE.Mesh;
     helpVisible: boolean = true;
 
-    constructor(color?: THREE.Color | string | number, intensity?: number, distance?: number, angle?: number, exponent?: number, decay?: number){
+    constructor(color?: THREE.Color | string | number, intensity?: number, distance?: number, angle?: number, exponent?: number, decay?: number) {
         super(color, intensity, distance, angle, exponent, decay);
 
-        this.dragItem = new THREE.Mesh(
-            new THREE.BoxBufferGeometry(0.4),
-            new THREE.MeshNormalMaterial()
-        )
+        this.dragItem = new THREE.Mesh(new THREE.BoxBufferGeometry(0.4), new THREE.MeshNormalMaterial());
 
         this.dragItem.name = "custom drag";
         this.name = "CustomSpotLight";
@@ -21,7 +17,7 @@ export default class CustomSpotLight extends THREE.SpotLight{
         this.add(this.dragItem);
     }
 
-    get parameters():any{
+    get parameters(): any {
         return {
             color: this.color,
             intensity: this.intensity,
@@ -29,11 +25,11 @@ export default class CustomSpotLight extends THREE.SpotLight{
             angle: this.angle,
             exponent: this.exponent,
             decay: this.decay,
-            helpVisible: this.helpVisible
-        }
+            helpVisible: this.helpVisible,
+        };
     }
 
-    update(){
+    update() {
         this.dragItem.lookAt(new THREE.Vector3());
     }
 }

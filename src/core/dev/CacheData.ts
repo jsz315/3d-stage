@@ -1,5 +1,4 @@
 export default class CacheData {
-
     meshes: Map<any, any> = new Map();
     attributes: Map<any, any> = new Map();
     attributesNormalized: Map<any, any> = new Map();
@@ -7,7 +6,5 @@ export default class CacheData {
     textures: Map<any, any> = new Map();
     images: Map<any, any> = new Map();
 
-    constructor() {
-
-    }
+    constructor() {}
 }

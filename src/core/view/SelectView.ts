@@ -1,17 +1,16 @@
-import * as THREE from 'three'
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import SelectLine from './SelectLine';
-import ComputeGeometry from '../tool/ComputeGeometry';
+import * as THREE from "three";
+import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import SelectLine from "./SelectLine";
+import ComputeGeometry from "../tool/ComputeGeometry";
 
-export default class SelectView extends THREE.Object3D{
-
-    scene:THREE.Scene;
+export default class SelectView extends THREE.Object3D {
+    scene: THREE.Scene;
     transformControls: TransformControls;
     orbitControls: OrbitControls;
     selectLine: SelectLine;
 
-    constructor(scene:THREE.Scene, camera:THREE.PerspectiveCamera, canvas: HTMLElement){
+    constructor(scene: THREE.Scene, camera: THREE.PerspectiveCamera, canvas: HTMLElement) {
         super();
         this.scene = scene;
         this.orbitControls = new OrbitControls(camera, canvas);
@@ -21,69 +20,68 @@ export default class SelectView extends THREE.Object3D{
         this.add(this.selectLine);
 
         this.transformControls.addEventListener("dragging-changed", (event) => {
-            console.log('dragging-changed');
+            console.log("dragging-changed");
             this.orbitControls.enabled = !event.value;
         });
 
         this.transformControls.addEventListener("objectChange", (event) => {
-            console.log('objectChange');
-        })
+            console.log("objectChange");
+        });
     }
 
-    deleteSelected(){
+    deleteSelected() {
         this.remove(this.transformControls);
         this.selectLine.deleteSelected();
     }
 
-    setMode(n:any):void{
+    setMode(n: any): void {
         this.transformControls.setMode(n);
     }
 
-    toggerSpace():void{
+    toggerSpace(): void {
         let n = this.transformControls.space === "local" ? "world" : "local";
         this.transformControls.setSpace(n);
     }
 
-    select(obj: any):void{
-        if(obj){
+    select(obj: any): void {
+        if (obj) {
             this.selectLine.select(obj);
             this.transformControls.attach(obj);
             this.add(this.transformControls);
-        }
-        else{
+        } else {
             this.selectLine.clear();
             this.remove(this.transformControls);
         }
     }
 
-    bspSubtract():THREE.Object3D|null{
+    bspSubtract(): THREE.Object3D | null {
         let list = this.selectLine.getBSPObjects();
-        if(list){
+        if (list) {
             let m = ComputeGeometry.subtract(list[0], list[1]);
             return m;
         }
         return null;
     }
 
-    bspIntersect():THREE.Object3D|null{
+    bspIntersect(): THREE.Object3D | null {
         let list = this.selectLine.getBSPObjects();
-        if(list){
+        if (list) {
             let m = ComputeGeometry.intersect(list[0], list[1]);
             return m;
         }
         return null;
     }
 
-    bspUnion():THREE.Object3D|null{
+    bspUnion(): THREE.Object3D | null {
         let list = this.selectLine.getBSPObjects();
-        if(list){
+        if (list) {
             let m = ComputeGeometry.union(list[0], list[1]);
             return m;
         }
         return null;
     }
 
-    cancelSelected():any{
+    cancelSelected(): any {
         this.remove(this.transformControls);
         this.selectLine.clear();
     }

@@ -1,36 +1,105 @@
-import * as THREE from 'three'
+import * as THREE from "three";
+import Tooler from "./Tooler";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { TDSLoader } from "three/examples/jsm/loaders/TDSLoader.js";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader.js";
 
-export default class LoadTooler{
+export class LoadTooler {
+    constructor() {}
 
-    constructor(){
-
-    }
-
-    start(url:string, onProgress:Function, onCompelte:Function, onError:Function):void{
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url);
-        xhr.onprogress = (event) =>{
-            if (event.lengthComputable) {
-                let n = Math.floor(event.loaded / event.total * 100);
-                onProgress(n);
-            }
-        };
-        xhr.onreadystatechange = () => { // 状态发生变化时，函数被回调
-            if (xhr.readyState === 4) { // 成功完成
-                // 判断响应结果:
-                if (xhr.status === 200) {
-                    // 成功，通过responseText拿到响应的文本:
-                    onCompelte();
-                } else {
-                    // 失败，根据响应码判断失败原因:
-                    onError();
-                }
-            } else {
-                // HTTP请求还在继续...
-            }
+    start(url: string) {
+        if (url.match(/fbx$/i)) {
+            return this.loadFbx(url);
+        } else if (url.match(/obj$/i)) {
+            return this.loadObj(url);
+        } else if (url.match(/3ds$/i)) {
+            return this.load3ds(url);
+        } else if (url.match(/stl$/i)) {
+            return this.loadStl(url);
+        } else if (url.match(/mtl$/i)) {
+            return this.loadMtl(url);
+        } else if (url.match(/dae$/i)) {
+            return this.loadDae(url);
+        } else {
+            return this.loadGltf(url);
         }
-        xhr.send();
     }
 
+    loadGltf(url: string) {
+        return new Promise((resolve) => {
+            const loader = new GLTFLoader();
+            loader.load(url, (object: any) => {
+                var m = object.scene;
+                resolve(m);
+            });
+        });
+    }
 
+    loadDae(url: string) {
+        return new Promise((resolve) => {
+            const loader = new ColladaLoader();
+            loader.load(url, (collada: any) => {
+                var object = collada.scene;
+                resolve(object);
+            });
+        });
+    }
+
+    loadMtl(url: string) {
+        return new Promise((resolve) => {
+            const loader = new MTLLoader();
+            loader.load(url, (materials: any) => {
+                materials.preload();
+
+                new OBJLoader()
+                    .setMaterials(materials)
+                    // .setPath( 'models/obj/male02/' )
+                    .load(url.replace(".mtl", ".obj"), (object) => {
+                        resolve(object);
+                    });
+            });
+        });
+    }
+
+    loadStl(url: string) {
+        return new Promise((resolve) => {
+            const loader = new STLLoader();
+            loader.load(url, (object: any) => {
+                resolve(object);
+            });
+        });
+    }
+
+    loadFbx(url: string) {
+        // var mat = new THREE.MeshStandardMaterial({color: 0x303030});
+        // mat.castShadow = true;
+        return new Promise((resolve) => {
+            const loader = new FBXLoader();
+            loader.load(url, (object: any) => {
+                resolve(object);
+            });
+        });
+    }
+
+    load3ds(url: string) {
+        return new Promise((resolve) => {
+            const loader = new TDSLoader();
+            loader.load(url, (object: any) => {
+                resolve(object);
+            });
+        });
+    }
+
+    loadObj(url: string) {
+        return new Promise((resolve) => {
+            const loader = new OBJLoader();
+            loader.load(url, (object: any) => {
+                resolve(object);
+            });
+        });
+    }
 }

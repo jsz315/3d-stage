@@ -1,13 +1,10 @@
 export default class ModelTooler {
-
-    constructor() {
-
-    }
+    constructor() {}
 
     public static getMinMax(attribute: any, start: any, count: any) {
         var output = {
             min: new Array(attribute.itemSize).fill(Number.POSITIVE_INFINITY),
-            max: new Array(attribute.itemSize).fill(Number.NEGATIVE_INFINITY)
+            max: new Array(attribute.itemSize).fill(Number.NEGATIVE_INFINITY),
         };
 
         for (var i = start; i < start + count; i++) {

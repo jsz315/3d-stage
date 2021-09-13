@@ -1,299 +1,342 @@
 <template>
-  <div class="stage">
-    <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
-    <canvas ref="canvas" class="canvas"></canvas>
-  </div>
+    <div class="stage">
+        <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
+        <canvas ref="canvas" class="canvas"></canvas>
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from "@/core/event/index";
-import ParamTooler from '@/core/tool/ParamTooler';
-import {Stats} from '@/core/tool/Stats';
+import ParamTooler from "@/core/tool/ParamTooler";
+import { Stats } from "@/core/tool/Stats";
 
-let game:Game;
+let game: Game;
 let dataList: any;
-let stats:any;
+let stats: any;
 
 @Component
 export default class Stage extends Vue {
-  @Prop() private msg!: string
+    mounted() {
+        game = new Game(this.$refs.canvas);
 
-  mounted() {
-    game = new Game(this.$refs.canvas);
-    
-    (<any>this.$refs.canvas).addEventListener("mouseenter", this.mouseenter);
+        (<any>this.$refs.canvas).addEventListener("mouseenter", this.mouseenter);
 
-    //threejs发过来的消息
-    // GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
-    // GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
+        //threejs发过来的消息
+        // GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
+        // GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
 
-    GameEvent.ins.on(GameEvent.ITEM_INFO, (e:any) => {this.changeItemInfo(e)});
-    GameEvent.ins.on(GameEvent.FAIL_COMPUTE, (e:any) => {this.failCompute(e)});
+        GameEvent.ins.on(GameEvent.ITEM_INFO, (e: any) => {
+            this.changeItemInfo(e);
+        });
+        GameEvent.ins.on(GameEvent.FAIL_COMPUTE, (e: any) => {
+            this.failCompute(e);
+        });
 
-    
-    
-    // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
+        // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
 
-    //vue组件发过来的消息
-    // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
-    // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
-    GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e:any) => {this.changeMaterial(e)});
-    
-    GameEvent.ins.on(GameEvent.DELETE_TEXTURE, (e:any) => {this.deleteTexture(e)});
-    GameEvent.ins.on(GameEvent.DELETE_ITEM, (e:any) => {this.deleteItem(e)});
-    GameEvent.ins.on(GameEvent.COPY_ITEM, (e:any) => {this.copyItem(e)});
+        //vue组件发过来的消息
+        // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
+        // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
+        GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e: any) => {
+            this.changeMaterial(e);
+        });
 
-    GameEvent.ins.on(GameEvent.ADD_LIGHT, (e:any) => {this.addLight(e)});
+        GameEvent.ins.on(GameEvent.DELETE_TEXTURE, (e: any) => {
+            this.deleteTexture(e);
+        });
+        GameEvent.ins.on(GameEvent.DELETE_ITEM, (e: any) => {
+            this.deleteItem(e);
+        });
+        GameEvent.ins.on(GameEvent.COPY_ITEM, (e: any) => {
+            this.copyItem(e);
+        });
 
-    GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e:any) => {this.addCustomGeometry(e)});
-    GameEvent.ins.on(GameEvent.MAKE_GROUP, (e:any) => {this.makeGroup(e)});
-    GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e:any) => {this.splitGroup(e)});
-    // GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
+        GameEvent.ins.on(GameEvent.ADD_LIGHT, (e: any) => {
+            this.addLight(e);
+        });
 
-    GameEvent.ins.on(GameEvent.GET_SCENE_TREE, (e:any) => {this.getSceneTree(e)});
-    GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e:any) => {this.selectTreeItem(e)});
+        GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e: any) => {
+            this.addCustomGeometry(e);
+        });
+        GameEvent.ins.on(GameEvent.MAKE_GROUP, (e: any) => {
+            this.makeGroup(e);
+        });
+        GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e: any) => {
+            this.splitGroup(e);
+        });
+        // GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
 
-    GameEvent.ins.on(GameEvent.CHANGE_ITEM_NAME, (e:any) => {this.changeItemName(e)});
+        GameEvent.ins.on(GameEvent.GET_SCENE_TREE, (e: any) => {
+            this.getSceneTree(e);
+        });
+        GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e: any) => {
+            this.selectTreeItem(e);
+        });
 
+        GameEvent.ins.on(GameEvent.CHANGE_ITEM_NAME, (e: any) => {
+            this.changeItemName(e);
+        });
 
-    GameEvent.ins.on(GameEvent.BSP_SUBTRACT, (e:any) => {this.bspSubtract(e)});
-    GameEvent.ins.on(GameEvent.BSP_INTERSECT, (e:any) => {this.bspIntersect(e)});
-    GameEvent.ins.on(GameEvent.BSP_UNION, (e:any) => {this.bspUnion(e)}); 
+        GameEvent.ins.on(GameEvent.BSP_SUBTRACT, (e: any) => {
+            this.bspSubtract(e);
+        });
+        GameEvent.ins.on(GameEvent.BSP_INTERSECT, (e: any) => {
+            this.bspIntersect(e);
+        });
+        GameEvent.ins.on(GameEvent.BSP_UNION, (e: any) => {
+            this.bspUnion(e);
+        });
 
-    GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e:any) => {this.handleExport(e)}); 
-    GameEvent.ins.on(GameEvent.LOAD_SCENE, (e:any) => {this.handleTest(e)}); 
-    GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e:any) => {this.handleStats(e)}); 
-    GameEvent.ins.on(GameEvent.IMPORT_SCENE, (e:any) => {this.handleFile(e)}); 
-    
+        GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e: any) => {
+            this.handleExport(e);
+        });
+        GameEvent.ins.on(GameEvent.LOAD_SCENE, (e: any) => {
+            this.handleTest(e);
+        });
+        GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e: any) => {
+            this.handleStats(e);
+        });
+        GameEvent.ins.on(GameEvent.IMPORT_SCENE, (e: any) => {
+            this.handleFile(e);
+        });
 
-    //Paramview组件发过来的消息
-    GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e:any) => {this.changeItemParam(e)});
+        //Paramview组件发过来的消息
+        GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e: any) => {
+            this.changeItemParam(e);
+        });
 
-    this.initStats();
+        GameEvent.ins.on(GameEvent.MESH_ALIGN, (e: any) => {
+            this.changeMeshAlign(e);
+        });
+        GameEvent.ins.on(GameEvent.MODEL_EXPORT, (e: any) => {
+            this.changeMeshExport(e);
+        });
 
-  }
-
-  initStats(){
-    stats = new Stats();
-    stats.setMode(0); 
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '204px';
-    stats.domElement.style.top = '90px';
-    document.body.appendChild(stats.domElement);
-    
-    game.setStats(stats);
-  }
-
-  addLight(e: any){
-    game.addLight(e.detail);
-  }
-
-  changeMaterial(e: any){
-    game.toggerMaterial(e.detail);
-  }
-
-  deleteTexture(e:any){
-    game.deleteTexture(e.detail);
-  }
-
-  changeItemParam(e: any){
-    console.log("Paramview组件发过来的消息");
-    console.log(e.detail);
-    let value = e.detail.value;
-    let list = e.detail.name.split(".");
-    let type = list[0];
-
-    if(type == "geometry"){
-      let param:any = Object.assign(this.$store.state.curParam, {});
-      param[list[1]] = Number(value);
-      game.changeGeometryParam(param);
-      // this.$store.commit("changeCurParams", param);
+        this.initStats();
     }
-    else if(type == "position" || type == "rotation" || type == "scale"){
-      let transform:any = Object.assign(this.$store.state.transform, {});
-			transform[type][list[1]] = Number(value);
-      game.changeItemTransform(transform);
-      // this.$store.commit("changeCurTransform", transform);
+
+    initStats() {
+        stats = new Stats();
+        stats.setMode(0);
+        stats.domElement.style.position = "absolute";
+        stats.domElement.style.left = "204px";
+        stats.domElement.style.top = "90px";
+        stats.domElement.style.zIndex = 1;
+        document.body.appendChild(stats.domElement);
+
+        game.setStats(stats);
     }
-    else if(type == "material"){
-      let material = Object.assign(this.$store.state.curMaterial, {});
-      if(ParamTooler.checkMap(list[1])){
-        if(list[2] == "image"){
-          game.changeTextureMaterial(list[1], value);
+
+    addLight(e: any) {
+        game.addLight(e.detail);
+    }
+
+    changeMaterial(e: any) {
+        game.toggerMaterial(e.detail);
+    }
+
+    deleteTexture(e: any) {
+        game.deleteTexture(e.detail);
+    }
+
+    changeMeshAlign(e: any) {
+        game.changeMeshAlign(e.detail);
+    }
+
+    changeMeshExport(e: any) {
+        game.changeMeshExport(e.detail);
+    }
+
+    changeItemParam(e: any) {
+        console.log("Paramview组件发过来的消息");
+        console.log(e.detail);
+        let value = e.detail.value;
+        let list = e.detail.name.split(".");
+        let type = list[0];
+
+        if (type == "geometry") {
+            let param: any = Object.assign(this.$store.state.curParam, {});
+            param[list[1]] = Number(value);
+            game.changeGeometryParam(param);
+            // this.$store.commit("changeCurParams", param);
+        } else if (type == "position" || type == "rotation" || type == "scale") {
+            let transform: any = Object.assign(this.$store.state.transform, {});
+            transform[type][list[1]] = Number(value);
+            game.changeItemTransform(transform);
+            // this.$store.commit("changeCurTransform", transform);
+        } else if (type == "material") {
+            let material = Object.assign(this.$store.state.curMaterial, {});
+            if (ParamTooler.checkMap(list[1])) {
+                if (list[2] == "image") {
+                    game.changeTextureMaterial(list[1], value);
+                } else {
+                    game.changeRepeatMaterial(list[1], list[2], value);
+                }
+                if (!material[list[1]]) {
+                    material[list[1]] = {};
+                }
+                material[list[1]][list[2]] = value;
+            } else {
+                material[list[1]] = value;
+                game.changeCommonMaterial(list[1], value);
+            }
+        } else if (type == "light") {
+            game.changeLightParam(list[1], value);
+        } else if (type == "scene") {
+            let data = Object.assign(this.$store.state, {});
+            let parameters = data.parameters;
+            parameters[list[1]] = value;
+            this.$store.commit("changeItemInfo", [data]);
+            game.changeScene(parameters);
         }
-        else{
-          game.changeRepeatMaterial(list[1], list[2], value);
+    }
+
+    deleteItem(e: any) {
+        game.deleteItem();
+    }
+
+    copyItem(e: any) {
+        game.copyItem();
+    }
+
+    mouseenter(e: MouseEvent): void {
+        if (this.$store.state.dragItem) {
+            game.addObject(this.$store.state.dragItem.name, e);
         }
-        if(!material[list[1]]){
-          material[list[1]] = {};
+    }
+
+    changeSelectItem(e: CustomEvent): void {
+        this.$store.commit("changeCurItemName", e.detail.name);
+        this.$store.commit("changeCurDragType", "mesh");
+        this.$store.commit("changeDrawer", true);
+        this.$store.commit("changeMaterialType", e.detail.materialType);
+        this.$store.commit("changeCurMaterial", e.detail.material);
+        this.$store.commit("changeCurParams", e.detail.parameters);
+        this.$store.commit("changeCurTransform", e.detail.transform);
+    }
+
+    changeSelectLight(e: CustomEvent): void {
+        this.$store.commit("changeCurItemName", e.detail.name);
+        this.$store.commit("changeCurDragType", "light");
+        this.$store.commit("changeDrawer", true);
+        this.$store.commit("changeCurParams", e.detail.parameters);
+        this.$store.commit("changeCurTransform", e.detail.transform);
+    }
+
+    changeItemInfo(e: CustomEvent): void {
+        dataList = e.detail;
+        this.$store.commit("changeItemInfo", dataList);
+        this.$store.commit("changeDrawer", true);
+        if (dataList[0] && dataList[0].uuid) {
+            GameEvent.ins.send(GameEvent.OPEN_TREE_ITEM, dataList[0].uuid);
         }
-        material[list[1]][list[2]] = value;
-      }
-      else{
-        material[list[1]] = value;
-        game.changeCommonMaterial(list[1], value);
-      }
     }
-    else if(type == "light"){
-      game.changeLightParam(list[1], value);
+
+    changeCurTransform(e: CustomEvent): void {
+        this.$store.commit("changeCurTransform", e.detail);
     }
-    else if(type == "scene"){
-      let data = Object.assign(this.$store.state, {});
-      let parameters = data.parameters;
-      parameters[list[1]] = value;
-      this.$store.commit("changeItemInfo", [data]);
-      game.changeScene(parameters);
+
+    handleFile(e: CustomEvent): void {
+        console.log(e);
+        if (e && e.detail) {
+            game.loadServeModel(e.detail);
+            return;
+        }
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(e.detail);
+        reader.onload = (r) => {
+            console.info(reader.result);
+            var rs = new DataView(reader.result as ArrayBuffer);
+            console.log(rs);
+            game.loadObject(rs.buffer);
+        };
     }
-  }
 
-  deleteItem(e: any){
-    game.deleteItem();
-  }
-
-  copyItem(e: any){
-    game.copyItem();
-  }
-
-  mouseenter(e:MouseEvent):void{
-    if(this.$store.state.dragItem){
-      game.addObject(this.$store.state.dragItem.name, e);
+    handleTest(e: CustomEvent): void {
+        this.$prompt("请输入文件地址", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+        })
+            .then((res: any) => {
+                game.loadServeModel(res.value);
+            })
+            .catch(() => {
+                this.$message({
+                    type: "info",
+                    message: "取消输入",
+                });
+            });
     }
-  }
 
-  changeSelectItem(e:CustomEvent):void{
-    this.$store.commit("changeCurItemName", e.detail.name);
-    this.$store.commit("changeCurDragType", "mesh");
-    this.$store.commit("changeDrawer", true);
-    this.$store.commit("changeMaterialType", e.detail.materialType);
-    this.$store.commit("changeCurMaterial", e.detail.material);
-    this.$store.commit("changeCurParams", e.detail.parameters);
-    this.$store.commit("changeCurTransform", e.detail.transform);
-  }
-
-  changeSelectLight(e:CustomEvent):void{
-    this.$store.commit("changeCurItemName", e.detail.name);
-    this.$store.commit("changeCurDragType", "light");
-    this.$store.commit("changeDrawer", true);
-    this.$store.commit("changeCurParams", e.detail.parameters);
-    this.$store.commit("changeCurTransform", e.detail.transform);
-  }
-
-  changeItemInfo(e:CustomEvent):void{
-    dataList = e.detail;
-    this.$store.commit("changeItemInfo", dataList);
-    this.$store.commit("changeDrawer", true);
-    if(dataList[0] && dataList[0].uuid){
-      GameEvent.ins.send(GameEvent.OPEN_TREE_ITEM, dataList[0].uuid);
+    handleStats(e: CustomEvent): void {
+        let s = stats.domElement.style;
+        console.log(s);
+        if (s.display == "none") {
+            s.display = "block";
+        } else {
+            s.display = "none";
+        }
     }
-  }
 
-  changeCurTransform(e:CustomEvent):void{
-    this.$store.commit("changeCurTransform", e.detail);
-  }
+    handleExport(e: CustomEvent) {
+        // game.exportTest();
 
-  handleFile(e:CustomEvent):void{
-    console.log(e);
-    if(e && e.detail){
-      game.loadServeModel(e.detail);
-      return;
+        let type = e.detail;
+        if (type == 1) {
+            game.standardExport(true);
+        } else if (type == 2) {
+            game.standardExport(false);
+        } else if (type == 3) {
+            game.customExport(true);
+        } else if (type == 4) {
+            game.customExport(false);
+        }
     }
-    var reader = new FileReader();
-      reader.readAsArrayBuffer(e.detail);
-      reader.onload = (r) => {
-          console.info(reader.result);
-          var rs = new DataView(reader.result as ArrayBuffer);
-          console.log(rs);
-          game.loadObject(rs.buffer);
-      }
-  }
 
-  handleTest(e:CustomEvent):void{
-    this.$prompt('请输入文件地址', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-    }).then((res:any) => {
-      game.loadServeModel(res.value);
-    }).catch(() => {
-      this.$message({
-        type: 'info',
-        message: '取消输入'
-      });       
-    });
-  }
-
-  handleStats(e:CustomEvent):void{
-    let s = stats.domElement.style;
-    console.log(s);
-    if(s.display == "none"){
-      s.display = "block";
+    addCustomGeometry(e: CustomEvent): void {
+        game.addCustomGeometry(e.detail);
     }
-    else{
-      s.display = "none";
+
+    makeGroup(e: CustomEvent): void {
+        game.makeGroup();
     }
-  }
 
-  handleExport(e:CustomEvent){
-    // game.exportTest();
-
-    let type = e.detail;
-    if(type == 1){
-      game.standardExport(true);
+    splitGroup(e: CustomEvent): void {
+        game.splitGroup();
     }
-    else if(type == 2){
-      game.standardExport(false);
+
+    getSceneTree(e: CustomEvent): void {
+        let s = game.getSceneTree();
+        console.log("game getSceneTree");
+        console.log(s);
+        this.$store.commit("changeSceneTree", [s]);
     }
-    else if(type == 3){
-      game.customExport(true);
+
+    selectTreeItem(e: CustomEvent): void {
+        game.selectedItemByUUID(e.detail);
     }
-    else if(type == 4){
-      game.customExport(false);
+
+    changeItemName(e: CustomEvent): void {
+        game.changeItemName(e.detail);
     }
-  }
 
-  addCustomGeometry(e:CustomEvent):void{
-    game.addCustomGeometry(e.detail);
-  }
+    bspSubtract(e: CustomEvent): void {
+        game.bspSubtract();
+    }
 
-  makeGroup(e:CustomEvent):void{
-    game.makeGroup();
-  }
+    bspIntersect(e: CustomEvent): void {
+        game.bspIntersect();
+    }
 
-  splitGroup(e:CustomEvent):void{
-    game.splitGroup();
-  }
+    bspUnion(e: CustomEvent): void {
+        game.bspUnion();
+    }
 
-  getSceneTree(e:CustomEvent):void{
-    let s = game.getSceneTree();
-    console.log("game getSceneTree");
-    console.log(s);
-    this.$store.commit("changeSceneTree", [s]);
-  }
-
-  selectTreeItem(e:CustomEvent):void{
-    game.selectedItemByUUID(e.detail);
-  }
-
-  changeItemName(e:CustomEvent):void{
-    game.changeItemName(e.detail);
-  }
-
-  bspSubtract(e:CustomEvent):void{
-    game.bspSubtract();
-  }
-
-  bspIntersect(e:CustomEvent):void{
-    game.bspIntersect();
-  }
-
-  bspUnion(e:CustomEvent):void{
-    game.bspUnion();
-  }
-
-  failCompute(e:CustomEvent):void{
-    this.$message(e.detail);
-  }
+    failCompute(e: CustomEvent): void {
+        this.$message(e.detail);
+    }
 }
 </script>
 

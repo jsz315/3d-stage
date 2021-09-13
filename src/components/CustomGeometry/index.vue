@@ -15,53 +15,47 @@
 </template>
 
 <script>
-    import GameEvent from "@/core/event/index";
-    import ParamTooler from "@/core/tool/ParamTooler";
+import GameEvent from "@/core/event/index";
+import ParamTooler from "@/core/tool/ParamTooler";
 
-    export default {
-        data() {
-            return {
-                position: "",
-                normal: "",
-                uv: "",
-                index: ""
-            };
+export default {
+    data() {
+        return {
+            position: "",
+            normal: "",
+            uv: "",
+            index: "",
+        };
+    },
+    components: {},
+    computed: {
+        visible() {
+            return this.$store.state.customGeometryVisible;
         },
-        components: {
-            
-        },
-        computed: {
-            visible() {
-                return this.$store.state.customGeometryVisible;
-            }
-        },
-        mounted() {
-            
-        },
+    },
+    mounted() {},
 
-        methods: {
-            handleSure(){
-                if(this.position &&　this.normal && this.uv && this.index){
-                    this.$store.commit("changeCustomGeometryVisible", false);
-                    GameEvent.ins.send(GameEvent.CUSTOM_GEOMETRY, {
-                        position: this.position,
-                        normal: this.normal,
-                        uv: this.uv,
-                        index: this.index
-                    })
-                }
-                else{
-                    this.$message("请输入正确数据");
-                }
-                
-            },
-            handleClose(){
+    methods: {
+        handleSure() {
+            if (this.position && this.normal && this.uv && this.index) {
                 this.$store.commit("changeCustomGeometryVisible", false);
+                GameEvent.ins.send(GameEvent.CUSTOM_GEOMETRY, {
+                    position: this.position,
+                    normal: this.normal,
+                    uv: this.uv,
+                    index: this.index,
+                });
+            } else {
+                this.$message("请输入正确数据");
             }
-        }
-    };
+        },
+        handleClose() {
+            this.$store.commit("changeCustomGeometryVisible", false);
+        },
+    },
+};
 </script>
 
 <style lang="less" scoped>
-    @import "./index.less";
+@import "./index.less";
 </style>

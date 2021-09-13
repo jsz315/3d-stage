@@ -1,19 +1,25 @@
-import * as THREE from 'three'
-import GLTFTooler from './GLTFTooler';
-import ExportModel from '../dev/ExportModel';
+import * as THREE from "three";
+import Tooler from "./Tooler";
+import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
+import { OBJExporter } from "three/examples/jsm/exporters/OBJExporter";
+import { STLExporter } from "three/examples/jsm/exporters/STLExporter";
+import { ColladaExporter } from "three/examples/jsm/exporters/ColladaExporter";
 
-export default class ExportTooler{
+export class ExportTooler {
+    constructor() {}
 
-    constructor(){
-        
+    static start(obj:THREE.Object3D, name:string, param: object = {}) {
+        if(name.indexOf(".obj") != -1){
+            Tooler.download((new OBJExporter()).parse(obj), name);
+        }
+        else if(name.indexOf(".gltf") != -1){
+            (new GLTFExporter()).parse(obj, (res:any)=>{
+                Tooler.download(JSON.stringify(res), name);
+            }, param)
+        }
+        else if(name.indexOf(".stl") != -1){
+            Tooler.download((new STLExporter()).parse(obj, param), name);
+        }
     }
 
-    public static standardExport(useBase64:boolean, obj:any):void{
-        GLTFTooler.toGLTFData(useBase64, obj, "standerd");
-    }
-
-    public static customExport(useBase64:boolean, obj:any):void{
-        let e = new ExportModel();
-        e.parse(useBase64, obj, "custom");
-    }
 }

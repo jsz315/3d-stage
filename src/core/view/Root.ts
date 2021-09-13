@@ -1,26 +1,25 @@
-import * as THREE from 'three'
-import WorldTooler from '../tool/WorldTooler';
-import Factory from '../tool/Factory';
-import ColorTooler from '../tool/ColorTooler';
-import SelectView from './SelectView';
-import FocusLight from '../light/FocusLight';
-import CustomGroup from '../dev/CustomGroup';
-import GLTFTooler from '../tool/GLTFTooler';
+import * as THREE from "three";
+import WorldTooler from "../tool/WorldTooler";
+import Factory from "../tool/Factory";
+import ColorTooler from "../tool/ColorTooler";
+import SelectView from "./SelectView";
+import FocusLight from "../light/FocusLight";
+import CustomGroup from "../dev/CustomGroup";
+import GLTFTooler from "../tool/GLTFTooler";
 
-export default class Root extends THREE.Object3D{
-
+export default class Root extends THREE.Object3D {
     public static SINGLE_ROOT = "SingleRoot";
 
     container: THREE.Object3D;
     lights: THREE.Object3D;
-    scene:THREE.Scene;
-    camera:THREE.PerspectiveCamera;
-    grid:THREE.GridHelper;
+    scene: THREE.Scene;
+    camera: THREE.PerspectiveCamera;
+    grid: THREE.GridHelper;
     rayCaster: THREE.Raycaster;
     selectView: SelectView;
     focusLight: FocusLight;
 
-    constructor(scene:THREE.Scene, camera:THREE.PerspectiveCamera, canvas: HTMLElement){
+    constructor(scene: THREE.Scene, camera: THREE.PerspectiveCamera, canvas: HTMLElement) {
         super();
 
         this.name = Root.SINGLE_ROOT;
@@ -56,33 +55,33 @@ export default class Root extends THREE.Object3D{
         // this.addFaceMaterial();
     }
 
-    addFaceMaterial(){
+    addFaceMaterial() {
         var geometry = new THREE.BoxGeometry();
         var materials = [];
-        for(let i = 0; i < 4; i++){
+        for (let i = 0; i < 4; i++) {
             let material = new THREE.MeshBasicMaterial();
             material.color = ColorTooler.getRandomColor();
             materials.push(material);
         }
-        for(let i = 0; i < geometry.faces.length; i++){
+        for (let i = 0; i < geometry.faces.length; i++) {
             geometry.faces[i].materialIndex = i % materials.length;
         }
         let mesh = new THREE.Mesh(geometry, materials);
         this.container.add(mesh);
     }
 
-    select(e: MouseEvent, camera:THREE.PerspectiveCamera):any {
+    select(e: MouseEvent, camera: THREE.PerspectiveCamera): any {
         let mouse = new THREE.Vector2();
         mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-        let obj:any;
+        let obj: any;
         this.rayCaster.setFromCamera(mouse, camera);
         let list = [...this.container.children, ...this.lights.children];
         let intersectObjects = this.rayCaster.intersectObjects(list, true);
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
-            if(obj.name == "custom drag"){
+            if (obj.name == "custom drag") {
                 obj = obj.parent;
             }
             console.log(obj);
@@ -91,24 +90,23 @@ export default class Root extends THREE.Object3D{
         return obj;
     }
 
-    deleteItem():void{
+    deleteItem(): void {
         this.selectView.deleteSelected();
     }
 
-    addLight(light:any){
+    addLight(light: any) {
         this.lights.add(light);
     }
 
-    addObject(obj: THREE.Object3D){
+    addObject(obj: THREE.Object3D) {
         this.container.add(obj);
     }
 
-    addItem(type: string):any {
+    addItem(type: string): any {
         let geo;
-        if(type.indexOf("Buffer") != -1){
+        if (type.indexOf("Buffer") != -1) {
             geo = Factory.getBufferGeometry(type, null);
-        }
-        else{
+        } else {
             geo = Factory.getGeometry(type, null);
         }
         if (!geo) {
@@ -122,7 +120,7 @@ export default class Root extends THREE.Object3D{
             transparent: true,
             opacity: 1,
             flatShading: true,
-            wireframe: false
+            wireframe: false,
         });
 
         let mesh = new THREE.Mesh(geo, material);
@@ -133,41 +131,41 @@ export default class Root extends THREE.Object3D{
         return mesh;
     }
 
-    update(){
+    update() {
         this.selectView.selectLine.update();
-        this.lights.children.forEach((item:any) => {
+        this.lights.children.forEach((item: any) => {
             item.update(this.camera);
-        })
+        });
     }
 
-    bspSubtract():void{
+    bspSubtract(): void {
         let m = this.selectView.bspSubtract();
-        if(m){
+        if (m) {
             this.container.add(m);
         }
     }
 
-    bspIntersect():void{
+    bspIntersect(): void {
         let m = this.selectView.bspIntersect();
-        if(m){
+        if (m) {
             this.container.add(m);
         }
     }
 
-    bspUnion():void{
+    bspUnion(): void {
         let m = this.selectView.bspUnion();
-        if(m){
+        if (m) {
             this.container.add(m);
         }
     }
 
-    makeGroup():any{
+    makeGroup(): any {
         let list = this.selectView.selectLine.getSelectItems();
-        if(list.length > 1){
+        if (list.length > 1) {
             let customGroup = new CustomGroup();
-            list.forEach((item:any) => {
+            list.forEach((item: any) => {
                 customGroup.push(item);
-            })
+            });
             this.selectView.selectLine.clear();
             this.addObject(customGroup);
             return customGroup;
@@ -175,28 +173,27 @@ export default class Root extends THREE.Object3D{
         return null;
     }
 
-    splitGroup():any{
+    splitGroup(): any {
         let list = this.selectView.selectLine.getSelectItems();
-        if(list.length == 1){
-            let obj:any = list[0];
-            if(obj.name == "CustomGroup"){
-                obj.clear(this.container);                
+        if (list.length == 1) {
+            let obj: any = list[0];
+            if (obj.name == "CustomGroup") {
+                obj.clear(this.container);
                 this.container.remove(obj);
                 this.selectView.cancelSelected();
             }
         }
     }
 
-    set multiple(n:any){
+    set multiple(n: any) {
         this.selectView.selectLine.multiple = n;
     }
 
-    set selectedColor(n:any){
+    set selectedColor(n: any) {
         this.selectView.selectLine.selectedColor = n;
     }
 
-    get selectedColor():any{
+    get selectedColor(): any {
         return this.selectView.selectLine.selectedColor;
     }
-
 }

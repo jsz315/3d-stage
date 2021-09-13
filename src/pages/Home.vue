@@ -1,14 +1,14 @@
 <template>
-  <div class="home">
-    <Stage />
-    <LeftSide />
-    <RightSide />
-    <TextureView />
-    <CustomGeometry />
-    <MenuView />
-    <RemoteView />
-    <Loading :progress="progress"/>
-  </div>
+    <div class="home">
+        <Stage />
+        <LeftSide />
+        <RightSide />
+        <TextureView />
+        <CustomGeometry />
+        <MenuView />
+        <RemoteView />
+        <Loading :progress="progress" v-if="false" />
+    </div>
 </template>
 
 <script>
@@ -25,10 +25,10 @@ import Loading from "@/components/Loading/index.vue";
 import GameEvent from "@/core/event/index";
 
 export default {
-    data(){
+    data() {
         return {
-            progress: 30
-        }
+            progress: 30,
+        };
     },
     components: {
         Stage,
@@ -38,12 +38,12 @@ export default {
         CustomGeometry,
         MenuView,
         RemoteView,
-        Loading
+        Loading,
     },
     mounted() {
-        GameEvent.ins.on(GameEvent.LOADING, (e)=>{
+        GameEvent.ins.on(GameEvent.LOADING, (e) => {
             this.progress = e.detail;
-        })
+        });
     },
-}
+};
 </script>

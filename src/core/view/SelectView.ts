@@ -3,6 +3,8 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import SelectLine from "./SelectLine";
 import ComputeGeometry from "../tool/ComputeGeometry";
+import { Presenter } from "../history/Presenter";
+import { PositionCmd } from "../history/cmd/PositionCmd";
 
 export default class SelectView extends THREE.Object3D {
     scene: THREE.Scene;
@@ -10,7 +12,11 @@ export default class SelectView extends THREE.Object3D {
     orbitControls: OrbitControls;
     selectLine: SelectLine;
 
-    constructor(scene: THREE.Scene, camera: THREE.PerspectiveCamera, canvas: HTMLElement) {
+    constructor(
+        scene: THREE.Scene,
+        camera: THREE.PerspectiveCamera,
+        canvas: HTMLElement
+    ) {
         super();
         this.scene = scene;
         this.orbitControls = new OrbitControls(camera, canvas);
@@ -19,13 +25,31 @@ export default class SelectView extends THREE.Object3D {
         this.selectLine = new SelectLine(this.scene);
         this.add(this.selectLine);
 
-        this.transformControls.addEventListener("dragging-changed", (event) => {
-            console.log("dragging-changed");
+        this.transformControls.addEventListener("dragging-changed", event => {
+            console.log("dragging-changed", event);
             this.orbitControls.enabled = !event.value;
         });
 
-        this.transformControls.addEventListener("objectChange", (event) => {
-            console.log("objectChange");
+        // this.transformControls.addEventListener("objectChange", event => {
+        //     console.log("objectChange", event);
+        // });
+
+        var oldPosition: any;
+
+        this.transformControls.addEventListener("mouseDown", event => {
+            console.log("mouseDown", event);
+            oldPosition = event.target.object.position.clone();
+        });
+
+        this.transformControls.addEventListener("mouseUp", event => {
+            console.log("mouseUp", event);
+            var newPosition = event.target.object.position.clone();
+            var cmd = new PositionCmd(
+                event.target.object,
+                oldPosition,
+                newPosition
+            );
+            Presenter.instance.push(cmd);
         });
     }
 

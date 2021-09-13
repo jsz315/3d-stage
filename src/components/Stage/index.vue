@@ -1,6 +1,12 @@
 <template>
     <div class="stage">
-        <p class="info">Q-坐标系 | W-移动 | E-旋转 | R-缩放</p>
+        <div class="info">
+            <div class="tip">Q-坐标系 | W-移动 | E-旋转 | R-缩放</div>
+            <div class="btns">
+                <i class="btn el-icon-refresh-left" @click="undo"></i>
+                <i class="btn el-icon-refresh-right" @click="redo"></i>
+            </div>
+        </div>
         <canvas ref="canvas" class="canvas"></canvas>
     </div>
 </template>
@@ -11,6 +17,7 @@ import Game from "@/core/Game"; // @ is an alias to /src
 import GameEvent from "@/core/event/index";
 import ParamTooler from "@/core/tool/ParamTooler";
 import { Stats } from "@/core/tool/Stats";
+import { Presenter } from "@/core/history/Presenter";
 
 let game: Game;
 let dataList: any;
@@ -21,7 +28,10 @@ export default class Stage extends Vue {
     mounted() {
         game = new Game(this.$refs.canvas);
 
-        (<any>this.$refs.canvas).addEventListener("mouseenter", this.mouseenter);
+        (<any>this.$refs.canvas).addEventListener(
+            "mouseenter",
+            this.mouseenter
+        );
 
         //threejs发过来的消息
         // GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
@@ -117,6 +127,14 @@ export default class Stage extends Vue {
         this.initStats();
     }
 
+    undo() {
+        Presenter.instance.undo();
+    }
+
+    redo() {
+        Presenter.instance.redo();
+    }
+
     initStats() {
         stats = new Stats();
         stats.setMode(0);
@@ -161,7 +179,11 @@ export default class Stage extends Vue {
             param[list[1]] = Number(value);
             game.changeGeometryParam(param);
             // this.$store.commit("changeCurParams", param);
-        } else if (type == "position" || type == "rotation" || type == "scale") {
+        } else if (
+            type == "position" ||
+            type == "rotation" ||
+            type == "scale"
+        ) {
             let transform: any = Object.assign(this.$store.state.transform, {});
             transform[type][list[1]] = Number(value);
             game.changeItemTransform(transform);
@@ -246,7 +268,7 @@ export default class Stage extends Vue {
         }
         var reader = new FileReader();
         reader.readAsArrayBuffer(e.detail);
-        reader.onload = (r) => {
+        reader.onload = r => {
             console.info(reader.result);
             var rs = new DataView(reader.result as ArrayBuffer);
             console.log(rs);
@@ -257,7 +279,7 @@ export default class Stage extends Vue {
     handleTest(e: CustomEvent): void {
         this.$prompt("请输入文件地址", "提示", {
             confirmButtonText: "确定",
-            cancelButtonText: "取消",
+            cancelButtonText: "取消"
         })
             .then((res: any) => {
                 game.loadServeModel(res.value);
@@ -265,7 +287,7 @@ export default class Stage extends Vue {
             .catch(() => {
                 this.$message({
                     type: "info",
-                    message: "取消输入",
+                    message: "取消输入"
                 });
             });
     }

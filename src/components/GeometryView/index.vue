@@ -4,16 +4,23 @@
             <div class="comm" v-if="info.position">
                 <div class="label" @click="log(info.position)">position</div>
                 <div class="info" @click="log(info.position, true)">
-                    <div class="tip">length: {{ info.position.count * info.position.itemSize }}</div>
+                    <div class="tip">
+                        length:
+                        {{ info.position.count * info.position.itemSize }}
+                    </div>
                     <div class="tip">count: {{ info.position.count }}</div>
-                    <div class="tip">itemSize: {{ info.position.itemSize }}</div>
+                    <div class="tip">
+                        itemSize: {{ info.position.itemSize }}
+                    </div>
                 </div>
             </div>
 
             <div class="comm" v-if="info.normal">
                 <div class="label" @click="log(info.normal)">normal</div>
                 <div class="info" @click="log(info.normal, true)">
-                    <div class="tip">length: {{ info.normal.count * info.normal.itemSize }}</div>
+                    <div class="tip">
+                        length: {{ info.normal.count * info.normal.itemSize }}
+                    </div>
                     <div class="tip">count: {{ info.normal.count }}</div>
                     <div class="tip">itemSize: {{ info.normal.itemSize }}</div>
                 </div>
@@ -22,7 +29,9 @@
             <div class="comm" v-if="info.uv">
                 <div class="label" @click="log(info.uv)">uv</div>
                 <div class="info" @click="log(info.uv, true)">
-                    <div class="tip">length: {{ info.uv.count * info.uv.itemSize }}</div>
+                    <div class="tip">
+                        length: {{ info.uv.count * info.uv.itemSize }}
+                    </div>
                     <div class="tip">count: {{ info.uv.count }}</div>
                     <div class="tip">itemSize: {{ info.uv.itemSize }}</div>
                 </div>
@@ -39,6 +48,15 @@
                 <el-button type="primary" @click="align(1)">顶对齐</el-button>
                 <el-button type="primary" @click="align(0)">中对齐</el-button>
                 <el-button type="primary" @click="align(-1)">底对齐</el-button>
+            </div>
+
+            <div>
+                <el-button type="primary" @click="rotate(1)"
+                    >绕自身Y轴旋转</el-button
+                >
+                <el-button type="primary" @click="rotate(0)"
+                    >绕世界Y轴旋转</el-button
+                >
             </div>
         </template>
         <template v-else>
@@ -58,7 +76,7 @@ export default {
     computed: {
         info() {
             return this.$store.state.extra.geometry;
-        },
+        }
     },
     methods: {
         log(n, join) {
@@ -71,7 +89,10 @@ export default {
         align(n) {
             GameEvent.ins.send(GameEvent.MESH_ALIGN, n);
         },
-    },
+        rotate(n) {
+            GameEvent.ins.send(GameEvent.OBJ_ROTATE, n);
+        }
+    }
 };
 </script>
 

@@ -124,6 +124,10 @@ export default class Stage extends Vue {
             this.changeMeshExport(e);
         });
 
+        GameEvent.ins.on(GameEvent.OBJ_ROTATE, (e: any) => {
+            game.objRotate(e.detail);
+        });
+
         this.initStats();
     }
 

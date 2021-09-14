@@ -36,7 +36,7 @@ export default class Game {
             antialias: true,
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        // this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setClearColor(new THREE.Color(0xffffff));
         this.renderer.shadowMap.enabled = true;
         // this.renderer.outputEncoding = THREE.sRGBEncoding;

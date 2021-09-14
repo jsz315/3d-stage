@@ -522,6 +522,7 @@ export default class Game {
     }
 
     selectedItemByUUID(uuid: string): any {
+        console.log("selecte uuid", uuid);
         let obj: any = this.scene.getObjectByProperty("uuid", uuid);
         this.selectObject(obj);
     }

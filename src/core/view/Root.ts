@@ -81,12 +81,13 @@ export default class Root extends THREE.Object3D {
         let intersectObjects = this.rayCaster.intersectObjects(list, true);
         if (intersectObjects[0]) {
             obj = intersectObjects[0].object;
-            if (obj.name == "custom drag") {
-                obj = obj.parent;
-            }
+            // if (obj.name == "custom drag") {
+            //     obj = obj.parent;
+            // }
             console.log(obj);
+            this.selectView.select(obj);
         }
-        this.selectView.select(obj);
+        // this.selectView.select(obj);
         return obj;
     }
 

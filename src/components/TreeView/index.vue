@@ -28,10 +28,6 @@ export default class LeftSide extends Vue {
         });
     }
 
-    handleNodeClick(e: any) {
-        GameEvent.ins.send(GameEvent.SELECT_TREE_ITEM, e.uuid);
-    }
-
     openTreeItem(e: CustomEvent) {
         // (this.$refs.tree as any).setCheckedKeys([]);
         // let uuid = e.detail;

@@ -33,7 +33,7 @@ export default class Game {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
-            antialias: true,
+            antialias: true
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -43,7 +43,12 @@ export default class Game {
 
         this.scene = new THREE.Scene();
 
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        this.camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            100
+        );
         this.camera.position.set(3, 4, 5);
         this.camera.lookAt(new THREE.Vector3());
 
@@ -57,12 +62,12 @@ export default class Game {
     }
 
     addEventListener(): void {
-        window.addEventListener("resize", (e) => this.onResize(e), false);
+        window.addEventListener("resize", e => this.onResize(e), false);
         this.canvas.addEventListener("mousedown", (e: MouseEvent) => {
             console.log("mousedown");
             this.mouseDown(e);
         });
-        window.addEventListener("keydown", (event) => {
+        window.addEventListener("keydown", event => {
             console.log(event.keyCode);
             switch (event.keyCode) {
                 case 81: // Q
@@ -83,7 +88,7 @@ export default class Game {
             }
         });
 
-        window.addEventListener("keyup", (event) => {
+        window.addEventListener("keyup", event => {
             switch (event.keyCode) {
                 case 17: // ctrl
                     this.root.multiple = false;
@@ -179,6 +184,29 @@ export default class Game {
         }
     }
 
+    objRotate(n: number): void {
+        console.log("rotate type", n);
+        var r = (10 * Math.PI) / 180;
+        if (n == 1) {
+            (this.curMesh as THREE.Object3D).rotateOnAxis(
+                new THREE.Vector3(0, 1, 0),
+                r
+            );
+        } else {
+            // (this.curMesh as THREE.Object3D).rotateOnWorldAxis(
+            //     new THREE.Vector3(0, 1, 0),
+            //     r
+            // );
+
+            Tooler.rotateOnAxis(
+                this.curMesh as THREE.Object3D,
+                new THREE.Vector3(),
+                new THREE.Vector3(0, 1, 0),
+                10
+            );
+        }
+    }
+
     changeMeshExport({ type, param }: any) {
         var name = "custom";
         switch (type) {
@@ -213,7 +241,8 @@ export default class Game {
         let type = ParamTooler.getType(key);
 
         if (key == "normalScale") {
-            mesh.material[key] && mesh.material[key].set(1, -1).multiplyScalar(Number(data));
+            mesh.material[key] &&
+                mesh.material[key].set(1, -1).multiplyScalar(Number(data));
         } else {
             if (type == ParamTooler.TYPE_COLOR) {
                 mesh.material[key] = new THREE.Color(data);
@@ -261,7 +290,11 @@ export default class Game {
                 fog.near = Number(data.near);
                 fog.far = Number(data.far);
             } else {
-                this.scene.fog = new THREE.Fog(new THREE.Color(data.fogColor).getHex(), Number(data.near), Number(data.far));
+                this.scene.fog = new THREE.Fog(
+                    new THREE.Color(data.fogColor).getHex(),
+                    Number(data.near),
+                    Number(data.far)
+                );
             }
         } else {
             this.scene.fog = null;
@@ -330,7 +363,12 @@ export default class Game {
 
     sendItemInfo(m: any): void {
         this.insideObj = SelectTooler.getInsideObject(m);
-        let data = ParamTooler.getObjectData(this.insideObj, this.scene, this.root.grid.visible, this.root.selectedColor);
+        let data = ParamTooler.getObjectData(
+            this.insideObj,
+            this.scene,
+            this.root.grid.visible,
+            this.root.selectedColor
+        );
         let list = [data];
         GameEvent.ins.send(GameEvent.ITEM_INFO, list);
     }
@@ -363,7 +401,7 @@ export default class Game {
 
     loadServeModel(url: string): void {
         let loadTooler = new LoadTooler();
-        loadTooler.start(url).then((obj) => {
+        loadTooler.start(url).then(obj => {
             if (obj instanceof THREE.Object3D) {
                 Tooler.resize(obj, 20);
                 this.root.addObject(obj);
@@ -417,7 +455,7 @@ export default class Game {
         loader.setPath("/asset/obj/");
         loader.load(
             "win.gltf",
-            (gltf) => {
+            gltf => {
                 console.log("gltf");
                 console.log(gltf);
                 gltf.scene.traverse((child: any) => {
@@ -430,7 +468,9 @@ export default class Game {
                 });
 
                 let aim: any = gltf.scene.children[0].children[0].children[0];
-                let size = new THREE.Box3().setFromObject(aim).getSize(new THREE.Vector3());
+                let size = new THREE.Box3()
+                    .setFromObject(aim)
+                    .getSize(new THREE.Vector3());
                 let max = Math.max(size.x, size.y, size.z);
                 let scale = 10 / max;
                 aim.scale.set(scale, scale, scale);

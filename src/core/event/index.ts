@@ -1,4 +1,4 @@
-export default class GameEvent{
+export default class GameEvent {
     private static _ins: GameEvent;
 
     public static SELECT_ITEM: string = "select item";
@@ -13,19 +13,19 @@ export default class GameEvent{
 
     public static CUSTOM_GEOMETRY: string = "custom geometry";
 
-    public static DELETE_TEXTURE:string = "delete texture";
+    public static DELETE_TEXTURE: string = "delete texture";
 
-    public static ADD_LIGHT:string = "add light";
-    public static SELECT_LIGHT:string = "select light";
+    public static ADD_LIGHT: string = "add light";
+    public static SELECT_LIGHT: string = "select light";
 
-    public static GET_SCENE_TREE:string = "get scene tree";
-    public static SET_SCENE_TREE:string = "set scene tree";
-    public static SELECT_TREE_ITEM:string = "select tree item";
-    
+    public static GET_SCENE_TREE: string = "get scene tree";
+    public static SET_SCENE_TREE: string = "set scene tree";
+    public static SELECT_TREE_ITEM: string = "select tree item";
+
     public static CHANGE_PARAM: string = "change param";
     public static CHANGE_TRANSFORM: string = "change transform";
-    public static CHANGE_MATERIAL:string = "change material";
-    public static CHANGE_ITEM_PARAM: string = "change item param"; 
+    public static CHANGE_MATERIAL: string = "change material";
+    public static CHANGE_ITEM_PARAM: string = "change item param";
 
     public static CHANGE_ITEM_NAME: string = "change item name";
 
@@ -46,30 +46,30 @@ export default class GameEvent{
 
     public static MESH_ALIGN: string = "mesh align";
     public static MODEL_EXPORT: string = "model export";
+    public static OBJ_ROTATE: string = "obj rotate";
 
-    public version:string;
-    private _sender:any;
-    
+    public version: string;
+    private _sender: any;
 
-    constructor(){
+    constructor() {
         this.version = "v" + Math.random();
         console.log(this.version);
     }
 
-    public init(sender:any):void{
+    public init(sender: any): void {
         this._sender = sender;
     }
 
-    public on(type:string, callback:Function):void{
+    public on(type: string, callback: Function): void {
         this._sender.addEventListener(type, callback);
     }
 
-    public send(type:string, param:any):void{
-        this._sender.dispatchEvent(new CustomEvent(type, {detail: param}));
+    public send(type: string, param: any): void {
+        this._sender.dispatchEvent(new CustomEvent(type, { detail: param }));
     }
 
-    public static get ins():GameEvent{
-        if(!this._ins){
+    public static get ins(): GameEvent {
+        if (!this._ins) {
             this._ins = new GameEvent();
         }
         return this._ins;

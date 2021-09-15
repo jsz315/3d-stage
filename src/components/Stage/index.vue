@@ -18,6 +18,7 @@ import GameEvent from "@/core/event/index";
 import ParamTooler from "@/core/tool/ParamTooler";
 import { Stats } from "@/core/tool/Stats";
 import { Presenter } from "@/core/history/Presenter";
+import { mapState, mapMutations } from "vuex";
 
 let game: Game;
 let dataList: any;
@@ -37,94 +38,89 @@ export default class Stage extends Vue {
         // GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
         // GameEvent.ins.on(GameEvent.SELECT_LIGHT, (e:any) => {this.changeSelectLight(e)});
 
-        GameEvent.ins.on(GameEvent.ITEM_INFO, (e: any) => {
+        GameEvent.ins.on(GameEvent.ITEM_INFO, (e: CustomEvent) => {
             this.changeItemInfo(e);
         });
-        GameEvent.ins.on(GameEvent.FAIL_COMPUTE, (e: any) => {
-            this.failCompute(e);
+        GameEvent.ins.on(GameEvent.FAIL_COMPUTE, (e: CustomEvent) => {
+            this.$message(e.detail);
         });
 
-        // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeCurTransform(e)});
-
-        //vue组件发过来的消息
-        // GameEvent.ins.on(GameEvent.CHANGE_PARAM, (e:any) => {this.changeItemParam(e)});
-        // GameEvent.ins.on(GameEvent.CHANGE_TRANSFORM, (e:any) => {this.changeItemTransform(e)});
-        GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e: any) => {
-            this.changeMaterial(e);
+        GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e: CustomEvent) => {
+            game.toggerMaterial(e.detail);
         });
 
-        GameEvent.ins.on(GameEvent.DELETE_TEXTURE, (e: any) => {
-            this.deleteTexture(e);
+        GameEvent.ins.on(GameEvent.DELETE_TEXTURE, (e: CustomEvent) => {
+            game.deleteTexture(e.detail);
         });
-        GameEvent.ins.on(GameEvent.DELETE_ITEM, (e: any) => {
-            this.deleteItem(e);
+        GameEvent.ins.on(GameEvent.DELETE_ITEM, (e: CustomEvent) => {
+            game.deleteItem();
         });
-        GameEvent.ins.on(GameEvent.COPY_ITEM, (e: any) => {
-            this.copyItem(e);
-        });
-
-        GameEvent.ins.on(GameEvent.ADD_LIGHT, (e: any) => {
-            this.addLight(e);
+        GameEvent.ins.on(GameEvent.COPY_ITEM, (e: CustomEvent) => {
+            game.copyItem();
         });
 
-        GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e: any) => {
-            this.addCustomGeometry(e);
+        GameEvent.ins.on(GameEvent.ADD_LIGHT, (e: CustomEvent) => {
+            game.addLight(e.detail);
         });
-        GameEvent.ins.on(GameEvent.MAKE_GROUP, (e: any) => {
-            this.makeGroup(e);
+
+        GameEvent.ins.on(GameEvent.CUSTOM_GEOMETRY, (e: CustomEvent) => {
+            game.addCustomGeometry(e.detail);
         });
-        GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e: any) => {
-            this.splitGroup(e);
+        GameEvent.ins.on(GameEvent.MAKE_GROUP, (e: CustomEvent) => {
+            game.makeGroup();
+        });
+        GameEvent.ins.on(GameEvent.SPLIT_GROUP, (e: CustomEvent) => {
+            game.splitGroup();
         });
         // GameEvent.ins.on(GameEvent.CHANGE_IS_ROOT, (e:any) => {this.changeIsRoot(e)});
 
-        GameEvent.ins.on(GameEvent.GET_SCENE_TREE, (e: any) => {
+        GameEvent.ins.on(GameEvent.GET_SCENE_TREE, (e: CustomEvent) => {
             this.getSceneTree(e);
         });
-        GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e: any) => {
-            this.selectTreeItem(e);
+        GameEvent.ins.on(GameEvent.SELECT_TREE_ITEM, (e: CustomEvent) => {
+            game.selectedItemByUUID(e.detail);
         });
 
-        GameEvent.ins.on(GameEvent.CHANGE_ITEM_NAME, (e: any) => {
-            this.changeItemName(e);
+        GameEvent.ins.on(GameEvent.CHANGE_ITEM_NAME, (e: CustomEvent) => {
+            game.changeItemName(e.detail);
         });
 
-        GameEvent.ins.on(GameEvent.BSP_SUBTRACT, (e: any) => {
-            this.bspSubtract(e);
+        GameEvent.ins.on(GameEvent.BSP_SUBTRACT, (e: CustomEvent) => {
+            game.bspSubtract();
         });
-        GameEvent.ins.on(GameEvent.BSP_INTERSECT, (e: any) => {
-            this.bspIntersect(e);
+        GameEvent.ins.on(GameEvent.BSP_INTERSECT, (e: CustomEvent) => {
+            game.bspIntersect();
         });
-        GameEvent.ins.on(GameEvent.BSP_UNION, (e: any) => {
-            this.bspUnion(e);
+        GameEvent.ins.on(GameEvent.BSP_UNION, (e: CustomEvent) => {
+            game.bspUnion();
         });
 
-        GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e: any) => {
+        GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e: CustomEvent) => {
             this.handleExport(e);
         });
-        GameEvent.ins.on(GameEvent.LOAD_SCENE, (e: any) => {
+        GameEvent.ins.on(GameEvent.LOAD_SCENE, (e: CustomEvent) => {
             this.handleTest(e);
         });
-        GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e: any) => {
+        GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e: CustomEvent) => {
             this.handleStats(e);
         });
-        GameEvent.ins.on(GameEvent.IMPORT_SCENE, (e: any) => {
+        GameEvent.ins.on(GameEvent.IMPORT_SCENE, (e: CustomEvent) => {
             this.handleFile(e);
         });
 
         //Paramview组件发过来的消息
-        GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e: any) => {
+        GameEvent.ins.on(GameEvent.CHANGE_ITEM_PARAM, (e: CustomEvent) => {
             this.changeItemParam(e);
         });
 
-        GameEvent.ins.on(GameEvent.MESH_ALIGN, (e: any) => {
-            this.changeMeshAlign(e);
+        GameEvent.ins.on(GameEvent.MESH_ALIGN, (e: CustomEvent) => {
+            game.changeMeshAlign(e.detail);
         });
-        GameEvent.ins.on(GameEvent.MODEL_EXPORT, (e: any) => {
-            this.changeMeshExport(e);
+        GameEvent.ins.on(GameEvent.MODEL_EXPORT, (e: CustomEvent) => {
+            game.changeMeshExport(e.detail);
         });
 
-        GameEvent.ins.on(GameEvent.OBJ_ROTATE, (e: any) => {
+        GameEvent.ins.on(GameEvent.OBJ_ROTATE, (e: CustomEvent) => {
             game.objRotate(e.detail);
         });
 
@@ -150,28 +146,11 @@ export default class Stage extends Vue {
 
         game.setStats(stats);
     }
-
-    addLight(e: any) {
-        game.addLight(e.detail);
-    }
-
-    changeMaterial(e: any) {
+    changeMaterial(e: CustomEvent) {
         game.toggerMaterial(e.detail);
     }
 
-    deleteTexture(e: any) {
-        game.deleteTexture(e.detail);
-    }
-
-    changeMeshAlign(e: any) {
-        game.changeMeshAlign(e.detail);
-    }
-
-    changeMeshExport(e: any) {
-        game.changeMeshExport(e.detail);
-    }
-
-    changeItemParam(e: any) {
+    changeItemParam(e: CustomEvent) {
         console.log("Paramview组件发过来的消息");
         console.log(e.detail);
         let value = e.detail.value;
@@ -217,14 +196,6 @@ export default class Stage extends Vue {
             this.$store.commit("changeItemInfo", [data]);
             game.changeScene(parameters);
         }
-    }
-
-    deleteItem(e: any) {
-        game.deleteItem();
-    }
-
-    copyItem(e: any) {
-        game.copyItem();
     }
 
     mouseenter(e: MouseEvent): void {
@@ -307,8 +278,6 @@ export default class Stage extends Vue {
     }
 
     handleExport(e: CustomEvent) {
-        // game.exportTest();
-
         let type = e.detail;
         if (type == 1) {
             game.standardExport(true);
@@ -321,47 +290,11 @@ export default class Stage extends Vue {
         }
     }
 
-    addCustomGeometry(e: CustomEvent): void {
-        game.addCustomGeometry(e.detail);
-    }
-
-    makeGroup(e: CustomEvent): void {
-        game.makeGroup();
-    }
-
-    splitGroup(e: CustomEvent): void {
-        game.splitGroup();
-    }
-
     getSceneTree(e: CustomEvent): void {
         let s = game.getSceneTree();
         console.log("game getSceneTree");
         console.log(s);
         this.$store.commit("changeSceneTree", [s]);
-    }
-
-    selectTreeItem(e: CustomEvent): void {
-        game.selectedItemByUUID(e.detail);
-    }
-
-    changeItemName(e: CustomEvent): void {
-        game.changeItemName(e.detail);
-    }
-
-    bspSubtract(e: CustomEvent): void {
-        game.bspSubtract();
-    }
-
-    bspIntersect(e: CustomEvent): void {
-        game.bspIntersect();
-    }
-
-    bspUnion(e: CustomEvent): void {
-        game.bspUnion();
-    }
-
-    failCompute(e: CustomEvent): void {
-        this.$message(e.detail);
     }
 }
 </script>

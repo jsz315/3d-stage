@@ -209,7 +209,7 @@ export default class Game {
 
     changeMeshExport({ type, param }: any) {
         var name = "custom";
-        switch (type) {
+        switch (Number(type)) {
             case 0:
                 ExportTooler.start(this.curMesh, name + ".obj", param);
                 break;

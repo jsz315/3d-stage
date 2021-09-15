@@ -7,7 +7,7 @@
         <div class="main">
             <el-tabs size="mini" v-model="tabName" type="border-card" @tab-click="handleClick">
                 <el-tab-pane size="mini" label="新增" name="first">
-                    <el-button size="mini" @click="openRemote">远程资源</el-button>
+                    <el-button size="mini" class="remote" @click="openRemote">远程资源</el-button>
                     <AddView />
                 </el-tab-pane>
 

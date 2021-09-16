@@ -5350,6 +5350,11 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jsz-event@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/jsz-event/-/jsz-event-1.0.1.tgz#daad23c41f08f1e9f4ac4292f06453f6cadb0ba8"
+  integrity sha512-meQ5dt8qMNX3JPdRTprC+uwbfxd6dmiJ90q0E/1YV3+1gs6emKD41yhxCq2mZO2wo7udSl5exKDordAODX08CA==
+
 killable@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/killable/download/killable-1.0.1.tgz#4c8ce441187a061c7474fb87ca08e2a638194892"
@@ -8431,10 +8436,10 @@ three-js-csg@^72.0.0:
   resolved "https://registry.npmjs.org/three-js-csg/-/three-js-csg-72.0.0.tgz#69e6ae441f3f01089e6f13c87c7288e1c4380bbc"
   integrity sha1-aeauRB8/AQiebxPIfHKI4cQ4C7w=
 
-three@^0.107.0:
-  version "0.107.0"
-  resolved "https://registry.npm.taobao.org/three/download/three-0.107.0.tgz#0c862c348d61bd3f22058e01f5e771c1294315a1"
-  integrity sha1-DIYsNI1hvT8iBY4B9edxwSlDFaE=
+three@^0.125.0:
+  version "0.125.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.125.0.tgz#19e922b9dc51ad0b706893aeee888de68e99850a"
+  integrity sha512-qL36qUGsPQ/Ofo/RZdXwHwM7A8wzUSAIyawtjIebJSPvounUQeneSqxI0aBY2iwKpseGy+RUtj3C5f/z4poyXw==
 
 throttle-debounce@^1.0.1:
   version "1.1.0"

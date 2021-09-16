@@ -1,15 +1,40 @@
 .tree-view {
     position: relative;
+    width: 100%;
+    // overflow-x: hidden;
+    box-sizing: border-box;
+    user-select: none;
+    .box {
+        position: relative;
+    }
 }
 .hide {
     display: none;
 }
 .item {
-    margin: 8px;
     cursor: pointer;
+    padding: 4px;
+    position: relative;
+    &:hover {
+        background: #f0f0f0;
+    }
+}
+.drag {
+    position: absolute;
+    width: auto;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    right: 0;
+    background: #edf8f8;
+    opacity: 0.5;
+    pointer-events: none;
 }
 .children {
-    transform: translateX(12px);
+    // transform: translateX(12px);
+    // padding-left: 12px;
+    position: relative;
+    box-sizing: border-box;
 }
 .selected {
     color: rgb(23, 151, 255);

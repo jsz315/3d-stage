@@ -2,7 +2,14 @@
     <div class="menu-view">
         <input ref="file" class="file" type="file" @change="handleSelectFile" />
 
-        <el-menu size="mini" mode="horizontal" @select="handleSelect" background-color="#545c64" active-text-color="#fdd440" text-color="#fff">
+        <el-menu
+            size="mini"
+            mode="horizontal"
+            @select="handleSelect"
+            background-color="#545c64"
+            active-text-color="#fdd440"
+            text-color="#fff"
+        >
             <el-menu-item index="1">导入模型</el-menu-item>
             <el-submenu index="2">
                 <template slot="title"
@@ -60,7 +67,7 @@
 <script>
 import GameEvent from "@/core/event/index";
 import ParamTooler from "@/core/tool/ParamTooler";
-
+import { mapState, mapMutations } from "vuex";
 export default {
     data() {
         return {
@@ -69,24 +76,29 @@ export default {
             uv: "",
             index: "",
             activeIndex: "1",
-            activeIndex2: "1",
+            activeIndex2: "1"
         };
     },
     components: {},
     computed: {
         visible() {
             return this.$store.state.customGeometryVisible;
-        },
+        }
     },
     mounted() {},
 
     methods: {
+        ...mapMutations(["changeVisible"]),
         handleSelect(key, keyPath) {
             console.log(key, keyPath);
+            if (key == "1") {
+                this.changeVisible({ key: "file", value: true });
+                return;
+            }
             if (key.indexOf("exp") != -1) {
                 GameEvent.ins.send(GameEvent.MODEL_EXPORT, {
                     type: key.split("-").pop(),
-                    param: {},
+                    param: {}
                 });
             }
         },
@@ -97,7 +109,7 @@ export default {
                     position: this.position,
                     normal: this.normal,
                     uv: this.uv,
-                    index: this.index,
+                    index: this.index
                 });
             } else {
                 this.$message("请输入正确数据");
@@ -145,8 +157,8 @@ export default {
             } else if (e == 2) {
                 GameEvent.ins.send(GameEvent.BSP_UNION, null);
             }
-        },
-    },
+        }
+    }
 };
 </script>
 

@@ -1,50 +1,53 @@
 <template>
-    <div class="remote-view" v-show="visible.remote">
-        <div class="content">
-            <div class="title">模型<i class="el-icon-close" @click="onHide"></i></div>
-            <div class="list">
-                <div class="item" @click="onLoad(item.url)" v-for="(item, index) in list" :key="index">
-                    <div class="img-box">
-                        <img :src="path(item.img)" />
-                    </div>
-                    <div class="tip">{{ item.title }}</div>
+    <PopView
+        :visible="visible.remote"
+        title="模型"
+        :close="onHide"
+        width="80%"
+        height="80vh"
+    >
+        <div class="list">
+            <div
+                class="item"
+                @click="onLoad(item.url)"
+                v-for="(item, index) in list"
+                :key="index"
+            >
+                <div class="img-box">
+                    <img :src="path(item.img)" />
                 </div>
+                <div class="tip">{{ item.title }}</div>
             </div>
         </div>
-    </div>
+    </PopView>
 </template>
 
 <script>
 import GameEvent from "@/core/event/index";
-import ProtoView from "@/components/ProtoView/index.vue";
+import PopView from "@/components/PopView/index.vue";
 import { mapState, mapMutations } from "vuex";
 import axios from "axios";
 export default {
     data() {
         return {
-            list: [],
+            list: []
         };
     },
-    components: {},
+    components: { PopView },
     computed: {
-        ...mapState(["visible"]),
+        ...mapState(["visible"])
     },
     mounted() {
-        axios.get("/obj/model.json").then((res) => {
+        axios.get("/obj/model.json").then(res => {
             console.log(typeof res.data);
             console.log(res);
             if (typeof res.data == "object") {
                 this.list = res.data;
                 return;
             }
-            var str = res.data.replace(/\r\n/g, "");
-            // console.log(str)
-            // this.list = JSON.parse(str);
-            var fun = new Function("return " + str);
-            var list = fun();
-            // this.list = list.filter((v, i)=>{
-            //   return v.img.indexOf("/thing/") != -1
-            // })
+            // var str = res.data.replace(/\r\n/g, "");
+            // var fun = new Function("return " + str);
+            // var list = fun();
         });
     },
     methods: {
@@ -53,15 +56,18 @@ export default {
             this.changeVisible({ key: "remote", value: false });
         },
         path(url) {
-            return url.replace("./obj", "https://jsz315.gitee.io/three-web-app/obj");
+            return url.replace(
+                "./obj",
+                "https://jsz315.gitee.io/three-web-app/obj"
+            );
         },
         onLoad(url) {
             url = url.substr(1);
             // game.loadServeModel(url);
             GameEvent.ins.send(GameEvent.IMPORT_SCENE, url);
             this.onHide();
-        },
-    },
+        }
+    }
 };
 </script>
 

@@ -124,6 +124,15 @@ export default class Stage extends Vue {
             game.objRotate(e.detail);
         });
 
+        GameEvent.ins.on(GameEvent.CHANGE_LEVEL, (e: CustomEvent) => {
+            var { fromItem, toItem } = e.detail;
+            game.changeLevel(fromItem, toItem);
+        });
+
+        GameEvent.ins.on(GameEvent.IMPORT_FILE, (e: CustomEvent) => {
+            game.importFile(e.detail);
+        });
+
         this.initStats();
     }
 

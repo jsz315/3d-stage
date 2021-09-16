@@ -1,5 +1,12 @@
 <template>
-    <Treeview :list="sceneTree" :nodeClick="onNodeClick" ref="tree" :uuid="uuid"></Treeview>
+    <Treeview
+        :list="sceneTree"
+        :level="0"
+        :nodeClick="onNodeClick"
+        ref="tree"
+        :uuid="uuid"
+        :dragFun="dragFun"
+    ></Treeview>
     <!-- <el-tree ref="tree" show-checkbox :data="sceneTree" node-key="uuid" :props="defaultProps" :default-expanded-keys="keys" :default-checked-keys="keys" :default-expand-all="false" :accordion="true" @node-click="handleNodeClick"></el-tree> -->
 </template>
 
@@ -9,13 +16,13 @@ import GameEvent from "@/core/event/index";
 import Treeview from "../tree-view/index.vue";
 @Component({
     components: {
-        Treeview,
-    },
+        Treeview
+    }
 })
 export default class LeftSide extends Vue {
     @Provide() defaultProps: object = {
         children: "children",
-        label: "name",
+        label: "name"
     };
 
     @Provide() keys: string[] = [];
@@ -44,6 +51,11 @@ export default class LeftSide extends Vue {
 
         this.$store.commit("changeUuid", item.uuid);
         GameEvent.ins.send(GameEvent.SELECT_TREE_ITEM, item.uuid);
+    }
+
+    dragFun(fromItem: any, toItem: any) {
+        console.log(fromItem, "-->", toItem);
+        GameEvent.ins.send(GameEvent.CHANGE_LEVEL, { fromItem, toItem });
     }
 
     get sceneTree(): any {

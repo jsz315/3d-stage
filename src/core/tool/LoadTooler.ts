@@ -30,7 +30,7 @@ export class LoadTooler {
     }
 
     loadGltf(url: string) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new GLTFLoader();
             loader.load(url, (object: any) => {
                 var m = object.scene;
@@ -40,7 +40,7 @@ export class LoadTooler {
     }
 
     loadDae(url: string) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new ColladaLoader();
             loader.load(url, (collada: any) => {
                 var object = collada.scene;
@@ -50,7 +50,7 @@ export class LoadTooler {
     }
 
     loadMtl(url: string) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new MTLLoader();
             loader.load(url, (materials: any) => {
                 materials.preload();
@@ -58,7 +58,7 @@ export class LoadTooler {
                 new OBJLoader()
                     .setMaterials(materials)
                     // .setPath( 'models/obj/male02/' )
-                    .load(url.replace(".mtl", ".obj"), (object) => {
+                    .load(url.replace(".mtl", ".obj"), object => {
                         resolve(object);
                     });
             });
@@ -66,7 +66,7 @@ export class LoadTooler {
     }
 
     loadStl(url: string) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new STLLoader();
             loader.load(url, (object: any) => {
                 resolve(object);
@@ -77,7 +77,7 @@ export class LoadTooler {
     loadFbx(url: string) {
         // var mat = new THREE.MeshStandardMaterial({color: 0x303030});
         // mat.castShadow = true;
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new FBXLoader();
             loader.load(url, (object: any) => {
                 resolve(object);
@@ -86,7 +86,7 @@ export class LoadTooler {
     }
 
     load3ds(url: string) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new TDSLoader();
             loader.load(url, (object: any) => {
                 resolve(object);
@@ -95,11 +95,21 @@ export class LoadTooler {
     }
 
     loadObj(url: string) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new OBJLoader();
             loader.load(url, (object: any) => {
                 resolve(object);
             });
         });
+    }
+
+    loadObjFile(file: File) {
+        const loader = new OBJLoader();
+        // loader.parse()
+    }
+
+    loadGltfFile(file: File) {
+        const loader = new GLTFLoader();
+        // loader.parse()
     }
 }

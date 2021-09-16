@@ -10,7 +10,7 @@ import ListSceneTooler from "./tool/ListSceneTooler";
 import Root from "./view/Root";
 import ExportModel from "./dev/ExportModel";
 import { ExportTooler } from "./tool/ExportTooler";
-import Tooler from "./tool/Toole";
+import Tooler from "./tool/Tooler";
 
 export default class Game {
     canvas: HTMLElement;
@@ -324,9 +324,28 @@ export default class Game {
         this.sendItemInfo(light);
     }
 
+    changeLevel(fromItem: any, toItem: any): void {
+        if (!fromItem || !toItem) return;
+        if (fromItem.uuid == toItem.uuid) {
+            console.log("没有移动");
+        } else {
+            var fromObj = this.scene.getObjectByProperty("uuid", fromItem.uuid);
+            var toObj = this.scene.getObjectByProperty("uuid", toItem.uuid);
+            if (fromObj && toObj) {
+                if (Tooler.isContain(fromObj, toObj)) {
+                    console.log("不能移动到自己内部");
+                } else {
+                    (toObj as THREE.Object3D).add(fromObj);
+                }
+            }
+        }
+    }
+
     selectObject(obj: THREE.Object3D): void {
         if (obj != this.root.selectView) {
-            this.root.selectView.select(obj);
+            if (Tooler.isContain(this.root, obj)) {
+                this.root.selectView.select(obj);
+            }
             this.sendItemInfo(obj);
         } else {
             console.log("looping");
@@ -542,4 +561,6 @@ export default class Game {
     bspUnion(): void {
         this.root.bspUnion();
     }
+
+    importFile(file: File): void {}
 }

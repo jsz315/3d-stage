@@ -15,6 +15,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "core-js": "^2.6.5",
     "element-ui": "^2.11.1",
+    "jsz-event": "^1.0.1",
     "less": "^3.10.1",
     "less-loader": "^5.0.0",
     "three": "^0.107.0",

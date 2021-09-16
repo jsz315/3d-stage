@@ -7,6 +7,7 @@
         <CustomGeometry />
         <MenuView />
         <RemoteView />
+        <FileView />
         <Loading :progress="progress" v-if="false" />
     </div>
 </template>
@@ -20,6 +21,7 @@ import TextureView from "@/components/TextureView/index.vue";
 import CustomGeometry from "@/components/CustomGeometry/index.vue";
 import MenuView from "@/components/MenuView/index.vue";
 import RemoteView from "@/components/RemoteView/index.vue";
+import FileView from "@/components/FileView/index.vue";
 import Loading from "@/components/Loading/index.vue";
 // import EventCenter from "@/core/EventCenter";
 import GameEvent from "@/core/event/index";
@@ -27,7 +29,7 @@ import GameEvent from "@/core/event/index";
 export default {
     data() {
         return {
-            progress: 30,
+            progress: 30
         };
     },
     components: {
@@ -39,11 +41,12 @@ export default {
         MenuView,
         RemoteView,
         Loading,
+        FileView
     },
     mounted() {
-        GameEvent.ins.on(GameEvent.LOADING, (e) => {
+        GameEvent.ins.on(GameEvent.LOADING, e => {
             this.progress = e.detail;
         });
-    },
+    }
 };
 </script>

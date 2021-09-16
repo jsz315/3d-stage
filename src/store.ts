@@ -35,8 +35,9 @@ export default new Vuex.Store({
         sceneTree: [],
         visible: {
             remote: false,
+            file: false
         },
-        uuid: "",
+        uuid: ""
     },
     mutations: {
         changeVisible(state, { key, value }) {
@@ -101,7 +102,7 @@ export default new Vuex.Store({
         },
         changeChildName(state, childName) {
             state.childName = childName;
-        },
+        }
     },
-    actions: {},
+    actions: {}
 });

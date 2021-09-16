@@ -48,6 +48,9 @@ export default class GameEvent {
     public static MODEL_EXPORT: string = "model export";
     public static OBJ_ROTATE: string = "obj rotate";
 
+    public static CHANGE_LEVEL: string = "change level";
+    public static IMPORT_FILE: string = "import file";
+
     public version: string;
     private _sender: any;
 

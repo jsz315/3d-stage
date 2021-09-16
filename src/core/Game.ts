@@ -562,5 +562,15 @@ export default class Game {
         this.root.bspUnion();
     }
 
-    importFile(file: File): void {}
+    importFile(file: any): void {
+        console.log(file);
+        let loadTooler = new LoadTooler();
+        loadTooler.startFile(file).then(obj => {
+            if (obj instanceof THREE.Object3D) {
+                Tooler.resize(obj, 20);
+                this.root.addObject(obj);
+                // this.checkPlay(obj);
+            }
+        });
+    }
 }

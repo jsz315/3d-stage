@@ -1,48 +1,48 @@
-var BlobTooler = function () {};
+var BlobTooler = function() {};
 
 BlobTooler.prototype = {
-    constructor: function(){
-
-    },
+    constructor: function() {},
 
     /**
      * base64转二进制文件
-     * @param {string} dataURI 
+     * @param {string} dataURI
      */
     dataURI2Blob(dataURI) {
         // mime类型
-        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        var mimeString = dataURI
+            .split(",")[0]
+            .split(":")[1]
+            .split(";")[0];
         //base64 解码
-        var byteString = atob(dataURI.split(',')[1]);
+        var byteString = atob(dataURI.split(",")[1]);
         //创建缓冲数组
         var arrayBuffer = new ArrayBuffer(byteString.length);
         //创建视图
-        var intArray = new Uint8Array(arrayBuffer); 
+        var intArray = new Uint8Array(arrayBuffer);
 
         for (var i = 0; i < byteString.length; i++) {
             intArray[i] = byteString.charCodeAt(i);
         }
-        return new Blob([intArray], {type: mimeString});
+        return new Blob([intArray], { type: mimeString });
     },
-
 
     /**
      * 二进制文件转base64
-     * @param {Blob} blob 
-     * @param {function} callback 
+     * @param {Blob} blob
+     * @param {function} callback
      */
     blob2DataURI(blob, callback) {
         var reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = function(e) {
             callback(e.target.result);
-        }
+        };
         reader.readAsDataURL(blob);
     },
 
     /**
      * 读取远程二进制文件
-     * @param {string} url 
-     * @param {function} callback 
+     * @param {string} url
+     * @param {function} callback
      */
     readRemoteBlob(url, callback) {
         var xhr = new XMLHttpRequest();
@@ -56,20 +56,18 @@ BlobTooler.prototype = {
         xhr.send();
     },
 
-
     /**
      * 二进制文件转arrayBuffer
-     * @param {Blob} blob 
-     * @param {function} callback 
+     * @param {Blob} blob
+     * @param {function} callback
      */
-    blob2ArrayBuffer(blob, callback){
+    blob2ArrayBuffer(blob, callback) {
         var reader = new FileReader();
         reader.readAsArrayBuffer(blob);
-        reader.onload = ()=>{
+        reader.onload = () => {
             callback(reader.result);
-        }
+        };
     }
+};
 
-}
-
-export {BlobTooler}
+export { BlobTooler };

@@ -40,6 +40,7 @@ export default {
                 GameEvent.ins.send(GameEvent.IMPORT_FILE, files[0]);
             }
             e.target.value = "";
+            this.onHide();
         }
     }
 };

@@ -203,4 +203,14 @@ export default class Tooler {
         }
         return false;
     }
+
+    public static readStringFromFile(file: any) {
+        return new Promise(resolve => {
+            var reader = new FileReader();
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+            reader.readAsText(file);
+        });
+    }
 }

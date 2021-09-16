@@ -42,7 +42,7 @@ export default class Stage extends Vue {
             this.changeItemInfo(e);
         });
         GameEvent.ins.on(GameEvent.FAIL_COMPUTE, (e: CustomEvent) => {
-            this.$message(e.detail);
+            // this.$message(e.detail);
         });
 
         GameEvent.ins.on(GameEvent.CHANGE_MATERIAL, (e: CustomEvent) => {
@@ -98,9 +98,7 @@ export default class Stage extends Vue {
         GameEvent.ins.on(GameEvent.EXPORT_SCENE, (e: CustomEvent) => {
             this.handleExport(e);
         });
-        GameEvent.ins.on(GameEvent.LOAD_SCENE, (e: CustomEvent) => {
-            this.handleTest(e);
-        });
+
         GameEvent.ins.on(GameEvent.TOGGLE_STATS, (e: CustomEvent) => {
             this.handleStats(e);
         });
@@ -258,22 +256,6 @@ export default class Stage extends Vue {
             console.log(rs);
             game.loadObject(rs.buffer);
         };
-    }
-
-    handleTest(e: CustomEvent): void {
-        this.$prompt("请输入文件地址", "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消"
-        })
-            .then((res: any) => {
-                game.loadServeModel(res.value);
-            })
-            .catch(() => {
-                this.$message({
-                    type: "info",
-                    message: "取消输入"
-                });
-            });
     }
 
     handleStats(e: CustomEvent): void {

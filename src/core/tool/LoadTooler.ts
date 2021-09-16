@@ -7,6 +7,7 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader.js";
+import { BlobTooler } from "./BlobTooler";
 
 export class LoadTooler {
     constructor() {}
@@ -26,6 +27,15 @@ export class LoadTooler {
             return this.loadDae(url);
         } else {
             return this.loadGltf(url);
+        }
+    }
+
+    startFile(file: any) {
+        var name = file.name;
+        if (name.match(/obj$/i)) {
+            return this.loadObjFile(file);
+        } else {
+            return this.loadGltfFile(file);
         }
     }
 
@@ -103,13 +113,21 @@ export class LoadTooler {
         });
     }
 
-    loadObjFile(file: File) {
+    async loadObjFile(file: File) {
         const loader = new OBJLoader();
-        // loader.parse()
+        var str = await Tooler.readStringFromFile(file);
+        return loader.parse(str as string);
     }
 
     loadGltfFile(file: File) {
-        const loader = new GLTFLoader();
-        // loader.parse()
+        return new Promise(resolve => {
+            var blobTooler = new BlobTooler();
+            blobTooler.blob2ArrayBuffer(file, (res: any) => {
+                const loader = new GLTFLoader();
+                loader.parse(res, "", (gltf: any) => {
+                    resolve(gltf.scene);
+                });
+            });
+        });
     }
 }

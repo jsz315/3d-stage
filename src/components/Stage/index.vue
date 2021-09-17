@@ -179,9 +179,14 @@ export default class Stage extends Vue {
             type == "scale"
         ) {
             let transform: any = Object.assign(this.$store.state.transform, {});
-            transform[type][list[1]] = Number(value);
+            if (type == "scale" && this.$store.state.lockScale) {
+                transform.scale.x = transform.scale.y = transform.scale.z = Number(
+                    value
+                );
+            } else {
+                transform[type][list[1]] = Number(value);
+            }
             game.changeItemTransform(transform);
-            // this.$store.commit("changeCurTransform", transform);
         } else if (type == "material") {
             let material = Object.assign(this.$store.state.curMaterial, {});
             if (ParamTooler.checkMap(list[1])) {

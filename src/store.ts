@@ -37,9 +37,13 @@ export default new Vuex.Store({
             remote: false,
             file: false
         },
-        uuid: ""
+        uuid: "",
+        lockScale: true
     },
     mutations: {
+        changeLockScale(state, value) {
+            state.lockScale = value;
+        },
         changeVisible(state, { key, value }) {
             (state.visible as any)[key] = value;
         },

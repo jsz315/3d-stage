@@ -1,8 +1,16 @@
 <template>
     <PopView :visible="visible.file" title="模型" :close="onHide" width="80%">
-        <div class="box" :class="{ hited }" ref="box">
-            <div class="tip">拖动文件到框内</div>
-            <input class="file" type="file" @change="onChange" />
+        <div class="wrap">
+            <div class="label">打开本地模型文件</div>
+            <div class="local" :class="{ hited }" ref="local">
+                <div class="tip">拖动文件到框内</div>
+                <input class="file" type="file" @change="onChange" />
+            </div>
+            <div class="label">加载远程模型文件</div>
+            <div class="serve">
+                <input class="url" v-model="url" type="text" />
+                <div class="btn" @click="onLoad">确定</div>
+            </div>
         </div>
     </PopView>
 </template>
@@ -19,7 +27,8 @@ export default {
     data() {
         return {
             list: [],
-            hited: false
+            hited: false,
+            url: ""
         };
     },
     components: { PopView },
@@ -27,7 +36,7 @@ export default {
         ...mapState(["visible"])
     },
     mounted() {
-        const dragWrapper = this.$refs.box;
+        const dragWrapper = this.$refs.local;
         dropRemove = H5EventDispatcher.createDomListenter(
             dragWrapper,
             "drop",
@@ -83,6 +92,11 @@ export default {
                 GameEvent.ins.send(GameEvent.IMPORT_FILE, files[0]);
             }
             e.target.value = "";
+            this.onHide();
+        },
+        onLoad() {
+            GameEvent.ins.send(GameEvent.LOAD_ZIP, this.url);
+            this.url = "";
             this.onHide();
         }
     }

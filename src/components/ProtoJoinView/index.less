@@ -1,0 +1,51 @@
+.proto-join-view {
+    position: relative;
+}
+.edit {
+    position: relative;
+    &::after {
+        display: block;
+        position: absolute;
+        content: "";
+        left: 0;
+        right: 0;
+        width: 250px;
+        margin: auto;
+        top: 0;
+        height: 1px;
+        background: #f0f0f0;
+    }
+}
+.join {
+    margin-left: 40px;
+    position: relative;
+    &::after {
+        display: block;
+        position: absolute;
+        content: "";
+        left: 2px;
+        width: 12px;
+        margin: auto;
+        top: 27px;
+        height: 1px;
+        background: #909090;
+    }
+}
+.lock {
+    position: absolute;
+    margin: auto;
+    left: 22px;
+    top: 27px;
+    bottom: 50px;
+    width: 20px;
+    border-right: solid 1px #909090;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    .icon {
+        font-size: 20px;
+        color: @mainColor;
+        margin-right: 4px;
+    }
+}

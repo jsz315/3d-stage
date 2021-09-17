@@ -1,9 +1,10 @@
 .left-side {
     position: fixed;
     width: 200px;
-    height: 100%;
     left: 0;
-    top: 0;
+    top: @menuHeight;
+    bottom: 0;
+    margin: auto;
     z-index: 3;
     transition: all 300ms;
     background: #ffffff;
@@ -20,14 +21,12 @@
     }
 }
 .main {
-    margin-top: @menuHeight;
     position: relative;
     overflow-x: hidden;
     overflow-y: scroll;
     width: 100%;
     height: 100%;
-    box-sizing: border-box;
-    .remote{
+    .remote {
         margin-bottom: 16px;
     }
 }
@@ -70,7 +69,7 @@
     color: #0084ff;
     right: -30px;
     font-size: 20px;
-    top: 40px;
+    top: 10px;
 }
 
 /deep/.el-collapse-item__header {

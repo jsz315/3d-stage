@@ -2,7 +2,9 @@
     <div class="right-side" :class="{ hide }">
         <!-- <component :is="aim"/> -->
         <div class="toggle" @click="onToggle">
-            <i :class="!hide ? 'el-icon-caret-right' : 'el-icon-caret-left'"></i>
+            <i
+                :class="!hide ? 'el-icon-caret-right' : 'el-icon-caret-left'"
+            ></i>
         </div>
         <div class="mesh-info">
             <div class="title">
@@ -13,29 +15,52 @@
             </div>
 
             <div class="cur-name">
-                <input type="txt" class="name" v-bind:value="curItemName" ref="name" />
-                <el-button size="mini" @click="handleChangeName">修改</el-button>
+                <input
+                    type="txt"
+                    class="name"
+                    v-bind:value="curItemName"
+                    ref="name"
+                />
+                <el-button size="mini" @click="handleChangeName"
+                    >修改</el-button
+                >
             </div>
 
-            <el-collapse v-model="activeNames" @change="handleCollapse" accordion>
+            <el-collapse
+                v-model="activeNames"
+                @change="handleCollapse"
+                accordion
+            >
                 <el-collapse-item title="材质" name="0" v-if="showMaterial">
                     <MaterialView />
                 </el-collapse-item>
 
                 <el-collapse-item title="状态参数" name="1">
-                    <ProtoView :label="paramType" :parameters="parameters"></ProtoView>
+                    <ProtoView
+                        :label="paramType"
+                        :parameters="parameters"
+                    ></ProtoView>
                 </el-collapse-item>
 
                 <el-collapse-item title="位置" name="2" v-if="transform">
-                    <ProtoView label="position" :parameters="transform.position"></ProtoView>
+                    <ProtoView
+                        label="position"
+                        :parameters="transform.position"
+                    ></ProtoView>
                 </el-collapse-item>
 
                 <el-collapse-item title="旋转" name="3" v-if="transform">
-                    <ProtoView label="rotation" :parameters="transform.rotation"></ProtoView>
+                    <ProtoView
+                        label="rotation"
+                        :parameters="transform.rotation"
+                    ></ProtoView>
                 </el-collapse-item>
 
                 <el-collapse-item title="缩放" name="4" v-if="transform">
-                    <ProtoView label="scale" :parameters="transform.scale"></ProtoView>
+                    <ProtoJoinView
+                        label="scale"
+                        :parameters="transform.scale"
+                    ></ProtoJoinView>
                 </el-collapse-item>
 
                 <el-collapse-item title="数据" name="5" v-if="showGeometryView">
@@ -45,13 +70,27 @@
 
             <div class="btns" v-if="showBtns">
                 <el-button-group>
-                    <el-button type="primary" size="small" @click="handleMakeGroup">成组</el-button>
-                    <el-button type="primary" size="small" @click="handleSplitGroup">解组</el-button>
+                    <el-button
+                        type="primary"
+                        size="small"
+                        @click="handleMakeGroup"
+                        >成组</el-button
+                    >
+                    <el-button
+                        type="primary"
+                        size="small"
+                        @click="handleSplitGroup"
+                        >解组</el-button
+                    >
                 </el-button-group>
 
                 <el-button-group class="right-btns">
-                    <el-button type="primary" size="small" @click="handleCopy">复制</el-button>
-                    <el-button type="danger" size="small" @click="handleDelete">删除</el-button>
+                    <el-button type="primary" size="small" @click="handleCopy"
+                        >复制</el-button
+                    >
+                    <el-button type="danger" size="small" @click="handleDelete"
+                        >删除</el-button
+                    >
                 </el-button-group>
             </div>
         </div>
@@ -62,6 +101,7 @@
 import GameEvent from "@/core/event/index";
 import MaterialView from "@/components/MaterialView/index.vue";
 import ProtoView from "@/components/ProtoView/index.vue";
+import ProtoJoinView from "@/components/ProtoJoinView/index.vue";
 import GeometryView from "@/components/GeometryView/index.vue";
 import ComputeView from "@/components/ComputeView/index.vue";
 
@@ -71,14 +111,15 @@ export default {
             value: 0,
             direction: "rtl",
             activeNames: ["0"],
-            hide: false,
+            hide: false
         };
     },
     components: {
         MaterialView,
         ProtoView,
+        ProtoJoinView,
         GeometryView,
-        ComputeView,
+        ComputeView
     },
     computed: {
         paramType() {
@@ -135,13 +176,16 @@ export default {
         },
         curDragType() {
             return this.$store.state.curDragType;
-        },
+        }
     },
 
     methods: {
         handleChangeName(e) {
             console.log(this.curItemName, this.$refs.name.value);
-            GameEvent.ins.send(GameEvent.CHANGE_ITEM_NAME, this.$refs.name.value);
+            GameEvent.ins.send(
+                GameEvent.CHANGE_ITEM_NAME,
+                this.$refs.name.value
+            );
             GameEvent.ins.send(GameEvent.GET_SCENE_TREE, null);
         },
         handleClose() {
@@ -170,8 +214,8 @@ export default {
         handleChange(e) {},
         onToggle() {
             this.hide = !this.hide;
-        },
-    },
+        }
+    }
 };
 </script>
 

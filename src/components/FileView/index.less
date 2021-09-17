@@ -1,14 +1,12 @@
-.box {
+.local {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 80%;
     height: 200px;
     background: #f0f0f0;
     transition: all 200ms;
-    margin: 20px auto;
-    &.hited{
+    &.hited {
         background: #c8fdfb;
     }
     .tip {
@@ -20,4 +18,28 @@
         font-size: 16px;
         margin-top: 16px;
     }
+}
+.serve {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .url {
+        display: block;
+        flex: 1;
+        padding: 4px;
+    }
+    .btn {
+        margin-left: 10px;
+        padding: 4px 10px;
+        background: @mainColor;
+        color: #ffffff;
+        cursor: pointer;
+    }
+}
+.wrap {
+    padding: 20px;
+}
+.label {
+    margin: 20px 0;
+    color: #909090;
 }

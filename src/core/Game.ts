@@ -11,6 +11,7 @@ import Root from "./view/Root";
 import ExportModel from "./dev/ExportModel";
 import { ExportTooler } from "./tool/ExportTooler";
 import Tooler from "./tool/Tooler";
+import { FineLoader } from "./tool/FineLoader";
 
 export default class Game {
     canvas: HTMLElement;
@@ -47,7 +48,7 @@ export default class Game {
             75,
             window.innerWidth / window.innerHeight,
             0.1,
-            100
+            900
         );
         this.camera.position.set(3, 4, 5);
         this.camera.lookAt(new THREE.Vector3());
@@ -345,10 +346,13 @@ export default class Game {
         if (obj != this.root.selectView) {
             if (Tooler.isContain(this.root, obj)) {
                 this.root.selectView.select(obj);
+            } else {
+                this.root.selectView.select(null);
             }
             this.sendItemInfo(obj);
         } else {
             console.log("looping");
+            this.root.selectView.select(null);
         }
     }
 
@@ -571,6 +575,14 @@ export default class Game {
                 this.root.addObject(obj);
                 // this.checkPlay(obj);
             }
+        });
+    }
+
+    loadServeZip(url: string) {
+        var fineLoader = new FineLoader();
+        fineLoader.start(url, (object3D: THREE.Object3D) => {
+            Tooler.resize(object3D, 20);
+            this.root.addObject(object3D);
         });
     }
 }

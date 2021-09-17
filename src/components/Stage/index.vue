@@ -131,6 +131,10 @@ export default class Stage extends Vue {
             game.importFile(e.detail);
         });
 
+        GameEvent.ins.on(GameEvent.LOAD_ZIP, (e: CustomEvent) => {
+            game.loadServeZip(e.detail);
+        });
+
         this.initStats();
     }
 

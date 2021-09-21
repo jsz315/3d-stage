@@ -3,8 +3,8 @@
         <div class="info">
             <div class="tip">Q-坐标系 | W-移动 | E-旋转 | R-缩放</div>
             <div class="btns">
-                <i class="btn el-icon-refresh-left" @click="undo"></i>
-                <i class="btn el-icon-refresh-right" @click="redo"></i>
+                <i class="btn el-icon-refresh-left" @click="undo">撤销</i>
+                <i class="btn el-icon-refresh-right" @click="redo">重做</i>
             </div>
         </div>
         <canvas ref="canvas" class="canvas"></canvas>
@@ -185,6 +185,11 @@ export default class Stage extends Vue {
                 );
             } else {
                 transform[type][list[1]] = Number(value);
+            }
+            if (type == "rotation") {
+                if (this.$store.state.isAngle) {
+                } else {
+                }
             }
             game.changeItemTransform(transform);
         } else if (type == "material") {

@@ -50,10 +50,10 @@
                 </el-collapse-item>
 
                 <el-collapse-item title="旋转" name="3" v-if="transform">
-                    <ProtoView
+                    <RotateView
                         label="rotation"
                         :parameters="transform.rotation"
-                    ></ProtoView>
+                    ></RotateView>
                 </el-collapse-item>
 
                 <el-collapse-item title="缩放" name="4" v-if="transform">
@@ -102,6 +102,7 @@ import GameEvent from "@/core/event/index";
 import MaterialView from "@/components/MaterialView/index.vue";
 import ProtoView from "@/components/ProtoView/index.vue";
 import ProtoJoinView from "@/components/ProtoJoinView/index.vue";
+import RotateView from "@/components/RotateView/index.vue";
 import GeometryView from "@/components/GeometryView/index.vue";
 import ComputeView from "@/components/ComputeView/index.vue";
 
@@ -119,7 +120,8 @@ export default {
         ProtoView,
         ProtoJoinView,
         GeometryView,
-        ComputeView
+        ComputeView,
+        RotateView
     },
     computed: {
         paramType() {

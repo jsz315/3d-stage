@@ -27,6 +27,7 @@ export class Queue {
     }
 
     undo() {
+        console.log("undo");
         var cmd = this.commands.pop();
         if (cmd) {
             cmd.undo();

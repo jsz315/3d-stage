@@ -28,7 +28,7 @@ export default {
         return {
             list: [],
             hited: false,
-            url: ""
+            url: localStorage.getItem("url")
         };
     },
     components: { PopView },
@@ -96,7 +96,8 @@ export default {
         },
         onLoad() {
             GameEvent.ins.send(GameEvent.LOAD_ZIP, this.url);
-            this.url = "";
+            // this.url = "";
+            localStorage.setItem("url", this.url);
             this.onHide();
         }
     }

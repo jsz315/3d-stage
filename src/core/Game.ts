@@ -579,10 +579,11 @@ export default class Game {
     }
 
     loadServeZip(url: string) {
-        var fineLoader = new FineLoader();
-        fineLoader.start(url, (object3D: THREE.Object3D) => {
-            Tooler.resize(object3D, 20);
-            this.root.addObject(object3D);
-        });
+        this.loadServeModel(url);
+        // var fineLoader = new FineLoader();
+        // fineLoader.start(url, (object3D: THREE.Object3D) => {
+        //     Tooler.resize(object3D, 20);
+        //     this.root.addObject(object3D);
+        // });
     }
 }

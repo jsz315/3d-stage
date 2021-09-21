@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { DeleteCmd } from "../history/cmd/DeleteCmd";
+import { Presenter } from "../history/Presenter";
 import DisposeTooler from "../tool/DisposeTooler";
 
 export default class SelectLine extends THREE.Object3D {
@@ -25,11 +27,14 @@ export default class SelectLine extends THREE.Object3D {
             return item.obj == obj;
         });
         if (!has) {
-            let line = new THREE.BoxHelper(obj, new THREE.Color(this.selectedColor));
+            let line = new THREE.BoxHelper(
+                obj,
+                new THREE.Color(this.selectedColor)
+            );
             this.add(line);
             this.lines.push({
                 obj: obj,
-                line: line,
+                line: line
             });
         }
     }
@@ -45,13 +50,17 @@ export default class SelectLine extends THREE.Object3D {
     }
 
     deleteSelected(): void {
+        console.log("delete ===444====");
+        var objs: any = [];
         this.lines.forEach((item: any) => {
-            DisposeTooler.clear(item.obj);
+            // DisposeTooler.clear(item.obj);
             DisposeTooler.clear(item.line);
+            objs.push(item.obj);
             if (item.obj.name == "custom drag") {
                 DisposeTooler.clear(item.obj.parent);
             }
         });
+        Presenter.instance.execute(new DeleteCmd(objs));
         this.lines = [];
     }
 

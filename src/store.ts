@@ -38,9 +38,13 @@ export default new Vuex.Store({
             file: false
         },
         uuid: "",
-        lockScale: true
+        lockScale: true,
+        isAngle: false
     },
     mutations: {
+        changeIsAngle(state, value) {
+            state.isAngle = value;
+        },
         changeLockScale(state, value) {
             state.lockScale = value;
         },

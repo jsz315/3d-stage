@@ -1,0 +1,11 @@
+Model Information:
+* title:	Daniel M- DnA Bowling Alley
+* source:	https://sketchfab.com/3d-models/daniel-m-dna-bowling-alley-70ed8ba7c4d0450dbd19a5cd229c0bea
+* author:	dmella (https://sketchfab.com/dmella)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Daniel M- DnA Bowling Alley" (https://sketchfab.com/3d-models/daniel-m-dna-bowling-alley-70ed8ba7c4d0450dbd19a5cd229c0bea) by dmella (https://sketchfab.com/dmella) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

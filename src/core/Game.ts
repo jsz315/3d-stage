@@ -185,26 +185,36 @@ export default class Game {
         }
     }
 
-    objRotate(n: number): void {
+    objRotate(n: string): void {
         console.log("rotate type", n);
-        var r = (10 * Math.PI) / 180;
-        if (n == 1) {
-            (this.curMesh as THREE.Object3D).rotateOnAxis(
-                new THREE.Vector3(0, 1, 0),
-                r
-            );
-        } else {
-            // (this.curMesh as THREE.Object3D).rotateOnWorldAxis(
-            //     new THREE.Vector3(0, 1, 0),
-            //     r
-            // );
+        // var r = (10 * Math.PI) / 180;
+        // if (n == 1) {
+        //     (this.curMesh as THREE.Object3D).rotateOnAxis(
+        //         new THREE.Vector3(0, 1, 0),
+        //         r
+        //     );
+        // } else {
+        //     Tooler.rotateOnAxis(
+        //         this.curMesh as THREE.Object3D,
+        //         new THREE.Vector3(),
+        //         new THREE.Vector3(0, 1, 0),
+        //         10
+        //     );
+        // }
+        let mesh = this.curMesh;
+        // (mesh as THREE.Object3D).traverse((mesh)=>{
 
-            Tooler.rotateOnAxis(
-                this.curMesh as THREE.Object3D,
-                new THREE.Vector3(),
-                new THREE.Vector3(0, 1, 0),
-                10
-            );
+        // })
+        console.log(mesh);
+        var r = Math.PI / 2;
+        if (mesh instanceof THREE.Mesh) {
+            if (n == "x") {
+                mesh.geometry.rotateX(r);
+            } else if (n == "y") {
+                mesh.geometry.rotateY(r);
+            } else if (n == "z") {
+                mesh.geometry.rotateZ(r);
+            }
         }
     }
 
@@ -337,6 +347,7 @@ export default class Game {
                     console.log("不能移动到自己内部");
                 } else {
                     (toObj as THREE.Object3D).add(fromObj);
+                    GameEvent.ins.send(GameEvent.GET_SCENE_TREE);
                 }
             }
         }

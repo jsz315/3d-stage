@@ -93,6 +93,20 @@
                     >
                 </el-button-group>
             </div>
+
+            <SwitchView
+                label="显示"
+                :value="visible"
+                pname=""
+                @change="visibleChange"
+            ></SwitchView>
+            <el-button
+                class="del-btn"
+                type="danger"
+                size="small"
+                @click="handleDelete"
+                >删除选中物体</el-button
+            >
         </div>
     </div>
 </template>
@@ -105,6 +119,7 @@ import ProtoJoinView from "@/components/ProtoJoinView/index.vue";
 import RotateView from "@/components/RotateView/index.vue";
 import GeometryView from "@/components/GeometryView/index.vue";
 import ComputeView from "@/components/ComputeView/index.vue";
+import SwitchView from "@/components/ParamView/SwitchView/index.vue";
 
 export default {
     data() {
@@ -112,7 +127,8 @@ export default {
             value: 0,
             direction: "rtl",
             activeNames: ["0"],
-            hide: false
+            hide: false,
+            visible: true
         };
     },
     components: {
@@ -121,7 +137,8 @@ export default {
         ProtoJoinView,
         GeometryView,
         ComputeView,
-        RotateView
+        RotateView,
+        SwitchView
     },
     computed: {
         paramType() {
@@ -182,6 +199,9 @@ export default {
     },
 
     methods: {
+        visibleChange() {
+            this.visible = !this.visible;
+        },
         handleChangeName(e) {
             console.log(this.curItemName, this.$refs.name.value);
             GameEvent.ins.send(

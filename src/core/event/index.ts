@@ -51,6 +51,7 @@ export default class GameEvent {
     public static CHANGE_LEVEL: string = "change level";
     public static IMPORT_FILE: string = "import file";
     public static LOAD_ZIP: string = "load zip";
+    public static TOGGLE_VISIBLE: string = "toggle visible";
 
     public version: string;
     private _sender: any;

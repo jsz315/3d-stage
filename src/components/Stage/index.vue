@@ -135,6 +135,11 @@ export default class Stage extends Vue {
             game.loadServeZip(e.detail);
         });
 
+        GameEvent.ins.on(GameEvent.TOGGLE_VISIBLE, (e: CustomEvent) => {
+            console.log(e.detail, "visible");
+            game.toggleVisible(e.detail);
+        });
+
         this.initStats();
     }
 

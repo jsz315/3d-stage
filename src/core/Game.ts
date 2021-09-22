@@ -185,6 +185,12 @@ export default class Game {
         }
     }
 
+    toggleVisible(v: boolean) {
+        if (this.curMesh) {
+            (this.curMesh as THREE.Object3D).visible = v;
+        }
+    }
+
     objRotate(n: string): void {
         console.log("rotate type", n);
         // var r = (10 * Math.PI) / 180;

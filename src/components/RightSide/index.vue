@@ -199,8 +199,10 @@ export default {
     },
 
     methods: {
-        visibleChange() {
-            this.visible = !this.visible;
+        visibleChange(a, v) {
+            this.visible = v;
+            console.log("---", a, v);
+            GameEvent.ins.send(GameEvent.TOGGLE_VISIBLE, this.visible);
         },
         handleChangeName(e) {
             console.log(this.curItemName, this.$refs.name.value);

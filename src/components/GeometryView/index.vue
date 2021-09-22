@@ -44,10 +44,34 @@
                 </div>
             </div>
 
-            <div>
-                <el-button type="primary" @click="align(1)">顶对齐</el-button>
-                <el-button type="primary" @click="align(0)">中对齐</el-button>
-                <el-button type="primary" @click="align(-1)">底对齐</el-button>
+            <div class="comm">
+                <div class="label">对齐</div>
+                <div class="info">
+                    <el-button size="mini" type="primary" @click="align(1)"
+                        >顶</el-button
+                    >
+                    <el-button size="mini" type="primary" @click="align(0)"
+                        >中</el-button
+                    >
+                    <el-button size="mini" type="primary" @click="align(-1)"
+                        >底</el-button
+                    >
+                </div>
+            </div>
+
+            <div class="comm">
+                <div class="label">旋转</div>
+                <div class="info">
+                    <el-button size="mini" type="primary" @click="rotate('x')"
+                        >x</el-button
+                    >
+                    <el-button size="mini" type="primary" @click="rotate('y')"
+                        >y</el-button
+                    >
+                    <el-button size="mini" type="primary" @click="rotate('z')"
+                        >z</el-button
+                    >
+                </div>
             </div>
 
             <div>

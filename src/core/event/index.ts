@@ -68,7 +68,7 @@ export default class GameEvent {
         this._sender.addEventListener(type, callback);
     }
 
-    public send(type: string, param: any): void {
+    public send(type: string, param?: any): void {
         this._sender.dispatchEvent(new CustomEvent(type, { detail: param }));
     }
 

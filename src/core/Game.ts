@@ -220,9 +220,27 @@ export default class Game {
     }
 
     meshScale(n: number) {
-        let mesh = this.curMesh;
-        if (mesh instanceof THREE.Mesh) {
-            mesh.geometry.scale(n, n, n);
+        // let mesh = this.curMesh;
+        // if (mesh instanceof THREE.Mesh) {
+        //     mesh.geometry.scale(n, n, n);
+        // }
+
+        let list: THREE.Mesh[] = [];
+        if (this.curMesh) {
+            if (this.curMesh instanceof THREE.Mesh) {
+                list.push(this.curMesh);
+            } else {
+                (this.curMesh as THREE.Object3D).traverse(mesh => {
+                    if (mesh instanceof THREE.Mesh) {
+                        list.push(mesh);
+                    }
+                });
+            }
+
+            var r = Math.PI / 2;
+            list.forEach(mesh => {
+                mesh.geometry.scale(n, n, n);
+            });
         }
     }
 
@@ -245,11 +263,16 @@ export default class Game {
         // let mesh = this.curMesh;
         let list: THREE.Mesh[] = [];
         if (this.curMesh) {
-            (this.curMesh as THREE.Object3D).traverse(mesh => {
-                if (mesh instanceof THREE.Mesh) {
-                    list.push(mesh);
-                }
-            });
+            if (this.curMesh instanceof THREE.Mesh) {
+                list.push(this.curMesh);
+            } else {
+                (this.curMesh as THREE.Object3D).traverse(mesh => {
+                    if (mesh instanceof THREE.Mesh) {
+                        list.push(mesh);
+                    }
+                });
+            }
+
             var r = Math.PI / 2;
             list.forEach(mesh => {
                 if (n == "x") {

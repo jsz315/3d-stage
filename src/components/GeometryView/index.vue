@@ -44,44 +44,14 @@
                 </div>
             </div>
 
-            <div class="comm">
-                <div class="label">对齐</div>
-                <div class="info">
-                    <el-button size="mini" type="primary" @click="align(1)"
-                        >顶</el-button
-                    >
-                    <el-button size="mini" type="primary" @click="align(0)"
-                        >中</el-button
-                    >
-                    <el-button size="mini" type="primary" @click="align(-1)"
-                        >底</el-button
-                    >
-                </div>
-            </div>
-
-            <div class="comm">
-                <div class="label">旋转</div>
-                <div class="info">
-                    <el-button size="mini" type="primary" @click="rotate('x')"
-                        >x</el-button
-                    >
-                    <el-button size="mini" type="primary" @click="rotate('y')"
-                        >y</el-button
-                    >
-                    <el-button size="mini" type="primary" @click="rotate('z')"
-                        >z</el-button
-                    >
-                </div>
-            </div>
-
-            <div>
+            <!-- <div>
                 <el-button type="primary" @click="rotate(1)"
                     >绕自身Y轴旋转</el-button
                 >
                 <el-button type="primary" @click="rotate(0)"
                     >绕世界Y轴旋转</el-button
                 >
-            </div>
+            </div> -->
         </template>
         <template v-else>
             <div class="none">无数据</div>
@@ -91,12 +61,17 @@
 
 <script>
 import GameEvent from "@/core/event/index";
+import NumberView from "@/components/ParamView/NumberView/index.vue";
 
 export default {
     data() {
-        return {};
+        return {
+            scale: 1
+        };
     },
-    components: {},
+    components: {
+        NumberView
+    },
     computed: {
         info() {
             return this.$store.state.extra.geometry;
@@ -110,11 +85,15 @@ export default {
                 console.log(n.array);
             }
         },
-        align(n) {
-            GameEvent.ins.send(GameEvent.MESH_ALIGN, n);
+        align(type, axis) {
+            GameEvent.ins.send(GameEvent.MESH_ALIGN, { type, axis });
         },
         rotate(n) {
             GameEvent.ins.send(GameEvent.OBJ_ROTATE, n);
+        },
+        scaleChange(pname, n) {
+            this.scale = n;
+            GameEvent.ins.send(GameEvent.MESH_SCALE, n);
         }
     }
 };

@@ -66,6 +66,10 @@
                 <el-collapse-item title="数据" name="5" v-if="showGeometryView">
                     <GeometryView />
                 </el-collapse-item>
+
+                <el-collapse-item title="物体" name="6">
+                    <Object3dView />
+                </el-collapse-item>
             </el-collapse>
 
             <div class="btns" v-if="showBtns">
@@ -94,7 +98,7 @@
                 </el-button-group>
             </div>
 
-            <SwitchView
+            <!-- <SwitchView
                 label="显示"
                 :value="visible"
                 pname=""
@@ -106,7 +110,7 @@
                 size="small"
                 @click="handleDelete"
                 >删除选中物体</el-button
-            >
+            > -->
         </div>
     </div>
 </template>
@@ -119,6 +123,7 @@ import ProtoJoinView from "@/components/ProtoJoinView/index.vue";
 import RotateView from "@/components/RotateView/index.vue";
 import GeometryView from "@/components/GeometryView/index.vue";
 import ComputeView from "@/components/ComputeView/index.vue";
+import Object3dView from "@/components/Object3dView/index.vue";
 import SwitchView from "@/components/ParamView/SwitchView/index.vue";
 
 export default {
@@ -138,7 +143,8 @@ export default {
         GeometryView,
         ComputeView,
         RotateView,
-        SwitchView
+        SwitchView,
+        Object3dView
     },
     computed: {
         paramType() {

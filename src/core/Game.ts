@@ -27,6 +27,7 @@ export default class Game {
     root: Root;
     mixer: THREE.AnimationMixer = null as any;
     clock: THREE.Clock = new THREE.Clock();
+    tempCopyItem: THREE.Object3D = null as any;
 
     constructor(canvas: any) {
         GameEvent.ins.init(canvas);
@@ -129,11 +130,20 @@ export default class Game {
     }
 
     copyItem(): void {
-        let oldMesh = this.curMesh;
-        let newMesh = oldMesh.clone();
-        this.root.addObject(newMesh);
-        // this.scene.add(newMesh);
-        this.sendItemInfo(newMesh);
+        // let oldMesh = this.curMesh;
+        // let newMesh = oldMesh.clone();
+        // this.root.addObject(newMesh);
+        // this.sendItemInfo(newMesh);
+
+        this.tempCopyItem = this.curMesh.clone();
+    }
+
+    pasteItem() {
+        if (this.curMesh && this.tempCopyItem) {
+            (this.curMesh as THREE.Object3D).add(this.tempCopyItem);
+            this.sendItemInfo(this.tempCopyItem);
+            // this.tempCopyItem = null as any;
+        }
     }
 
     changeItemTransform(p: any): void {
@@ -163,7 +173,7 @@ export default class Game {
         }
     }
 
-    changeMeshAlign(n: number): void {
+    changeMeshAlign(type: number, axis: string): void {
         let mesh = this.curMesh;
         console.log(mesh);
         if (mesh instanceof THREE.Mesh) {
@@ -178,7 +188,25 @@ export default class Game {
             var leny = box.max.y - box.min.y;
             var lenz = box.max.z - box.min.z;
 
-            mesh.geometry.translate(0 - oldx, (leny / 2) * n - oldy, 0 - oldz);
+            if (axis == "x") {
+                mesh.geometry.translate(
+                    (lenx / 2) * type - oldx,
+                    0 - oldy,
+                    0 - oldz
+                );
+            } else if (axis == "y") {
+                mesh.geometry.translate(
+                    0 - oldx,
+                    (leny / 2) * type - oldy,
+                    0 - oldz
+                );
+            } else if (axis == "z") {
+                mesh.geometry.translate(
+                    0 - oldx,
+                    0 - oldy,
+                    (lenz / 2) * type - oldz
+                );
+            }
 
             var s = Tooler.getBoxSize(mesh);
             console.log("mesh bound", s);
@@ -188,6 +216,13 @@ export default class Game {
     toggleVisible(v: boolean) {
         if (this.curMesh) {
             (this.curMesh as THREE.Object3D).visible = v;
+        }
+    }
+
+    meshScale(n: number) {
+        let mesh = this.curMesh;
+        if (mesh instanceof THREE.Mesh) {
+            mesh.geometry.scale(n, n, n);
         }
     }
 
@@ -207,20 +242,24 @@ export default class Game {
         //         10
         //     );
         // }
-        let mesh = this.curMesh;
-        // (mesh as THREE.Object3D).traverse((mesh)=>{
-
-        // })
-        console.log(mesh);
-        var r = Math.PI / 2;
-        if (mesh instanceof THREE.Mesh) {
-            if (n == "x") {
-                mesh.geometry.rotateX(r);
-            } else if (n == "y") {
-                mesh.geometry.rotateY(r);
-            } else if (n == "z") {
-                mesh.geometry.rotateZ(r);
-            }
+        // let mesh = this.curMesh;
+        let list: THREE.Mesh[] = [];
+        if (this.curMesh) {
+            (this.curMesh as THREE.Object3D).traverse(mesh => {
+                if (mesh instanceof THREE.Mesh) {
+                    list.push(mesh);
+                }
+            });
+            var r = Math.PI / 2;
+            list.forEach(mesh => {
+                if (n == "x") {
+                    mesh.geometry.rotateX(r);
+                } else if (n == "y") {
+                    mesh.geometry.rotateY(r);
+                } else if (n == "z") {
+                    mesh.geometry.rotateZ(r);
+                }
+            });
         }
     }
 

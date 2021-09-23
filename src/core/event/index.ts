@@ -47,11 +47,14 @@ export default class GameEvent {
     public static MESH_ALIGN: string = "mesh align";
     public static MODEL_EXPORT: string = "model export";
     public static OBJ_ROTATE: string = "obj rotate";
+    public static MESH_SCALE: string = "mesh scale";
 
     public static CHANGE_LEVEL: string = "change level";
     public static IMPORT_FILE: string = "import file";
     public static LOAD_ZIP: string = "load zip";
     public static TOGGLE_VISIBLE: string = "toggle visible";
+
+    public static PASTE_ITEM: string = "paste item";
 
     public version: string;
     private _sender: any;

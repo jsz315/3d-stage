@@ -111,8 +111,13 @@ export default class Stage extends Vue {
             this.changeItemParam(e);
         });
 
+        GameEvent.ins.on(GameEvent.PASTE_ITEM, (e: CustomEvent) => {
+            game.pasteItem();
+        });
+
         GameEvent.ins.on(GameEvent.MESH_ALIGN, (e: CustomEvent) => {
-            game.changeMeshAlign(e.detail);
+            var { type, axis } = e.detail;
+            game.changeMeshAlign(type, axis);
         });
         GameEvent.ins.on(GameEvent.MODEL_EXPORT, (e: CustomEvent) => {
             game.changeMeshExport(e.detail);
@@ -138,6 +143,10 @@ export default class Stage extends Vue {
         GameEvent.ins.on(GameEvent.TOGGLE_VISIBLE, (e: CustomEvent) => {
             console.log(e.detail, "visible");
             game.toggleVisible(e.detail);
+        });
+
+        GameEvent.ins.on(GameEvent.MESH_SCALE, (e: CustomEvent) => {
+            game.meshScale(e.detail);
         });
 
         this.initStats();

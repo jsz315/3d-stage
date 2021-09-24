@@ -38,7 +38,11 @@ export default {
         ...mapState(["visible"])
     },
     mounted() {
-        axios.get("/obj/model.json").then(res => {
+        var url = webHost + "/obj/model.json";
+        // if (location.host == "jsz315.gitee.io") {
+        //     url = "https://jsz315.gitee.io/three-web-app/obj/model.json";
+        // }
+        axios.get(url).then(res => {
             console.log(typeof res.data);
             console.log(res);
             if (typeof res.data == "object") {
@@ -64,6 +68,8 @@ export default {
         onLoad(url) {
             url = url.substr(1);
             // game.loadServeModel(url);
+            url = webHost + url;
+            console.log(url, "url");
             GameEvent.ins.send(GameEvent.IMPORT_SCENE, url);
             this.onHide();
         }

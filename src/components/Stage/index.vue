@@ -202,7 +202,9 @@ export default class Stage extends Vue {
             }
             if (type == "rotation") {
                 if (this.$store.state.isAngle) {
+                    transform[type][list[1]] = (Number(value) * Math.PI) / 180;
                 } else {
+                    transform[type][list[1]] = Number(value);
                 }
             }
             game.changeItemTransform(transform);

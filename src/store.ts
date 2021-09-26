@@ -35,7 +35,8 @@ export default new Vuex.Store({
         sceneTree: [],
         visible: {
             remote: false,
-            file: false
+            file: false,
+            gltf: false
         },
         uuid: "",
         lockScale: true,

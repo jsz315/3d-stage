@@ -8,6 +8,7 @@
         <MenuView />
         <RemoteView />
         <FileView />
+        <GltfConfig />
         <Loading :progress="progress" v-if="false" />
     </div>
 </template>
@@ -23,6 +24,7 @@ import MenuView from "@/components/MenuView/index.vue";
 import RemoteView from "@/components/RemoteView/index.vue";
 import FileView from "@/components/FileView/index.vue";
 import Loading from "@/components/Loading/index.vue";
+import GltfConfig from "@/components/GltfConfig/index.vue";
 // import EventCenter from "@/core/EventCenter";
 import GameEvent from "@/core/event/index";
 
@@ -41,7 +43,8 @@ export default {
         MenuView,
         RemoteView,
         Loading,
-        FileView
+        FileView,
+        GltfConfig
     },
     mounted() {
         GameEvent.ins.on(GameEvent.LOADING, e => {

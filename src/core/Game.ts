@@ -658,11 +658,15 @@ export default class Game {
     }
 
     loadServeZip(url: string) {
-        this.loadServeModel(url);
-        // var fineLoader = new FineLoader();
-        // fineLoader.start(url, (object3D: THREE.Object3D) => {
-        //     Tooler.resize(object3D, 20);
-        //     this.root.addObject(object3D);
-        // });
+        if (url.indexOf(".zip") == -1) {
+            this.loadServeModel(url);
+            return;
+        }
+
+        var fineLoader = new FineLoader();
+        fineLoader.start(url, (object3D: THREE.Object3D) => {
+            Tooler.resize(object3D, 20);
+            this.root.addObject(object3D);
+        });
     }
 }

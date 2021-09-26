@@ -17,13 +17,14 @@
                 >
                 <el-menu-item index="exp-0">导出object模型</el-menu-item>
                 <el-menu-item index="exp-1">导出stl模型</el-menu-item>
-                <el-submenu index="2-3">
+                <el-menu-item index="gltf">导出gltf模型</el-menu-item>
+                <!-- <el-submenu index="2-3">
                     <template slot="title"
                         >导出gltf模型</template
                     >
                     <el-menu-item index="exp-2">base64</el-menu-item>
                     <el-menu-item index="exp-3">bin</el-menu-item>
-                </el-submenu>
+                </el-submenu> -->
             </el-submenu>
             <el-menu-item index="3" disabled>关于</el-menu-item>
         </el-menu>
@@ -93,6 +94,10 @@ export default {
             console.log(key, keyPath);
             if (key == "1") {
                 this.changeVisible({ key: "file", value: true });
+                return;
+            }
+            if (key == "gltf") {
+                this.changeVisible({ key: "gltf", value: true });
                 return;
             }
             if (key.indexOf("exp") != -1) {

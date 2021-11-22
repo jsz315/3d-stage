@@ -16,7 +16,7 @@
 
             <div class="cur-name">
                 <input
-                    type="txt"
+                    type="text"
                     class="name"
                     v-bind:value="curItemName"
                     ref="name"

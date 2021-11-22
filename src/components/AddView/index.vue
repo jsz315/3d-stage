@@ -2,14 +2,14 @@
     <el-collapse size="mini" v-model="activeNames" @change="handleCollapse" accordion>
         <el-collapse-item title="geometry" name="0">
             <div class="geometry" v-for="(item, idx) in geometryList" :key="item.name">
-                <img class="img" draggable="false" :src="item.img" data-type="geometry" :data-idx="idx" />
+                <img class="img" draggable="false" :src="item.img" data-type="geometry" :data-idx="idx" title="拖动到场景"/>
                 <div class="tip">{{ item.name }}</div>
             </div>
         </el-collapse-item>
 
         <el-collapse-item title="bufferGeometry" name="1">
             <div class="geometry" v-for="(item, idx) in bufferGeometryList" :key="item.name">
-                <img class="img" draggable="false" :src="item.img" data-type="bufferGeometry" :data-idx="idx" />
+                <img class="img" draggable="false" :src="item.img" data-type="bufferGeometry" :data-idx="idx" title="拖动到场景"/>
                 <div class="tip">{{ item.name }}</div>
             </div>
         </el-collapse-item>
@@ -44,7 +44,8 @@ export default class LeftSide extends Vue {
             this.lightList = res.data.light;
         });
 
-        this.$el.addEventListener("mousedown", (e) => {
+        this.$el.addEventListener("mousedown", (e:any) => {
+            e.preventDefault();
             let obj: any = e.target;
             if (obj.className == "img") {
                 let item;
@@ -53,7 +54,12 @@ export default class LeftSide extends Vue {
                 } else {
                     item = this.geometryList[obj.dataset.idx];
                 }
+                console.log(item, "-----item---")
                 this.$store.commit("changeDrag", item);
+                this.$store.commit("changeDragPosition", {x: e.clientX, y: e.clientY});
+                this.$store.commit("changeDragOffset", {x: e.offsetX, y: e.offsetY});
+
+
                 window.addEventListener("mousemove", this.mouseMove);
                 window.addEventListener("mouseup", this.mouseUp);
             }
@@ -82,9 +88,11 @@ export default class LeftSide extends Vue {
 
     mouseMove(e: MouseEvent) {
         // console.log("mouseMove " + this.tip);
+        this.$store.commit("changeDragPosition", {x: e.clientX, y: e.clientY});
     }
 
     mouseUp(e: MouseEvent) {
+        GameEvent.ins.send(GameEvent.DRAG_ITEM, null);
         window.removeEventListener("mousemove", this.mouseMove);
         window.removeEventListener("mouseup", this.mouseUp);
         this.$store.commit("changeDrag", null);

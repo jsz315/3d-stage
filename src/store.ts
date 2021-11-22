@@ -8,6 +8,8 @@ export default new Vuex.Store({
         dragItem: Object,
         curParam: Object,
         curMaterial: Object,
+        dragPosition: {x: 0, y: 0},
+        dragOffset: {x:0, y: 0},
         curTransform: {},
         isDrag: false,
         drawer: false,
@@ -72,6 +74,14 @@ export default new Vuex.Store({
 
         changeDrag(state, item) {
             state.dragItem = item;
+        },
+        changeDragPosition(state, {x, y}){
+            state.dragPosition.x = x;
+            state.dragPosition.y = y;
+        },
+        changeDragOffset(state, {x, y}){
+            state.dragOffset.x = x;
+            state.dragOffset.y = y;
         },
         changeCurParams(state, curParam) {
             state.curParam = curParam;

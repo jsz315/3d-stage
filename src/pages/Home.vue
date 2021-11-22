@@ -9,6 +9,7 @@
         <RemoteView />
         <FileView />
         <GltfConfig />
+        <DragView />
         <Loading :progress="progress" v-if="false" />
     </div>
 </template>
@@ -25,6 +26,7 @@ import RemoteView from "@/components/RemoteView/index.vue";
 import FileView from "@/components/FileView/index.vue";
 import Loading from "@/components/Loading/index.vue";
 import GltfConfig from "@/components/GltfConfig/index.vue";
+import DragView from "@/components/DragView/index.vue";
 // import EventCenter from "@/core/EventCenter";
 import GameEvent from "@/core/event/index";
 
@@ -44,7 +46,8 @@ export default {
         RemoteView,
         Loading,
         FileView,
-        GltfConfig
+        GltfConfig,
+        DragView
     },
     mounted() {
         GameEvent.ins.on(GameEvent.LOADING, e => {

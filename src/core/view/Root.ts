@@ -80,7 +80,18 @@ export default class Root extends THREE.Object3D {
         let list = [...this.container.children, ...this.lights.children];
         let intersectObjects = this.rayCaster.intersectObjects(list, true);
         if (intersectObjects[0]) {
+            console.log("intersectObjects", intersectObjects[0])
+
             obj = intersectObjects[0].object;
+
+            // obj.material = [obj.material, new THREE.MeshStandardMaterial({color: 0xff0000})];
+
+            // obj.geometry.groups.forEach((i:any, index:number)=>{
+            //     i.materialIndex = index == 0 ? 1 : 0;
+            // })
+            // obj.geometry.addGroup(0, 6, 1)
+
+
             // if (obj.name == "custom drag") {
             //     obj = obj.parent;
             // }

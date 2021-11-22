@@ -29,10 +29,10 @@ export default class Stage extends Vue {
     mounted() {
         game = new Game(this.$refs.canvas);
 
-        (<any>this.$refs.canvas).addEventListener(
-            "mouseenter",
-            this.mouseenter
-        );
+        // (<any>this.$refs.canvas).addEventListener(
+        //     "mouseenter",
+        //     this.mouseenter
+        // );
 
         //threejs发过来的消息
         // GameEvent.ins.on(GameEvent.SELECT_ITEM, (e:any) => {this.changeSelectItem(e)});
@@ -149,6 +149,12 @@ export default class Stage extends Vue {
             game.meshScale(e.detail);
         });
 
+        GameEvent.ins.on(GameEvent.DRAG_ITEM, (e: CustomEvent) => {
+            if (this.$store.state.dragItem) {
+                game.addObject(this.$store.state.dragItem.name, this.$store.state.dragPosition);
+            }
+        });
+
         this.initStats();
     }
 
@@ -235,11 +241,11 @@ export default class Stage extends Vue {
         }
     }
 
-    mouseenter(e: MouseEvent): void {
-        if (this.$store.state.dragItem) {
-            game.addObject(this.$store.state.dragItem.name, e);
-        }
-    }
+    // mouseenter(e: MouseEvent): void {
+    //     if (this.$store.state.dragItem) {
+    //         game.addObject(this.$store.state.dragItem.name, e);
+    //     }
+    // }
 
     changeSelectItem(e: CustomEvent): void {
         this.$store.commit("changeCurItemName", e.detail.name);

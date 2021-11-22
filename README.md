@@ -1,5 +1,8 @@
 # 3d-stage
 
+### 3d场景编辑
+![thumb](game.png)
+
 ## Project setup
 ```
 yarn install

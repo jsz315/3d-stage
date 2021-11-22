@@ -56,6 +56,8 @@ export default class GameEvent {
 
     public static PASTE_ITEM: string = "paste item";
 
+    public static DRAG_ITEM: string = "drag item";
+
     public version: string;
     private _sender: any;
 

@@ -12,6 +12,7 @@ import ExportModel from "./dev/ExportModel";
 import { ExportTooler } from "./tool/ExportTooler";
 import Tooler from "./tool/Tooler";
 import { FineLoader } from "./tool/FineLoader";
+import { PositionTooler } from "./tool/PositionTooler";
 
 export default class Game {
     canvas: HTMLElement;
@@ -456,11 +457,15 @@ export default class Game {
         }
     }
 
-    addObject(type: string, event: MouseEvent) {
+    addObject(type: string, point: any) {
+        console.log("addObject", point)
         let mesh = this.root.addItem(type);
+        let p = PositionTooler.screenToWorld(point.x, point.y, this.camera, this.renderer);
+        mesh.position.copy(p);
         if (mesh) {
             this.sendItemInfo(mesh);
         }
+
     }
 
     sendItemInfo(m: any): void {
